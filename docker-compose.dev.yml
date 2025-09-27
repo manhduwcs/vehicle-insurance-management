@@ -1,0 +1,36 @@
+version: '3.9'
+
+services:
+  vehicle_insurance_mysql_db:
+    image: mysql:8.0
+    container_name: vehicle_insurance_mysql_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  vehicle_insurance_django_web:
+    build: .
+    container_name: vehicle_insurance_django_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: mydb
+      DB_USER: myuser
+      DB_PASSWORD: mypassword
+
+volumes:
+  db_data:
