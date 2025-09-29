@@ -1,0 +1,7 @@
+# Active venv
+source venv/bin/activate
+
+# Fix MySQL error: public retrieval key was not allowed
+ALTER USER 'admin'@'%' IDENTIFIED WITH mysql_native_password BY 'A_123456';
+FLUSH PRIVILEGES;
+

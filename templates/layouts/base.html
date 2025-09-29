@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% load i18n static admin_soft %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+{% get_direction as direction %}
+{% get_admin_setting as admin_setting %}
+<html lang="en">
+
+<head>
+  {% include "includes/head.html" %}
+  {% block extrastyle %}{% endblock extrastyle %}
+  {% block extrahead %}{% endblock extrahead %}
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/showConfirmDelete.js' %}"></script>
+</head>
+
+<body class="g-sidenav-show  bg-gray-100">
+  {% block sidebar %}
+    {% include "includes/sidebar.html" %}
+  {% endblock sidebar %}
+  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+    {% block navigation %}
+        {% include "includes/navigation.html" %}
+    {% endblock navigation %}
+    
+    {% block content %}{% endblock content %}
+  </main>
+
+  {% block configurator %}
+    {% include "includes/configurator.html" %}
+  {% endblock configurator %}
+  
+  <!-- Overlay and modal -->
+  <div id="overlay" class="overlay" style="display:none"></div>
+  <div id="deleteConfirm" class="delete-modal" style="display:none"></div>
+
+  {% include "includes/scripts.html" %}
+  {% block extra_js %}{% endblock extra_js %}
+</body>
+
+</html>

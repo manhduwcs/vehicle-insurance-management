@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,18 +32,24 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    # "debug_toolbar",
+    "admin_soft.apps.AdminSoftDashboardConfig",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'home',
     'employee',
-    'vehicle'
+    'vehicle',
+    'insurance_category',
+    'discount'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,11 +59,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'vehicle_insurance_management.urls'
+HOME_TEMPLATES = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [HOME_TEMPLATES],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,13 +85,13 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',         
-        'USER': 'myuser',       
-        'PASSWORD': 'mypassword',
-        'HOST': '127.0.0.1',    
-        'PORT': '3306',
+        'NAME': 'VehicleInsuranceDB',
+        'USER': 'admin',
+        'PASSWORD': 'A_123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
         'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+            'auth_plugin': 'mysql_native_password',
         },
     }
 }
@@ -123,9 +131,27 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+
+# ✅ where collectstatic will dump all files (leave empty in git)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# ✅ where you keep your own static source files
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Disable migration
+MIGRATION_MODULES = {
+    app: None
+    for app in INSTALLED_APPS
+}
+
+# INTERNAL_IPS = [
+#     "127.0.0.1",
+# ]
