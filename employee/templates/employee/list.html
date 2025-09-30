@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Employee List</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="d-flex justify-content-between mb-2">
+            <div>
+                {% if can_add %}
+                    <a href="{% url 'employee:employee_create' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add Employee</a>
+                {% endif %}
+                <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Group</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.id }}</td>
+                    <td>{{ employee.username }}</td>
+                    <td>{{ employee.fullname }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>{{ employee.phone }}</td>
+                    <td>
+                        {% if employee.group %}
+                            {{ employee.group.group_name }}
+                        {% else %}
+                            No Group
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'employee:employee_detail' employee.id %}" class="btn btn-sm btn-info"><i class="fa-solid fa-circle-info"></i></a>
+                        {% if can_edit %}
+                            <a href="{% url 'employee:employee_update' employee.id %}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></a>
+                        {% endif %}
+                        {% if can_delete %}
+                            <form method="post" action="{% url 'employee:employee_delete' employee.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');"><i class="fas fa-trash"></i></button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">No employees found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

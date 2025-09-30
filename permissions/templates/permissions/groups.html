@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>List Groups</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>List Groups</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <div class="d-flex justify-content-between mb-2">
+            <div>
+                {% if can_add %}
+                    <a href="{% url 'permissions:add_group' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add new group</a>
+                {% endif %}
+                <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </a>
+            </div>
+        </div>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Group</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td>{{ group.id }}</td>
+                    <td>{{ group.group_name }}</td>
+                    <td>{{ group.description }}</td>
+                    <td>
+                        {% if can_edit %}
+                        <a href="{% url 'permissions:edit_group' group.id %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'permissions:assign_permission' group.id %}" class="btn btn-sm btn-info">
+                            <i class="fas fa-key"></i>
+                        </a>
+                        {% endif %}
+                        {% if can_delete %}
+                        <form action="{% url 'permissions:delete_group' group.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the group: {{ group.group_name }}?');">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

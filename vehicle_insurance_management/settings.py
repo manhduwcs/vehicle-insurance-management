@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'employee',
-    'vehicle'
+    'vehicle',
+    'permissions'
 ]
 
 MIDDLEWARE = [
@@ -77,9 +78,9 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mydb',         
-        'USER': 'myuser',       
-        'PASSWORD': 'mypassword',
+        'NAME': 'vehicleinsurancedb',
+        'USER': 'root',
+        'PASSWORD': 'Hieu@02090711',
         'HOST': '127.0.0.1',    
         'PORT': '3306',
         'OPTIONS': {
@@ -88,6 +89,17 @@ DATABASES = {
     }
 }
 
+# Session
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
