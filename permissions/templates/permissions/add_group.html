@@ -1,25 +1,65 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add new group</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-3">
-        <h2>Add new group</h2>
-        {% if messages %}
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">Add New Group</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endfor %}
-        {% endif %}
-        <form method="post">
+          {% endif %}
+          <form action="{% url 'permissions:add_group' %}" method="post">
             {% csrf_token %}
-            {{ form.as_p }}
-            <div class="d-flex justify-content-end">
-                <button type="submit" class="btn btn-primary me-2">Add</button>
-                <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">Cancel</a>
+
+            <!-- Group Name -->
+            <div class="mb-3">
+              <label class="form-label">Group Name</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-users"></i></span>
+                {{ form.group_name }}
+              </div>
+              {% if form.group_name.errors %}
+                <div class="invalid-feedback d-block">{{ form.group_name.errors.as_text }}</div>
+              {% endif %}
             </div>
-        </form>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
+                {{ form.description }}
+              </div>
+              {% if form.description.errors %}
+                <div class="invalid-feedback d-block">{{ form.description.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors.as_text }}
+              </div>
+            {% endif %}
+
+            <!-- Submit and Cancel buttons -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Add</button>
+              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
-</body>
-</html>
+  </div>
+</div>
+{% endblock content %}

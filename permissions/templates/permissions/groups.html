@@ -1,66 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>List Groups</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h2>List Groups</h2>
-        {% if messages %}
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>List Groups</h6>
+          {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
             {% endfor %}
-        {% endif %}
-        <div class="d-flex justify-content-between mb-2">
+          {% endif %}
+          <div class="d-flex justify-content-between mb-2">
             <div>
-                {% if can_add %}
-                    <a href="{% url 'permissions:add_group' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add new group</a>
-                {% endif %}
-                <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">
-                    <i class="fas fa-sync-alt"></i> Refresh
+              {% if can_add %}
+                <a href="{% url 'permissions:add_group' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add new group
                 </a>
+              {% endif %}
+              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </a>
             </div>
+          </div>
         </div>
-        <table class="table table-bordered">
-            <thead>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Group</th>
-                    <th>Description</th>
-                    <th></th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Group</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Description</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
                 </tr>
-            </thead>
-            <tbody>
+              </thead>
+              <tbody>
                 {% for group in groups %}
                 <tr>
-                    <td>{{ group.id }}</td>
-                    <td>{{ group.group_name }}</td>
-                    <td>{{ group.description }}</td>
-                    <td>
-                        {% if can_edit %}
-                        <a href="{% url 'permissions:edit_group' group.id %}" class="btn btn-sm btn-warning">
-                            <i class="fas fa-edit"></i>
-                        </a>
-                        <a href="{% url 'permissions:assign_permission' group.id %}" class="btn btn-sm btn-info">
-                            <i class="fas fa-key"></i>
-                        </a>
-                        {% endif %}
-                        {% if can_delete %}
-                        <form action="{% url 'permissions:delete_group' group.id %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the group: {{ group.group_name }}?');">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </form>
-                        {% endif %}
-                    </td>
+                  <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
+                  <td class="align-middle">
+                    <p class="text-xs font-weight-bold mb-0">{{ group.group_name }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ group.description }}</p>
+                  </td>
+                  <td class="align-middle">
+                    {% if can_edit %}
+                      <a href="{% url 'permissions:assign_permission' group.id %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-key"></i>
+                      </a>
+                      <a href="{% url 'permissions:edit_group' group.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                    {% endif %}
+                    {% if can_delete %}
+                      <form action="{% url 'permissions:delete_group' group.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the group: {{ group.group_name }}?');">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-secondary">No groups found.</td>
                 </tr>
                 {% endfor %}
-            </tbody>
-        </table>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
-</body>
-</html>
+  </div>
+  {% include "includes/footer.html" %}
+</div>
+{% endblock content %}
