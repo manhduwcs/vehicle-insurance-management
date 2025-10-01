@@ -11,8 +11,8 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-python manage.py migrate
+python manage.py collectstatic --no-input
 
-PORT=${1:-8000}
+PORT=${1:-8002}
 echo "Starting server on port $PORT ..."
-python manage.py runserver 0.0.0.0:$PORT
+python manage.py runserver $PORT
