@@ -6,7 +6,11 @@ if [ ! -d "venv" ]; then
     python3 -m venv venv
 fi
 
-source venv/bin/activate
+if [[ "$OS" == "Windows_NT" ]]; then
+    source venv/Scripts/activate
+else
+    source venv/bin/activate
+fi
 
 pip install --upgrade pip
 pip install -r requirements.txt

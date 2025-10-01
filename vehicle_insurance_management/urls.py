@@ -22,7 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),
     path('insurance-category/', include('insurance_category.urls')),
-    path('discount/', include('discount.urls'))
+    path('discount/', include('discount.urls')),
+    path('customers/', include('customer.urls')),
 ]
 
 # if settings.DEBUG:
