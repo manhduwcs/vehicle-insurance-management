@@ -1,0 +1,12 @@
+
+-- ERD
+https://drive.google.com/file/d/1oo9lKELdE5yyQZ7QsJ-d4HXUrLf_Gh4Q/view?usp=sharing
+
+-- Database
+https://dbdiagram.io/d/Insurance-68d4156fd2b621e422c1778d
+
+-- Workflow
+https://drive.google.com/file/d/1KIwulbWbWst_bPOO1oAsDjXsEGEyA6LF/view?usp=sharing
+
+-- System function analysis
+https://hypernotepad.com/n/fc980ca774d76e72
