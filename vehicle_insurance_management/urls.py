@@ -26,7 +26,8 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('', include('home.urls')),
     path('insurance-category/', include('insurance_category.urls')),
-    path('discount/', include('discount.urls'))
+    path('discount/', include('discount.urls')),
+    path('expenses/', include('expenses.urls'))
 ]
 
 # if settings.DEBUG:

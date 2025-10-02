@@ -9,7 +9,7 @@
     <div class="col-md-12 mt-4">
       <div class="card">
         <div class="card-header pb-0 px-3">
-          <h4 class="mb-0">Add New Group</h4>
+          <h4 class="mb-0">{{ expense.content|truncatechars:30 }}</h4>
         </div>
         <div class="card-body pt-4 p-3">
           {% if messages %}
@@ -19,30 +19,42 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-          <form action="{% url 'permissions:add_group' %}" method="post">
+          <form action="{% url 'expenses:expense_update' expense.id %}" method="post">
             {% csrf_token %}
 
-            <!-- Group Name -->
+            <!-- Content -->
             <div class="mb-3">
-              <label class="form-label">Group Name</label>
+              <label class="form-label">Content</label>
               <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-users"></i></span>
-                {{ form.group_name }}
+                <span class="input-group-text text-body"><i class="fas fa-file-alt"></i></span>
+                {{ form.content }}
               </div>
-              {% if form.group_name.errors %}
-                <div class="invalid-feedback d-block">{{ form.group_name.errors.as_text }}</div>
+              {% if form.content.errors %}
+                <div class="invalid-feedback d-block">{{ form.content.errors.as_text }}</div>
               {% endif %}
             </div>
 
-            <!-- Description -->
+            <!-- Amount -->
             <div class="mb-3">
-              <label class="form-label">Description</label>
+              <label class="form-label">Amount</label>
               <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
-                {{ form.description }}
+                <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
+                {{ form.amount }}
               </div>
-              {% if form.description.errors %}
-                <div class="invalid-feedback d-block">{{ form.description.errors.as_text }}</div>
+              {% if form.amount.errors %}
+                <div class="invalid-feedback d-block">{{ form.amount.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Date -->
+            <div class="mb-3">
+              <label class="form-label">Date</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-calendar-alt"></i></span>
+                {{ form.date }}
+              </div>
+              {% if form.date.errors %}
+                <div class="invalid-feedback d-block">{{ form.date.errors.as_text }}</div>
               {% endif %}
             </div>
 
@@ -55,8 +67,8 @@
 
             <!-- Submit and Cancel buttons -->
             <div class="text-end mt-3">
-              <button type="submit" class="btn btn-primary">Add</button>
-              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">Cancel</a>
+              <button type="submit" class="btn btn-primary">Update</button>
+              <a href="{% url 'expenses:expense_list' %}" class="btn btn-secondary">Cancel</a>
             </div>
           </form>
         </div>
@@ -79,7 +91,7 @@
                 {{ message }}
               </div>
               <div class="modal-footer">
-                <a href="{% url 'permissions:groups_list' %}" class="btn btn-primary">OK</a>
+                <a href="{% url 'expenses:expense_list' %}" class="btn btn-primary">OK</a>
               </div>
             </div>
           </div>
