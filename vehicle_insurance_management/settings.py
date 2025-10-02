@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'insurance_category',
     'discount',
     'permissions',
-    'expenses'
+    'expenses',
+    'customer'
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ DATABASES = {
         'NAME': 'vehicleinsurancedb',
         'USER': 'root',
         'PASSWORD': 'Hieu@02090711',
-        'HOST': '127.0.0.1',    
+        'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
