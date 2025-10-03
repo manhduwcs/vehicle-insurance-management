@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'employee',
     'vehicle',
     'insurance_category',
-    'discount'
+    'discount',
+    'customer'
 ]
 
 MIDDLEWARE = [
