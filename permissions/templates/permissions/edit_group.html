@@ -1,0 +1,105 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">{{ group.group_name }}</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <form action="{% url 'permissions:edit_group' group.id %}" method="post">
+            {% csrf_token %}
+
+            <!-- Group Name -->
+            <div class="mb-3">
+              <label class="form-label">Group Name</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-users"></i></span>
+                {{ form.group_name }}
+              </div>
+              {% if form.group_name.errors %}
+                <div class="invalid-feedback d-block">{{ form.group_name.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
+                {{ form.description }}
+              </div>
+              {% if form.description.errors %}
+                <div class="invalid-feedback d-block">{{ form.description.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors.as_text }}
+              </div>
+            {% endif %}
+
+            <!-- Submit and Cancel buttons -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Update</button>
+              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'permissions:groups_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- JavaScript to show modal if error exists -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

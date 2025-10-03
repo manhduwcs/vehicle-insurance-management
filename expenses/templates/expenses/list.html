@@ -2,12 +2,14 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
 <div class="container-fluid py-4">
   <div class="row">
     <div class="col-12">
       <div class="card mb-4">
         <div class="card-header pb-0">
-          <h6>Employee List</h6>
+          <h6>Expense List</h6>
           {% if messages %}
             {% for message in messages %}
               {% if message.tags != 'error' %}
@@ -18,11 +20,11 @@
           <div class="d-flex justify-content-between mb-2">
             <div>
               {% if can_add %}
-                <a href="{% url 'employee:employee_create' %}" class="btn btn-primary btn-sm">
-                  <i class="fa-solid fa-plus"></i> Add Employee
+                <a href="{% url 'expenses:expense_create' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add Expense
                 </a>
               {% endif %}
-              <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary btn-sm">
+              <a href="{% url 'expenses:expense_list' %}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-sync-alt"></i> Refresh
               </a>
             </div>
@@ -34,54 +36,40 @@
               <thead>
                 <tr>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Full Name</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Phone</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Group</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Content</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {% for employee in employees %}
+                {% for expense in expenses %}
                 <tr>
                   <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
                   <td class="align-middle">
-                    <a href="{% url 'employee:employee_detail' employee.id %}">
-                      <p class="text-xs font-weight-bold mb-0">{{ employee.username }}</p>
+                    <a href="{% url 'expenses:expense_detail' expense.id %}">
+                      <p class="text-xs font-weight-bold mb-0">{{ expense.content|truncatechars:50 }}</p>
                     </a>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.fullname }}</p>
+                    <p class="text-xs text-secondary mb-0">{{ expense.amount }}</p>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.email }}</p>
+                    <p class="text-xs text-secondary mb-0">{{ expense.date }}</p>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.phone }}</p>
-                  </td>
-                  <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">
-                      {% if employee.group %}
-                        {{ employee.group.group_name }}
-                      {% else %}
-                        No Group
-                      {% endif %}
-                    </p>
-                  </td>
-                  <td class="align-middle">
-                    <a href="{% url 'employee:employee_detail' employee.id %}" class="btn btn-sm btn-info">
+                    <a href="{% url 'expenses:expense_detail' expense.id %}" class="btn btn-sm btn-info">
                       <i class="fa-solid fa-circle-info"></i>
                     </a>
                     {% if can_edit %}
-                      <a href="{% url 'employee:employee_update' employee.id %}" class="btn btn-sm btn-warning">
+                      <a href="{% url 'expenses:expense_update' expense.id %}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i>
                       </a>
                     {% endif %}
                     {% if can_delete %}
-                      <form method="post" action="{% url 'employee:employee_delete' employee.id %}" style="display:inline;">
+                      <form method="post" action="{% url 'expenses:expense_delete' expense.id %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the employee: {{ employee.fullname }}?');">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the expense: {{ expense.content|truncatechars:30 }}?');">
                           <i class="fas fa-trash"></i>
                         </button>
                       </form>
@@ -90,7 +78,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="7" class="text-center text-secondary">No employees found.</td>
+                  <td colspan="5" class="text-center text-secondary">No expenses found.</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -117,7 +105,7 @@
                 {{ message }}
               </div>
               <div class="modal-footer">
-                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+                <a href="{% url 'expenses:expense_list' %}" class="btn btn-primary">OK</a>
               </div>
             </div>
           </div>

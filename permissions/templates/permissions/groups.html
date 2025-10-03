@@ -7,7 +7,7 @@
     <div class="col-12">
       <div class="card mb-4">
         <div class="card-header pb-0">
-          <h6>Employee List</h6>
+          <h6>List Groups</h6>
           {% if messages %}
             {% for message in messages %}
               {% if message.tags != 'error' %}
@@ -18,11 +18,11 @@
           <div class="d-flex justify-content-between mb-2">
             <div>
               {% if can_add %}
-                <a href="{% url 'employee:employee_create' %}" class="btn btn-primary btn-sm">
-                  <i class="fa-solid fa-plus"></i> Add Employee
+                <a href="{% url 'permissions:add_group' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add new group
                 </a>
               {% endif %}
-              <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary btn-sm">
+              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-sync-alt"></i> Refresh
               </a>
             </div>
@@ -34,54 +34,34 @@
               <thead>
                 <tr>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Username</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Full Name</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Email</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Phone</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Group</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Group</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Description</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {% for employee in employees %}
+                {% for group in groups %}
                 <tr>
                   <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
                   <td class="align-middle">
-                    <a href="{% url 'employee:employee_detail' employee.id %}">
-                      <p class="text-xs font-weight-bold mb-0">{{ employee.username }}</p>
-                    </a>
+                    <p class="text-xs font-weight-bold mb-0">{{ group.group_name }}</p>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.fullname }}</p>
+                    <p class="text-xs text-secondary mb-0">{{ group.description }}</p>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.email }}</p>
-                  </td>
-                  <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ employee.phone }}</p>
-                  </td>
-                  <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">
-                      {% if employee.group %}
-                        {{ employee.group.group_name }}
-                      {% else %}
-                        No Group
-                      {% endif %}
-                    </p>
-                  </td>
-                  <td class="align-middle">
-                    <a href="{% url 'employee:employee_detail' employee.id %}" class="btn btn-sm btn-info">
-                      <i class="fa-solid fa-circle-info"></i>
-                    </a>
                     {% if can_edit %}
-                      <a href="{% url 'employee:employee_update' employee.id %}" class="btn btn-sm btn-warning">
+                      <a href="{% url 'permissions:assign_permission' group.id %}" class="btn btn-sm btn-info">
+                        <i class="fas fa-key"></i>
+                      </a>
+                      <a href="{% url 'permissions:edit_group' group.id %}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i>
                       </a>
                     {% endif %}
                     {% if can_delete %}
-                      <form method="post" action="{% url 'employee:employee_delete' employee.id %}" style="display:inline;">
+                      <form action="{% url 'permissions:delete_group' group.id %}" method="post" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the employee: {{ employee.fullname }}?');">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the group: {{ group.group_name }}?');">
                           <i class="fas fa-trash"></i>
                         </button>
                       </form>
@@ -90,7 +70,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="7" class="text-center text-secondary">No employees found.</td>
+                  <td colspan="4" class="text-center text-secondary">No groups found.</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -117,7 +97,7 @@
                 {{ message }}
               </div>
               <div class="modal-footer">
-                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+                <a href="{% url 'permissions:groups_list' %}" class="btn btn-primary">OK</a>
               </div>
             </div>
           </div>
