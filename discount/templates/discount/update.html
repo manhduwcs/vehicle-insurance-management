@@ -1,0 +1,48 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <!-- Discount name as title -->
+          <h4 class="mb-0">{{ discount.name }}</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          <form action="{% url 'discount_update' discount.id %}" method="post">
+            {% csrf_token %}
+
+            <!-- Discount Name -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-tag"></i></span>
+              <input type="text" name="name" class="form-control" placeholder="Discount Name" value="{{ discount.name }}">
+            </div>
+
+            <!-- Rate (number) -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-percent"></i></span>
+              <input type="number" name="rate" class="form-control" placeholder="Rate" value="{{ discount.rate }}">
+            </div>
+
+            <!-- Description -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
+              <input type="text" name="description" class="form-control" placeholder="Description" value="{{ discount.description }}">
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Update Discount</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

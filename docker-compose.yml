@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  vehicle_mysql_db:
+    image: mysql:8.0
+    container_name: vehicle_mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: A_123456
+      MYSQL_DATABASE: VehicleInsuranceDB
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: A_123456
+    ports:
+      - "3307:3306"
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -u${DEV_DB_USER} -p${DEV_DB_PASSWORD} || exit 1" ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    networks: 
+      - dev_network
+      
+
+networks:
+  dev_network:
+    driver: bridge

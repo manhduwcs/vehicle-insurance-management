@@ -1,0 +1,34 @@
+/* Overlay */
+.overlay {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4); /* semi-transparent gray */
+  z-index: 9999 !important;   
+  transform: none !important; 
+}
+
+/* Modal */
+.delete-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff; /* white */
+  color: #000000;                  /* black text */
+  font-weight: bold;
+  padding: 20px;
+  border-radius: 0.5rem;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  z-index: 10000 !important;  /* above overlay */
+  max-width: 400px;
+  width: 90%;
+
+  text-align: center;              center text
+  display: flex;
+  flex-direction: column;          /* stack children vertically */
+  align-items: center;             /* center buttons horizontally */
+  gap: 15px;                       /* space between text and buttons */
+}
