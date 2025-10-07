@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <h3>Vehicle Detail</h3>
+  <p><strong>Name:</strong> {{ vehicle.name }}</p>
+  <p><strong>Customer:</strong> {{ vehicle.customer.name }}</p>
+  <p><strong>Model:</strong> {{ vehicle.model }}</p>
+  <p><strong>Type:</strong> {{ vehicle.vehicle_type.name }}</p>
+  <p><strong>Rate:</strong> {{ vehicle.rate }}</p>
+  <p><strong>Body Number:</strong> {{ vehicle.body_number }}</p>
+  <p><strong>Engine Number:</strong> {{ vehicle.engine_number }}</p>
+  <p><strong>Number:</strong> {{ vehicle.number }}</p>
+  <p><strong>Registration Date:</strong> {{ vehicle.registration_date }}</p>
+  <a href="{% url 'vehicle_list' %}" class="btn btn-secondary">Back to List</a>
+  {% include "includes/footer.html" %}
+</div>
+{% endblock content %}

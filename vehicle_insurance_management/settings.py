@@ -86,10 +86,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'VehicleInsuranceDB',
-        'USER': 'admin',
-        'PASSWORD': 'A_123456',
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'OPTIONS': {
             'auth_plugin': 'mysql_native_password',
         },

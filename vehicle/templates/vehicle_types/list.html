@@ -1,0 +1,66 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>Vehicle Types</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <a href="{% url 'vehicle_type_create' %}" class="btn btn-primary mb-3">Add Vehicle Type</a>
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fee</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Description</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Max Claimable Amount</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vt in vehicle_types %}
+                <tr>
+                  <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
+                  <td class="align-middle">
+                    <a href="{% url 'vehicle_type_detail' vt.id %}">
+                      <p class="text-xs font-weight-bold mb-0">{{ vt.name }}</p>
+                    </a>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vt.fee }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vt.description }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vt.max_claimable_amount }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <a href="{% url 'vehicle_type_update' vt.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="{% url 'vehicle_type_delete' vt.id %}" method="post" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-secondary">No vehicle types yet.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "includes/footer.html" %}
+</div>
+{% endblock content %}
