@@ -1,8 +1,14 @@
 # Active venv
 source venv/bin/activate
 
+# Run django port 8002
+python manage.py runserver 8002
+
 # Fix MySQL error: public retrieval key was not allowed
 ALTER USER 'admin'@'%' IDENTIFIED WITH mysql_native_password BY 'A_123456';
 FLUSH PRIVILEGES;
 
 scp -r dist/ root@113.20.107.226:/var/www/fdi-internal-fe/staging/
+
+# Dump initial data into mysql (docker only)
+docker exec -i vehicle_mysql_db mysql -u admin -pA_123456 < ./database.sql
