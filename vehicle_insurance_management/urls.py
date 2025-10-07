@@ -29,6 +29,7 @@ urlpatterns = [
     path('discount/', include('discount.urls')),
     path('expenses/', include('expenses.urls')),
     path('customers/', include('customer.urls')),
+    path('accounts/', include('accounts.urls')),
 ]
 
 # if settings.DEBUG:
