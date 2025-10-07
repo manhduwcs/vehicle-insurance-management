@@ -12,11 +12,9 @@ def register_view(request):
             form.save()
             messages.success(request, "Registration successful. Please login.")
             return redirect('accounts:login')
-        else:
-            messages.error(request, form.errors)
     else:
         form = RegisterForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'accounts/register.html', {'form': form})
 
 # -------------------
 # LOGIN
@@ -28,13 +26,21 @@ def login_view(request):
             customer = form.cleaned_data['customer']
             request.session['user_id'] = customer.id
             request.session['user_type'] = 'customer'
+            request.session['username'] = customer.username
+            remember_me = request.POST.get('remember_me')
+            
+            if remember_me == 'on':
+                request.session.set_expiry(7 * 24 * 60 * 60)  
+            else:
+                request.session.set_expiry(0)  
             messages.success(request, f"Welcome, {customer.fullname}!")
             return redirect('home')
         else:
-            messages.error(request, form.errors)
+            messages.error(request, "Invalid username or password.")
     else:
         form = LoginForm()
-    return render(request, 'login.html', {'form': form})
+
+    return render(request, 'accounts/login.html', {'form': form})
 
 # -------------------
 # LOGOUT

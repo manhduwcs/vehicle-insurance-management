@@ -66,7 +66,7 @@
 
   {% block content %}{% endblock content %}
 
-  <footer class="footer py-5">
+  {% comment %} <footer class="footer py-5">
     <div class="container">
       <div class="row">
         <div class="col-lg-8 mb-4 mx-auto text-center">
@@ -115,7 +115,7 @@
         </div>
       </div>
     </div>
-  </footer>
+  </footer> {% endcomment %}
 
   {% include "includes/scripts.html" %}
   {% block extra_js %}{% endblock extra_js %}

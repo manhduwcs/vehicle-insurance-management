@@ -59,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.CustomerAuthMiddleware',
+    'accounts.middleware.RedirectAuthenticatedUserMiddleware',
 ]
 
 ROOT_URLCONF = 'vehicle_insurance_management.urls'
@@ -67,7 +69,7 @@ HOME_TEMPLATES = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [HOME_TEMPLATES],
+        'DIRS': [HOME_TEMPLATES,BASE_DIR / 'admin_soft' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

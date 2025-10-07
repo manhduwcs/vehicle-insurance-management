@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from accounts.decorators import customer_login_required
 
+@customer_login_required
 def index(request):
     context = {
         "segment": "home",
