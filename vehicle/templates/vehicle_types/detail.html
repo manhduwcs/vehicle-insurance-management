@@ -1,0 +1,14 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <h3>Vehicle Type Detail</h3>
+  <p><strong>Name:</strong> {{ vehicle_type.name }}</p>
+  <p><strong>Fee:</strong> {{ vehicle_type.fee }}</p>
+  <p><strong>Description:</strong> {{ vehicle_type.description }}</p>
+  <p><strong>Max Claimable Amount:</strong> {{ vehicle_type.max_claimable_amount }}</p>
+  <a href="{% url 'vehicle_type_list' %}" class="btn btn-secondary">Back to List</a>
+  {% include "includes/footer.html" %}
+</div>
+{% endblock content %}

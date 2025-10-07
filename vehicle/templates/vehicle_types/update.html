@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">{{ vehicle_type.name }}</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          <form action="{% url 'vehicle_type_update' vehicle_type.id %}" method="post">
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-tag"></i></span>
+              <input type="text" name="name" class="form-control" placeholder="Name" value="{{ vehicle_type.name }}">
+            </div>
+
+            <!-- Fee -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
+              <input type="number" step="0.01" name="fee" class="form-control" placeholder="Fee" value="{{ vehicle_type.fee }}">
+            </div>
+
+            <!-- Description -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
+              <input type="text" name="description" class="form-control" placeholder="Description" value="{{ vehicle_type.description }}">
+            </div>
+
+            <!-- Max Claimable Amount -->
+            <div class="input-group mb-3">
+              <span class="input-group-text text-body"><i class="fas fa-money-bill"></i></span>
+              <input type="number" step="0.01" name="max_claimable_amount" class="form-control" placeholder="Max Claimable Amount" value="{{ vehicle_type.max_claimable_amount }}">
+            </div>
+
+            <!-- Submit button -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Update Vehicle Type</button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
