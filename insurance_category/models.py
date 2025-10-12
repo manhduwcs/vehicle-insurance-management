@@ -8,5 +8,5 @@ class InsuranceCategory(models.Model):
     type = models.CharField(max_length=255, db_column="Type")
     description = models.TextField(blank=True, null=True, db_column="Description")
 
-    class Meta:
-        db_table = "InsuranceCategories"  
+    # class Meta:
+    #     db_table = "InsuranceCategories"

@@ -32,7 +32,8 @@ CREATE TABLE VehicleTypes (
     Name VARCHAR(255),
     Fee DECIMAL(10,2),
     Description TEXT,
-    MaxClaimableAmount DECIMAL(15,2)
+    MaxPersonalCompensation DECIMAL(15,2),
+    MaxPropertyCompensation DECIMAL(15,2)
 );
 
 CREATE TABLE InsuranceCategories (
@@ -43,7 +44,7 @@ CREATE TABLE InsuranceCategories (
 
 CREATE TABLE Duration (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Months DECIMAL(5,2)
+    Months INT
 );
 
 CREATE TABLE Functions (
@@ -84,7 +85,8 @@ CREATE TABLE InsurancePriceList (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     InsuranceCategoryID INT,
     DurationID INT,
-    Years INT,
+    MinAge INT,
+    MaxAge INT,
     Rate DECIMAL(5,2),
     FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID),
     FOREIGN KEY (DurationID) REFERENCES Duration(ID)
@@ -97,12 +99,14 @@ CREATE TABLE Contracts (
     InsuranceCategoryID INT,
     EstimateValue DECIMAL(15,2),
     EstimatePremium DECIMAL(15,2),
-    DeductibleRate DECIMAL(5,2),
+    DeductibleValue DECIMAL(15,2),
     DeductibleAddon DECIMAL(15,2),
     ActualValue DECIMAL(15,2),
     ActualPremium DECIMAL(15,2),
     FixedDeduction DECIMAL(15,2),
-    AvaiableClaimAmount DECIMAL(15,2),
+    MaxPersonCompensation DECIMAL(15,2),
+    AvailablePersonCompensation DECIMAL(15,2),
+    AvailablePropertyCompensation DECIMAL(15,2),
     StartDate DATE,
     Status ENUM('Awaiting','Reject','Pending','Active','Inactive'),
     Note TEXT,
@@ -119,17 +123,20 @@ CREATE TABLE Claims (
     CustomerID INT,
     VehicleID INT,
     ContractID INT,
-    InsuranceCategoryID INT,  
+    CategoryID INT,
     Place TEXT,
     Date DATE,
-    DamageAmount DECIMAL(15,2),
+    HumanDamage DECIMAL(15,2),
+    PropertyDamage DECIMAL(15,2),
     Deduction DECIMAL(15,2),
-    ClaimAmount DECIMAL(15,2),
+    PersonalCompensation DECIMAL(15,2),
+    PropertyCompensation DECIMAL(15,2),
+    Note TEXT,
     Status ENUM('Pending','Approved','Completed','Rejected'),
     FOREIGN KEY (CustomerID) REFERENCES Customers(ID),
     FOREIGN KEY (VehicleID) REFERENCES Vehicles(ID),
     FOREIGN KEY (ContractID) REFERENCES Contracts(ID),
-    FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID)
+    FOREIGN KEY (CategoryID) REFERENCES InsuranceCategories(ID)
 );
 
 CREATE TABLE Expenses (
@@ -153,49 +160,115 @@ CREATE TABLE GroupsFunctionsActions (
 USE vehicleinsurancedb;
 
 -- Customers
-INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID) VALUES
-('nguyen.van.a', '123456!', 'Nguyen Van A', '123 Le Loi, Hanoi', 'nvana@gmail.com', '0912345678', 'C123456789', 'Hanoi', '2015-01-01', 'Hanoi Police', 'TAX12345'),
-('tran.thi.b', '123456!', 'Tran Thi B', '456 Tran Hung Dao, HCMC', 'ttb@gmail.com', '0912345679', 'C987654321', 'HCMC', '2016-05-15', 'HCMC Police', 'TAX54321'),
-('le.van.c', '123456!', 'Le Van C', '789 Nguyen Trai, Danang', 'lvc@gmail.com', '0912345680', 'C192837465', 'Danang', '2017-09-10', 'Danang Police', 'TAX67890');
+INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone)
+VALUES 
+('nguyenvana', '123456', 'Nguyễn Văn An', '12 Nguyễn Trãi, Quận 1, TP. Hồ Chí Minh', 'an.nguyen@example.com', '0903123456'),
+('tranthibich', '123456', 'Trần Thị Bích', '45 Cầu Giấy, Quận Cầu Giấy, Hà Nội', 'bich.tran@example.com', '0987234567'),
+('leminhduc', '123456', 'Lê Minh Đức', '89 Lê Lợi, TP. Đà Nẵng', 'duc.le@example.com', '0934567890'),
+('phamthanhha', '123456', 'Phạm Thanh Hà', '21 Nguyễn Huệ, TP. Huế', 'ha.pham@example.com', '0976543210'),
+('danghoangnam', '123456', 'Đặng Hoàng Nam', '5 Lý Thường Kiệt, TP. Hải Phòng', 'nam.dang@example.com', '0912789345');
 
--- VehicleTypes
-INSERT INTO VehicleTypes (Name, Fee, Description, MaxClaimableAmount) VALUES
-('Sedan', 500, '4-door car', 200000000),
-('SUV', 800, 'Sports Utility Vehicle', 300000000),
-('Truck', 1000, 'Cargo truck', 400000000),
-('Motorbike', 100, 'Two-wheeled motorbike', 50000000);
 
--- Vehicles
-INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate) VALUES
-('Toyota Camry', 1, 'Camry 2020', 1, 1000000000, 'B12345', 'E54321', '30A-12345', '2020-01-15'),
-('Honda CRV', 2, 'CRV 2019', 2, 1200000000, 'B67890', 'E09876', '30B-67890', '2019-03-20'),
-('Ford Ranger', 3, 'Ranger 2021', 3, 1500000000, 'B11122', 'E22211', '43C-11223', '2021-07-10'),
-('Yamaha Exciter', 1, 'Exciter 150', 4, 50000000, 'B33344', 'E44433', '29A-33445', '2018-05-05');
-
--- InsuranceCategories
-INSERT INTO InsuranceCategories (Name, Description) VALUES
-('Third Party Liability', 'Insurance covers damage to third party'),
-('Comprehensive', 'Covers own damage + third party'),
-('Motorbike Liability', 'Covers motorbike accidents');
+-- InsuranceCategories 
+INSERT INTO InsuranceCategories (Name, Description)
+VALUES
+('Comprehensive car insurance', 'Comprehensive car insurance covers damage from accidents, theft, fire, vandalism, or natural disasters'),
+('Hydrolock insurance', 'Hydrolock insurance covers damage caused when water enters the engine (hydrolock) during flooding'),
+('Theft insurance', 'Theft insurance covers loss or damage caused by theft or attempted theft'),
+('Fire and explosion insurance', 'Fire and explosion insurance covers loss or damage caused by fire, explosion, or related incidents'),
+('Natural disaster insurance', 'Natural disaster insurance covers loss or damage caused by natural disasters such as floods, storms, earthquakes, or typhoons');
 
 -- Duration
-INSERT INTO Duration (Months) VALUES (6), (12), (24);
+INSERT INTO Duration (Months)
+VALUES
+(12),
+(24),
+(36);
 
--- InsurancePriceList (based on your image)
-INSERT INTO InsurancePriceList (InsuranceCategoryID, DurationID, Years, Rate) VALUES
-(1, 2, 1, 1.5),
-(2, 2, 1, 2.0),
-(2, 3, 2, 3.8),
-(3, 1, 0.5, 0.8);
+-- InsurancePriceList demo data
+INSERT INTO InsurancePriceList (InsuranceCategoryID, DurationID, MinAge, MaxAge, Rate) VALUES
+-- 1. Body Damage Insurance (Thân vỏ)
+(1, 1, 0, 3, 1.30),
+(1, 1, 4, 7, 1.50),
+(1, 1, 8, 10, 1.80),
+(1, 1, 11, 20, 2.00),
+(1, 2, 0, 3, 1.25),
+(1, 2, 4, 7, 1.45),
+(1, 2, 8, 10, 1.70),
+(1, 2, 11, 20, 1.90),
+(1, 3, 0, 3, 1.20),
+(1, 3, 4, 7, 1.40),
+(1, 3, 8, 10, 1.60),
+(1, 3, 11, 20, 1.80),
 
+-- 2. Flood Damage (Thủy kích)
+(2, 1, 0, 3, 0.20),
+(2, 1, 4, 7, 0.25),
+(2, 1, 8, 10, 0.30),
+(2, 1, 11, 20, 0.35),
+(2, 2, 0, 3, 0.19),
+(2, 2, 4, 7, 0.23),
+(2, 2, 8, 10, 0.28),
+(2, 2, 11, 20, 0.33),
+(2, 3, 0, 3, 0.18),
+(2, 3, 4, 7, 0.22),
+(2, 3, 8, 10, 0.27),
+(2, 3, 11, 20, 0.32),
+
+-- 3. Theft Insurance (Mất cắp)
+(3, 1, 0, 3, 0.40),
+(3, 1, 4, 7, 0.45),
+(3, 1, 8, 10, 0.50),
+(3, 1, 11, 20, 0.60),
+(3, 2, 0, 3, 0.38),
+(3, 2, 4, 7, 0.43),
+(3, 2, 8, 10, 0.48),
+(3, 2, 11, 20, 0.57),
+(3, 3, 0, 3, 0.36),
+(3, 3, 4, 7, 0.41),
+(3, 3, 8, 10, 0.46),
+(3, 3, 11, 20, 0.55),
+
+-- 4. Fire & Explosion (Cháy nổ)
+(4, 1, 0, 3, 0.15),
+(4, 1, 4, 7, 0.18),
+(4, 1, 8, 10, 0.20),
+(4, 1, 11, 20, 0.25),
+(4, 2, 0, 3, 0.14),
+(4, 2, 4, 7, 0.17),
+(4, 2, 8, 10, 0.19),
+(4, 2, 11, 20, 0.23),
+(4, 3, 0, 3, 0.13),
+(4, 3, 4, 7, 0.16),
+(4, 3, 8, 10, 0.18),
+(4, 3, 11, 20, 0.22),
+
+-- 5. Natural Disaster (Thiên tai)
+(5, 1, 0, 3, 0.25),
+(5, 1, 4, 7, 0.30),
+(5, 1, 8, 10, 0.35),
+(5, 1, 11, 20, 0.40),
+(5, 2, 0, 3, 0.24),
+(5, 2, 4, 7, 0.28),
+(5, 2, 8, 10, 0.33),
+(5, 2, 11, 20, 0.38),
+(5, 3, 0, 3, 0.23),
+(5, 3, 4, 7, 0.27),
+(5, 3, 8, 10, 0.32),
+(5, 3, 11, 20, 0.37);
 
 -- Expenses
 INSERT INTO Expenses (Content, Amount, Date)
 VALUES
-('Office rent', 5000000, '2025-01-01'),
-('Electricity', 1200000, '2025-01-15'),
-('Internet', 800000, '2025-01-20');
-
+('Thuê văn phòng', 5000000, '2025-01-01'),
+('Tiền điện', 1200000, '2025-01-15'),
+('Tiền internet', 800000, '2025-01-20'),
+('Bảo trì hệ thống máy tính', 2500000, '2025-02-05'),
+('Chi phí quảng cáo trực tuyến', 3500000, '2025-02-10'),
+('Mua văn phòng phẩm', 950000, '2025-02-18'),
+('Tiền nước', 600000, '2025-03-01'),
+('Chi phí vệ sinh tòa nhà', 1000000, '2025-03-10'),
+('Chi phí bảo dưỡng xe công ty', 4200000, '2025-03-25');
 
 INSERT INTO GroupsUsers (GroupName, Description)
 VALUES 
@@ -219,8 +292,7 @@ INSERT INTO Functions (FunctionName, Description) VALUES
     ('Manage Employees', 'Manage Employees'),
     ('Manage Groups users', 'Manage Groups Users'),
     ('Manage Insurance Categories', 'Manage Insurance Categories'),
-    ('Manage Insurance Price List', 'Manage Insurance Price List'),
-    ('Manage Duration', 'Manage Duration');
+    ('Manage Insurance Price List', 'Manage Insurance Price List');
 
 INSERT INTO Actions (ActionName, Description)
 VALUES 
@@ -236,24 +308,19 @@ INSERT INTO GroupsFunctionsActions (GroupID, FunctionID, ActionID)
 VALUES 
     -- Administrator
     (1, 1, 1), (1, 1, 2), (1, 1, 3), (1, 1, 4),
-    (1, 10, 1), (1, 10, 2), (1, 10, 3), (1, 10, 4),
-    (1, 11, 1), (1, 11, 2), (1, 11, 3), (1, 11, 4),
+    (1, 7, 1), (1, 7, 2), (1, 7, 3), (1, 7, 4),
+    (1, 8, 1), (1, 8, 2), (1, 8, 3), (1, 8, 4),
 
     -- Customers
     (2, 1, 1), (2, 1, 2), (2, 1, 3), 
     (2, 2, 1), (2, 2, 2), (2, 2, 3), (2, 2, 4), 
-    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 4), 
-    (2, 7, 1), (2, 7, 3), (2, 7, 5), (2, 7, 6),
-    (2, 8, 1), (2, 8, 2), (2, 8, 3), (2, 8, 4), 
-    (2, 9, 1), (2, 9, 3), (2, 9, 5), (2, 9, 6), 
+    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 5), (2, 4, 6), 
+    (2, 5, 1), (2, 5, 2), (2, 5, 3), (2, 5, 5), (2, 5, 6), 
     
     -- Employees
     (3, 3, 1), (3, 3, 2), (3, 3, 3), (3, 3, 4), 
-    (3, 4, 1), (3, 3, 3),
-    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), 
+    (3, 4, 1), (3, 4, 2), (3, 4, 3), (3, 4, 4), (3, 4, 5), (3, 4, 6), 
+    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), (3, 5, 5), (3, 5, 6), 
     (3, 6, 1), (3, 6, 2), (3, 6, 3), (3, 6, 4), 
-    (3, 7, 1), (3, 7, 2), (3, 7, 3), (3, 7, 4), (3, 7, 5), (3, 7, 6),
-    (3, 8, 1), (3, 8, 3),
-    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4), (3, 9, 5), (3, 9, 6),
-    (3, 10, 1), (3, 10, 2), (3, 10, 3), (3, 10, 4), 
-    (3, 11, 1), (3, 11, 2), (3, 11, 3), (3, 11, 4);
+    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4), 
+    (3, 10, 1), (3, 10, 2), (3, 10, 3), (3, 10, 4);

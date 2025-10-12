@@ -25,12 +25,13 @@ urlpatterns = [
     path('employees/', include('employee.urls')),
     path('login/', login_view, name='login'),
     path('', include('home.urls')),
-    path('insurance-category/', include('insurance_category.urls')),
+    # path('insurance-category/', include('insurance_category.urls')),
     path('discount/', include('discount.urls')),
     path('expenses/', include('expenses.urls')),
     path('customers/', include('customer.urls')),
     path('accounts/', include('accounts.urls')),
-    path('vehicle/', include('vehicle.urls'))
+    path('vehicle/', include('vehicle.urls')),
+    path('categories/', include('categories.urls'))
 ]
 
 # if settings.DEBUG:
