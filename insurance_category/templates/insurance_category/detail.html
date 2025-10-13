@@ -1,4 +1,6 @@
-{% extends "layouts/base.html" %} {% load static %} {% block content %}
+{% extends "layouts/base.html" %} 
+{% load static %} 
+{% block content %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}" />
 <script src="{% static 'js/showConfirmDelete.js' %}"></script>
 <!-- Overlay -->
@@ -18,37 +20,14 @@
             >
               <div class="d-flex flex-column">
                 <h6 class="mb-3 text-sm">{{ category.name }}</h6>
-                <span class="mb-2 text-xs"
-                  >Type:
-                  <span class="text-dark font-weight-bold ms-sm-2"
-                    >{{ category.type }}</span
-                  ></span
-                >
-                <span class="mb-2 text-xs"
-                  >Fee:
-                  <span class="text-dark font-weight-bold ms-sm-2"
-                    >{{ category.fee }}</span
-                  ></span
-                >
-                <span class="mb-2 text-xs"
-                  >Rate:
-                  <span class="text-dark font-weight-bold ms-sm-2"
-                    >{{ category.rate }}</span
-                  ></span
-                >
                 <span class="text-xs"
                   >Description:
-                  <span class="text-dark font-weight-bold ms-sm-2"
-                    >{{ category.description }}</span
-                  ></span
-                >
+                  <span class="text-dark font-weight-bold ms-sm-2">
+                    {{ category.description }}
+                  </span>
+                </span>
               </div>
               <div class="ms-auto text-end">
-                <!-- <form
-                    action="{% url 'insurance_category:insurance_category_delete' category.id %}"
-                    method="post"
-                    style="display: inline"
-                  > -->
                 {% csrf_token %}
                 <button
                   type="button"
@@ -57,7 +36,6 @@
                 >
                   <i class="far fa-trash-alt me-2"></i>Delete
                 </button>
-                <!-- </form> -->
 
                 <form
                   action="{% url 'insurance_category:insurance_category_update' category.id %}"
