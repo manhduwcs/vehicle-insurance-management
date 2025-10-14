@@ -44,7 +44,7 @@ CREATE TABLE InsuranceCategories (
 
 CREATE TABLE Duration (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Months DECIMAL(5,2)
+    Months INT
 );
 
 CREATE TABLE Functions (
@@ -167,47 +167,6 @@ VALUES
 ('michaelle', '123456', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789'),
 ('hannahpham', '123456', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001'),
 ('ethannam', '123456', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234');
-
--- VehicleTypes
-INSERT INTO VehicleTypes (Name, Fee, Description, MaxPersonalCompensation, MaxPropertyCompensation)
-VALUES
--- Motorcycles
-('Motorcycle under 50cc', 55000, 'Motorcycle with engine capacity under 50cc', 150000000, 100000000),
-('Motorcycle over 50cc', 60000, 'Motorcycle with engine capacity over 50cc', 150000000, 100000000),
-
--- Passenger cars
-('Car under 6 seats (non-commercial)', 437000, 'Private passenger car under 6 seats (non-commercial use)', 150000000, 100000000),
-('Car from 6 to 11 seats', 794000, 'Passenger car with 6–11 seats', 150000000, 100000000),
-('Commercial car under 6 seats', 756000, 'Commercial passenger car under 6 seats', 150000000, 100000000),
-
--- Trucks and trailers
-('Truck under 3.5 tons', 853000, 'Truck with payload under 3.5 tons', 150000000, 100000000),
-('Truck from 3.5 to 7 tons', 1660000, 'Truck with payload from 3.5 to 7 tons', 150000000, 100000000),
-('Tractor head', 1826000, 'Semi-trailer tractor head', 150000000, 100000000);
-
--- Vehicles
-INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate)
-VALUES
--- Customer 1
-('Toyota Vios', 1, 'Vios G 2021', 3, 560000000, 'TH12345', 'EN98765', '30A-45678', '2022-05-12'),
-('Yamaha Janus', 1, 'Janus 125cc 2022', 2, 41000000, 'THA001', 'ENA001', '29H1-22345', '2023-03-15'),
-
--- Customer 2
-('Honda City', 2, 'City RS 2022', 3, 620000000, 'TH54321', 'EN12345', '30B-56789', '2023-02-10'),
-('Hyundai Staria', 2, 'Staria 9-Seater 2023', 4, 1380000000, 'THB002', 'ENB002', '30D-77788', '2023-11-02'),
-
--- Customer 3
-('Yamaha Exciter', 3, 'Exciter 155', 2, 48000000, 'TH88888', 'EN77777', '29E1-12345', '2023-06-20'),
-('Ford Transit', 3, 'Transit 2020', 4, 1120000000, 'THC003', 'ENC003', '30E-99234', '2020-09-09'),
-
--- Customer 4
-('Kia K200', 4, 'K200 1.9 Ton', 6, 465000000, 'TH99999', 'EN66666', '29C-88888', '2021-11-05'),
-('Isuzu NQR75', 4, 'NQR75 5-Ton Truck', 7, 780000000, 'THD004', 'END004', '30C-55555', '2022-08-20'),
-('Hino 700', 4, 'Hino 700 Tractor Head', 8, 1650000000, 'THE004', 'ENE004', '30H-11111', '2023-01-15'),
-
--- Customer 5
-('Mazda CX-5', 5, 'CX-5 Premium 2023', 3, 850000000, 'TH11223', 'EN33445', '30F-99999', '2023-09-01'),
-('Suzuki Carry', 5, 'Carry Truck 2022', 6, 365000000, 'THF005', 'ENF005', '30G-66666', '2022-06-30');
 
 
 -- InsuranceCategories 

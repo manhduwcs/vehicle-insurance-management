@@ -1,0 +1,123 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">Update Price  List</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <form action="{% url 'categories:edit_price_list' %}" method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <div class="table-responsive p-0">
+              <table class="table align-items-center mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Category</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Duration (Months)</th>
+                    {% for age_range in age_ranges %}
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
+                        {{ age_range.min_age }} - {{ age_range.max_age }} years
+                      </th>
+                    {% endfor %}
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for category in categories %}
+                    {% for duration in durations %}
+                      {% if forloop.first %}
+                        <tr>
+                          <td class="align-middle" rowspan="3">
+                            <p class="text-xs font-weight-bold mb-0">{{ category.name }}</p>
+                          </td>
+                      {% else %}
+                        <tr>
+                      {% endif %}
+                        <td class="align-middle text-center">
+                          <p class="text-xs text-secondary mb-0">{{ duration.months }}</p>
+                        </td>
+                        {% for age_range in age_ranges %}
+                          {% for form in formset %}
+                            {% if form.instance.insurance_category.id == category.id and form.instance.duration.id == duration.id and form.instance.min_age == age_range.min_age and form.instance.max_age == age_range.max_age %}
+                                <td class="align-middle text-center">
+                                    {{ form.id }}
+                                    {{ form.rate }}
+                                    {% if form.rate.errors %}
+                                        <div class="invalid-feedback d-block">{{ form.rate.errors.as_text }}</div>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                          {% endfor %}
+                        {% endfor %}
+                      </tr>
+                    {% endfor %}
+                  {% empty %}
+                    <tr>
+                      <td colspan="{{ age_ranges|length|add:2 }}" class="text-center text-secondary">No insurance categories found.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Lưu</button>
+              <a href="{% url 'categories:category_list' %}" class="btn btn-secondary">Hủy</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'employee:login' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  <!-- JavaScript to show permission error modal -->
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+          permissionErrorModal.show();
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  });
+  </script>
+</div>
+{% endblock content %}
