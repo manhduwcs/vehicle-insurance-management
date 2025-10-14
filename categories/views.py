@@ -97,7 +97,7 @@ def edit_price_list(request):
     if 'username' not in request.session:
         return redirect('employee:login')
     user_group_id = request.session.get('group_id', None)
-    if not has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit):
+    if not has_permission(user_group_id, FunctionIds.ManageInsurancePriceList, ActionIds.Edit):
         messages.error(request, "You do not have permission to edit price list.")
         return redirect('employee:login')
 
@@ -111,6 +111,8 @@ def edit_price_list(request):
             messages.success(request, 'Price list updated successfully!')
             return redirect('categories:category_list')
         else:
+            print("Formset errors:", formset.errors)
+            print("Non-form errors:", formset.non_form_errors())
             messages.error(request, 'Please correct the errors below.')
     else:
         formset = PriceListFormSet(queryset=queryset)
@@ -118,12 +120,11 @@ def edit_price_list(request):
     categories = InsuranceCategories.objects.all()
     durations = Duration.objects.all()
     age_ranges = InsurancePriceList.objects.values('min_age', 'max_age').distinct().order_by('min_age')
-    return render(request, 'categories/list.html', {
+    return render(request, 'categories/edit_price_list.html', {
         'formset': formset,
         'categories': categories,
         'durations': durations,
         'age_ranges': age_ranges,
-        'is_edit_mode': True,
         'can_add': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Create),
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Delete),

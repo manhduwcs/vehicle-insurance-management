@@ -43,14 +43,14 @@
           <div class="d-flex justify-content-between mb-2">
             <div>
               {% if can_add %}
-                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+                <a href="{% url 'categories:category_create' %}" class="btn btn-primary btn-sm">
                   <i class="fa-solid fa-plus"></i> Add Insurance Category
-                </button>
+                </a>
               {% endif %}
               {% if can_edit %}
-                <button type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editPriceListModal">
-                  <i class="fas fa-edit"></i> Edit Price List
-                </button>
+                <a href="{% url 'categories:edit_price_list' %}" class="btn btn-warning btn-sm">
+                  <i class="fas fa-edit"></i> Update Price List
+                </a>
               {% endif %}
               <a href="{% url 'categories:category_list' %}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-sync-alt"></i> Refresh
@@ -126,126 +126,126 @@
   </div>
   {% include "includes/footer.html" %}
 
-  <!-- Add Category Modal -->
-  {% if can_add %}
-    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="addCategoryModalLabel">Add New Insurance Category</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form action="{% url 'categories:category_create' %}" method="post">
-            {% csrf_token %}
-            <div class="modal-body">
-              <div class="mb-3">
-                <label class="form-label">Category Name</label>
-                <div class="input-group">
-                  <span class="input-group-text text-body"><i class="fas fa-file-alt"></i></span>
-                  {{ form.name }}
-                </div>
-                {% if form.name.errors %}
-                  <div class="invalid-feedback d-block">{{ form.name.errors.as_text }}</div>
-                {% endif %}
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Description</label>
-                <div class="input-group">
-                  <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
-                  {{ form.description }}
-                </div>
-                {% if form.description.errors %}
-                  <div class="invalid-feedback d-block">{{ form.description.errors.as_text }}</div>
-                {% endif %}
-              </div>
-              {% if form.non_field_errors %}
-                <div class="alert alert-danger">
-                  {{ form.non_field_errors.as_text }}
-                </div>
-              {% endif %}
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Save</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  {% endif %}
+<!--  &lt;!&ndash; Add Category Modal &ndash;&gt;-->
+<!--  {% if can_add %}-->
+<!--    <div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">-->
+<!--      <div class="modal-dialog modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--          <div class="modal-header">-->
+<!--            <h5 class="modal-title" id="addCategoryModalLabel">Add New Insurance Category</h5>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--          </div>-->
+<!--          <form action="{% url 'categories:category_create' %}" method="post">-->
+<!--            {% csrf_token %}-->
+<!--            <div class="modal-body">-->
+<!--              <div class="mb-3">-->
+<!--                <label class="form-label">Category Name</label>-->
+<!--                <div class="input-group">-->
+<!--                  <span class="input-group-text text-body"><i class="fas fa-file-alt"></i></span>-->
+<!--                  {{ form.name }}-->
+<!--                </div>-->
+<!--                {% if form.name.errors %}-->
+<!--                  <div class="invalid-feedback d-block">{{ form.name.errors.as_text }}</div>-->
+<!--                {% endif %}-->
+<!--              </div>-->
+<!--              <div class="mb-3">-->
+<!--                <label class="form-label">Description</label>-->
+<!--                <div class="input-group">-->
+<!--                  <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>-->
+<!--                  {{ form.description }}-->
+<!--                </div>-->
+<!--                {% if form.description.errors %}-->
+<!--                  <div class="invalid-feedback d-block">{{ form.description.errors.as_text }}</div>-->
+<!--                {% endif %}-->
+<!--              </div>-->
+<!--              {% if form.non_field_errors %}-->
+<!--                <div class="alert alert-danger">-->
+<!--                  {{ form.non_field_errors.as_text }}-->
+<!--                </div>-->
+<!--              {% endif %}-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--              <button type="submit" class="btn btn-primary">Save</button>-->
+<!--              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  {% endif %}-->
 
-  <!-- Edit Price List Modal -->
-  {% if can_edit %}
-    <div class="modal fade" id="editPriceListModal" tabindex="-1" aria-labelledby="editPriceListModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editPriceListModalLabel">Edit Price List</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <form action="{% url 'categories:edit_price_list' %}" method="post">
-            {% csrf_token %}
-            <div class="modal-body">
-              {{ formset.management_form }}
-              <div class="table-responsive p-0">
-                <table class="table align-items-center mb-0">
-                  <thead>
-                    <tr>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Category</th>
-                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Duration (Months)</th>
-                      {% for age_range in age_ranges %}
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">
-                          {{ age_range.min_age }} - {{ age_range.max_age }} years
-                        </th>
-                      {% endfor %}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for category in categories %}
-                      {% for duration in durations %}
-                        {% if forloop.first %}
-                          <tr>
-                            <td class="align-middle" rowspan="3">
-                              <p class="text-xs font-weight-bold mb-0">{{ category.name }}</p>
-                            </td>
-                        {% else %}
-                          <tr>
-                        {% endif %}
-                          <td class="align-middle text-center">
-                            <p class="text-xs text-secondary mb-0">{{ duration.months }}</p>
-                          </td>
-                          {% for age_range in age_ranges %}
-                            {% for form in formset %}
-                              {% if form.instance.insurance_category.id == category.id and form.instance.duration.id == duration.id and form.instance.min_age == age_range.min_age and form.instance.max_age == age_range.max_age %}
-                                <td class="align-middle text-center">
-                                  {{ form.rate }}
-                                  {% if form.rate.errors %}
-                                    <div class="invalid-feedback d-block">{{ form.rate.errors.as_text }}</div>
-                                  {% endif %}
-                                </td>
-                              {% endif %}
-                            {% endfor %}
-                          {% endfor %}
-                        </tr>
-                      {% endfor %}
-                    {% empty %}
-                      <tr>
-                        <td colspan="{{ age_ranges|length|add:2 }}" class="text-center text-secondary">No insurance categories found.</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Save</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  {% endif %}
+<!--  &lt;!&ndash; Edit Price List Modal &ndash;&gt;-->
+<!--  {% if can_edit %}-->
+<!--    <div class="modal fade" id="editPriceListModal" tabindex="-1" aria-labelledby="editPriceListModalLabel" aria-hidden="true">-->
+<!--      <div class="modal-dialog modal-xl modal-dialog-centered">-->
+<!--        <div class="modal-content">-->
+<!--          <div class="modal-header">-->
+<!--            <h5 class="modal-title" id="editPriceListModalLabel">Edit Price List</h5>-->
+<!--            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--          </div>-->
+<!--          <form action="{% url 'categories:edit_price_list' %}" method="post">-->
+<!--            {% csrf_token %}-->
+<!--            <div class="modal-body">-->
+<!--              {{ formset.management_form }}-->
+<!--              <div class="table-responsive p-0">-->
+<!--                <table class="table align-items-center mb-0">-->
+<!--                  <thead>-->
+<!--                    <tr>-->
+<!--                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Category</th>-->
+<!--                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Duration (Months)</th>-->
+<!--                      {% for age_range in age_ranges %}-->
+<!--                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">-->
+<!--                          {{ age_range.min_age }} - {{ age_range.max_age }} years-->
+<!--                        </th>-->
+<!--                      {% endfor %}-->
+<!--                    </tr>-->
+<!--                  </thead>-->
+<!--                  <tbody>-->
+<!--                    {% for category in categories %}-->
+<!--                      {% for duration in durations %}-->
+<!--                        {% if forloop.first %}-->
+<!--                          <tr>-->
+<!--                            <td class="align-middle" rowspan="3">-->
+<!--                              <p class="text-xs font-weight-bold mb-0">{{ category.name }}</p>-->
+<!--                            </td>-->
+<!--                        {% else %}-->
+<!--                          <tr>-->
+<!--                        {% endif %}-->
+<!--                          <td class="align-middle text-center">-->
+<!--                            <p class="text-xs text-secondary mb-0">{{ duration.months }}</p>-->
+<!--                          </td>-->
+<!--                          {% for age_range in age_ranges %}-->
+<!--                            {% for form in formset %}-->
+<!--                              {% if form.instance.insurance_category.id == category.id and form.instance.duration.id == duration.id and form.instance.min_age == age_range.min_age and form.instance.max_age == age_range.max_age %}-->
+<!--                                <td class="align-middle text-center">-->
+<!--                                  {{ form.rate }}-->
+<!--                                  {% if form.rate.errors %}-->
+<!--                                    <div class="invalid-feedback d-block">{{ form.rate.errors.as_text }}</div>-->
+<!--                                  {% endif %}-->
+<!--                                </td>-->
+<!--                              {% endif %}-->
+<!--                            {% endfor %}-->
+<!--                          {% endfor %}-->
+<!--                        </tr>-->
+<!--                      {% endfor %}-->
+<!--                    {% empty %}-->
+<!--                      <tr>-->
+<!--                        <td colspan="{{ age_ranges|length|add:2 }}" class="text-center text-secondary">No insurance categories found.</td>-->
+<!--                      </tr>-->
+<!--                    {% endfor %}-->
+<!--                  </tbody>-->
+<!--                </table>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--            <div class="modal-footer">-->
+<!--              <button type="submit" class="btn btn-primary">Save</button>-->
+<!--              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>-->
+<!--            </div>-->
+<!--          </form>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  {% endif %}-->
 
   <!-- Permission Error Modal -->
   {% if messages %}
