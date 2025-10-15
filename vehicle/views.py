@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import VehicleType, Vehicle
-from .forms import VehicleTypeForm, VehicleForm
+from .models import VehicleType, Vehicle, Claim, Contract
+from .forms import VehicleTypeForm, VehicleForm, ClaimForm
+from django.contrib.auth.decorators import login_required
 
 # VehicleType CRUD
 
@@ -123,3 +124,49 @@ def vehicle_delete(request, pk):
         vehicle.delete()
         return redirect("vehicle_list")
     return redirect("vehicle_list")
+
+# Claim CRUD
+
+@login_required
+def claim_list(request):
+    if request.user.is_staff:
+        claims = Claim.objects.all().order_by('-id')
+    else:
+        claims = Claim.objects.filter(customer=request.user.customer).order_by('-id')
+    return render(request, "claims/list.html", {"claims": claims, "segment": "claim"})
+
+@login_required
+def claim_create(request):
+    if request.method == "POST":
+        form = ClaimForm(request.POST)
+        if form.is_valid():
+            claim = form.save(commit=False)
+            claim.customer = request.user.customer
+            claim.status = 'Pending'
+            claim.save()
+            return redirect("claim_list")
+    else:
+        form = ClaimForm()
+        # Chỉ hiện xe của khách hàng đang đăng nhập
+        form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=request.user.customer)
+        form.fields['contract'].queryset = Contract.objects.none()
+    return render(request, "claims/create.html", {"form": form, "segment": "claim"})
+
+@login_required
+def claim_update(request, pk):
+    claim = get_object_or_404(Claim, pk=pk)
+    if not request.user.is_staff:
+        return redirect("claim_list")
+    if request.method == "POST":
+        form = ClaimForm(request.POST, instance=claim)
+        if form.is_valid():
+            form.save()
+            return redirect("claim_list")
+    else:
+        form = ClaimForm(instance=claim)
+    return render(request, "claims/update.html", {"form": form, "claim": claim, "segment": "claim"})
+
+@login_required
+def claim_detail(request, pk):
+    claim = get_object_or_404(Claim, pk=pk)
+    return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})

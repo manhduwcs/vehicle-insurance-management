@@ -12,4 +12,8 @@ urlpatterns = [
     path('vehicles/create/', views.vehicle_create, name='vehicle_create'),
     path('vehicles/<int:pk>/update/', views.vehicle_update, name='vehicle_update'),
     path('vehicles/<int:pk>/delete/', views.vehicle_delete, name='vehicle_delete'),
+    path('claims/', views.claim_list, name='claim_list'),
+    path('claims/create/', views.claim_create, name='claim_create'),
+    path('claims/<int:pk>/', views.claim_detail, name='claim_detail'),
+    path('claims/<int:pk>/update/', views.claim_update, name='claim_update'),
 ]
