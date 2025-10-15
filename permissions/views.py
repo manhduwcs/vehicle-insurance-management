@@ -111,7 +111,7 @@ def assign_permission(request, group_id):
             for action_id in selected_actions_post:
                 action = get_object_or_404(Actions, id=action_id)
                 GroupsFunctionsActions.objects.create(group=group_obj, function=function, action=action)
-            cache.clear()
+            # cache.clear()
             messages.success(request, "Permission saved successfully!")
         return redirect('permissions:assign_permission', group_id=group_id)
     function_id = request.GET.get('function_id')
@@ -128,6 +128,5 @@ def assign_permission(request, group_id):
         'group': group_obj
     })
 
-from django.shortcuts import render
 
 # Create your views here.

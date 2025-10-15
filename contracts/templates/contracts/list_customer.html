@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Contracts</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0 px-3">
+                        <h4 class="mb-0">My Contracts</h4>
+                    </div>
+                    <div class="card-body pt-4 p-3">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="table-responsive p-0">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Contract No</th>
+                                        <th class="text-center">Vehicle</th>
+                                        <th class="text-center">Insurance Type</th>
+                                        <th class="text-center">Duration (Months)</th>
+                                        <th class="text-center">Estimate Premium (VND)</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contract in contracts %}
+                                        <tr>
+                                            <td class="text-center">{{ contract.ContractNo }}</td>
+                                            <td class="text-center">{{ contract.VehicleID.Name }}</td>
+                                            <td class="text-center">{{ contract.InsuranceCategoryID.Name }}</td>
+                                            <td class="text-center">{{ contract.DurationID.Months }}</td>
+                                            <td class="text-center">{{ contract.EstimatePremium }}</td>
+                                            <td class="text-center">{{ contract.Status }}</td>
+                                            <td class="text-center">{{ contract.CreatedAt|date:"Y-m-d H:i" }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">No contracts found.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-end mt-3">
+                            <a href="{% url 'contracts:list' %}" class="btn btn-primary">Back to Insurance Types</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
