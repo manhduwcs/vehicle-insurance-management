@@ -59,6 +59,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.CustomerAuthMiddleware',
+    'accounts.middleware.RedirectAuthenticatedUserMiddleware',
 ]
 
 ROOT_URLCONF = 'vehicle_insurance_management.urls'
@@ -67,7 +69,7 @@ HOME_TEMPLATES = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [HOME_TEMPLATES],
+        'DIRS': [HOME_TEMPLATES,BASE_DIR / 'admin_soft' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -87,6 +89,7 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 
 DATABASES = {
     'default': {
+        # Hieu 
         # 'ENGINE': 'django.db.backends.mysql',
         # 'NAME': 'vehicleinsurancedb',
         # 'USER': 'root',
@@ -96,15 +99,34 @@ DATABASES = {
         # 'OPTIONS': {
         #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         # },
+        # --------------- 
+        # Manh 
         'ENGINE': 'django.db.backends.mysql',
+<<<<<<< HEAD
         'NAME': 'VehicleInsuranceDB',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '3306',
+=======
+        'NAME': 'vehicleinsurancedb',
+        'USER': 'admin',
+        'PASSWORD': 'A_123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
+        # --------------- 
+        # user ?
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'vehicleinsurancedb',
+        # 'USER': 'root',
+        # 'PASSWORD': '',
+        # 'HOST': 'localhost',
+        # 'PORT': '3306',
+>>>>>>> a766a79e981debfe82cba625a230a30f78c5c6e3
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
+        # --------------- 
     }
 }
 

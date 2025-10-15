@@ -36,9 +36,6 @@
                 <tr>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Fee</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rate</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Description</th>
                 </tr>
               </thead>
@@ -52,21 +49,12 @@
                     </a>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ category.fee }}</p>
-                  </td>
-                  <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ category.rate }}</p>
-                  </td>
-                  <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ category.type }}</p>
-                  </td>
-                  <td class="align-middle">
                     <p class="text-xs text-secondary mb-0">{{ category.description }}</p>
                   </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="6" class="text-center text-secondary">No insurance categories yet.</td>
+                  <td colspan="3" class="text-center text-secondary">No insurance categories yet.</td>
                 </tr>
                 {% endfor %}
               </tbody>

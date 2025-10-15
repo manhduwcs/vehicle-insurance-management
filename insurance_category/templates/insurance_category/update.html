@@ -13,34 +13,13 @@
           <h4 class="mb-0">{{ category.name }}</h4>
         </div>
         <div class="card-body pt-4 p-3">
-          <form action="{% url 'insurance_category_update' category.id %}" method="post">
+          <form action="{% url 'insurance_category:insurance_category_update' category.id %}" method="post">
             {% csrf_token %}
             
             <!-- Category Name -->
             <div class="input-group mb-3">
               <span class="input-group-text text-body"><i class="fas fa-tag"></i></span>
               <input type="text" name="name" class="form-control" placeholder="Category Name" value="{{ category.name }}">
-            </div>
-            
-            <!-- Type dropdown -->
-            <div class="input-group mb-3">
-              <span class="input-group-text text-body"><i class="fas fa-list"></i></span>
-<select name="type" class="form-control">
-  <option value="Liability Insurance" {% if category.type == "Liability Insurance" %}selected{% endif %}>Liability Insurance</option>
-  <option value="Property Insurance" {% if category.type == "Property Insurance" %}selected{% endif %}>Property Insurance</option>
-</select>
-            </div>
-
-            <!-- Fee (number) -->
-            <div class="input-group mb-3">
-              <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
-              <input type="number" name="fee" class="form-control" placeholder="Fee" value="{{ category.fee }}">
-            </div>
-
-            <!-- Rate (number) -->
-            <div class="input-group mb-3">
-              <span class="input-group-text text-body"><i class="fas fa-percent"></i></span>
-              <input type="number" name="rate" class="form-control" placeholder="Rate" value="{{ category.rate }}">
             </div>
 
             <!-- Description -->

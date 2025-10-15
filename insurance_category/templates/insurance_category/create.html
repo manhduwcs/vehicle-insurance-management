@@ -30,36 +30,6 @@
               </div>
             </div>
 
-            <!-- Type dropdown -->
-            <div class="mb-3">
-              <span class="form-label">Type</span>
-              <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-list"></i></span>
-                <select name="type" class="form-control">
-                  <option value="Liability Insurance" {% if category.type == "Liability Insurance" %}selected{% endif %}>Liability Insurance</option>
-                  <option value="Property Insurance" {% if category.type == "Property Insurance" %}selected{% endif %}>Property Insurance</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Fee -->
-            <div class="mb-3">
-              <span class="form-label">Fee</span>
-              <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
-                <input type="number" name="fee" class="form-control" placeholder="Fee" value="{{ category.fee }}">
-              </div>
-            </div>
-
-            <!-- Rate -->
-            <div class="mb-3">
-              <span class="form-label">Rate</span>
-              <div class="input-group">
-                <span class="input-group-text text-body"><i class="fas fa-percent"></i></span>
-                <input type="number" name="rate" class="form-control" placeholder="Rate" value="{{ category.rate }}">
-              </div>
-            </div>
-
             <!-- Description -->
             <div class="mb-3">
               <span class="form-label">Description</span>
