@@ -15,7 +15,7 @@ def insurance_category_list(request):
     group_id = request.session.get("group_id", None)
     if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
         messages.error(request, "You do not have permission to view the employee list.")
-        return redirect("employee:employee_list")
+        # return redirect("employee:employee_list")
     context = {
         "categories": categories,
         "segment": "insurance_category",
