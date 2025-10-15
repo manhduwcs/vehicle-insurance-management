@@ -1,263 +1,192 @@
--- Database 
-CREATE DATABASE IF NOT EXISTS VehicleInsuranceDB;
-USE VehicleInsuranceDB;
+CREATE DATABASE IF NOT EXISTS vehicleinsurancedb;
+USE vehicleinsurancedb;
 
--- Groups
-CREATE TABLE GroupsUsers (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    GroupName VARCHAR(100),
-    Description TEXT
-);
-
--- Employees
+-- Independent tables first
 CREATE TABLE Employees (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Username VARCHAR(50) UNIQUE,
-    Fullname VARCHAR(100),
-    Email VARCHAR(100) UNIQUE,
-    Phone VARCHAR(20) UNIQUE,
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(255) UNIQUE,
     Password VARCHAR(255),
-    GroupID INT,
-    FOREIGN KEY (GroupID) REFERENCES GroupsUsers(ID)
+    Fullname VARCHAR(255),
+    Email VARCHAR(255) UNIQUE,
+    Phone VARCHAR(50) UNIQUE,
+    GroupID INT
 );
 
--- Customers
 CREATE TABLE Customers (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Fullname VARCHAR(100),
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(255) UNIQUE,
+    Password VARCHAR(255),
+    Fullname VARCHAR(255),
     Address TEXT,
-    Email VARCHAR(100) UNIQUE,
-    Phone VARCHAR(20) UNIQUE,
-    Username VARCHAR(50) UNIQUE,
-    Password VARCHAR(255)
+    Email VARCHAR(255) UNIQUE,
+    Phone VARCHAR(50) UNIQUE,
+    IdentifyNumber VARCHAR(50),
+    IdentifyAddress VARCHAR(255),
+    IdentifyDate DATE,
+    IssuingAuthority VARCHAR(255),
+    TaxID VARCHAR(50)
 );
 
--- VehicleTypes
 CREATE TABLE VehicleTypes (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(50),
-    Fee DECIMAL(15,2),
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Fee DECIMAL(10,2),
     Description TEXT,
     MaxClaimableAmount DECIMAL(15,2)
 );
 
--- Vehicles
+CREATE TABLE InsuranceCategories (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Description TEXT
+);
+
+CREATE TABLE Duration (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Months DECIMAL(5,2)
+);
+
+CREATE TABLE Functions (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    FunctionName VARCHAR(255),
+    Description TEXT
+);
+
+CREATE TABLE Actions (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ActionName VARCHAR(255),
+    Description TEXT
+);
+
+CREATE TABLE Groups (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    GroupName VARCHAR(255),
+    Description TEXT
+);
+
+-- Dependent tables
 CREATE TABLE Vehicles (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
     CustomerID INT,
-    Model VARCHAR(50),
-    TypeID INT,
-    Rate DECIMAL(15,2),
+    Model VARCHAR(255),
+    VehicleTypeID INT,
+    PurchasePrice DECIMAL(15,2),
     BodyNumber VARCHAR(50),
     EngineNumber VARCHAR(50),
-    Number VARCHAR(20),
+    Number VARCHAR(50),
     RegistrationDate DATE,
     FOREIGN KEY (CustomerID) REFERENCES Customers(ID),
-    FOREIGN KEY (TypeID) REFERENCES VehicleTypes(ID)
+    FOREIGN KEY (VehicleTypeID) REFERENCES VehicleTypes(ID)
 );
 
--- Depreciation
-CREATE TABLE Depreciation (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Rate DECIMAL(5,2)
-);
-
--- InsuranceCategories
-CREATE TABLE InsuranceCategories (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    Fee DECIMAL(15,2),
+CREATE TABLE InsurancePriceList (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    InsuranceCategoryID INT,
+    DurationID INT,
+    Years INT,
     Rate DECIMAL(5,2),
-    Type VARCHAR(50),
-    Description TEXT
+    FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID),
+    FOREIGN KEY (DurationID) REFERENCES Duration(ID)
 );
 
--- Estimates
-CREATE TABLE Estimates (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE Contracts (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ContractNo VARCHAR(255) UNIQUE,
     VehicleID INT,
     InsuranceCategoryID INT,
-    FOREIGN KEY (VehicleID) REFERENCES Vehicles(ID),
-    FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID)
-);
-
--- Discounts
-CREATE TABLE Discounts (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    Rate DECIMAL(5,2),
-    Description TEXT
-);
-
--- EstimateDiscount
-CREATE TABLE EstimateDiscount (
-    DiscountID INT,
-    EstimateID INT,
-    PRIMARY KEY (DiscountID, EstimateID),
-    FOREIGN KEY (DiscountID) REFERENCES Discounts(ID),
-    FOREIGN KEY (EstimateID) REFERENCES Estimates(ID)
-);
-
--- Contracts
-CREATE TABLE Contracts (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ContractNo VARCHAR(50) UNIQUE,
-    EstimateID INT,
-    Duration INT,
-    Fee DECIMAL(15,2),
-    Deductible DECIMAL(15,2),
-    UsageTime INT,
-    MaxClaimAmount DECIMAL(15,2),
-    IdentifyNumber VARCHAR(50),
-    IdentifyAddress VARCHAR(255),
-    IdentifyDate DATE,
-    IssuingAuthority VARCHAR(100),
-    TaxID VARCHAR(50),
+    EstimateValue DECIMAL(15,2),
+    EstimatePremium DECIMAL(15,2),
+    DeductibleRate DECIMAL(5,2),
+    DeductibleAddon DECIMAL(15,2),
+    ActualValue DECIMAL(15,2),
+    ActualPremium DECIMAL(15,2),
+    FixedDeduction DECIMAL(15,2),
+    AvaiableClaimAmount DECIMAL(15,2),
+    StartDate DATE,
+    Status ENUM('Awaiting','Reject','Pending','Active','Inactive'),
+    Note TEXT,
     CreatedBy INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    StartDate DATE,
-    Status VARCHAR(50),
-    FOREIGN KEY (EstimateID) REFERENCES Estimates(ID),
-    FOREIGN KEY (CreatedBy) REFERENCES Employees(ID),
-    FOREIGN KEY (UsageTime) REFERENCES Depreciation(ID)
+    FOREIGN KEY (VehicleID) REFERENCES Vehicles(ID),
+    FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID),
+    FOREIGN KEY (CreatedBy) REFERENCES Employees(ID)
 );
 
--- Expenses
+CREATE TABLE Claims (
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    ClaimNo VARCHAR(255) UNIQUE,
+    CustomerID INT,
+    VehicleID INT,
+    ContractID INT,
+    InsuranceCategoryID INT,  
+    Place TEXT,
+    Date DATE,
+    DamageAmount DECIMAL(15,2),
+    Deduction DECIMAL(15,2),
+    ClaimAmount DECIMAL(15,2),
+    Status ENUM('Pending','Approved','Completed','Rejected'),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(ID),
+    FOREIGN KEY (VehicleID) REFERENCES Vehicles(ID),
+    FOREIGN KEY (ContractID) REFERENCES Contracts(ID),
+    FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID),
+);
+
 CREATE TABLE Expenses (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ID INT PRIMARY KEY AUTO_INCREMENT,
     Content TEXT,
     Amount DECIMAL(15,2),
     Date DATE
 );
 
--- RequestClaims
-CREATE TABLE RequestClaims (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ContractID INT,
-    Place VARCHAR(255),
-    Date DATE,
-    FOREIGN KEY (ContractID) REFERENCES Contracts(ID)
-);
-
--- Claims
-CREATE TABLE Claims (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ClaimNo VARCHAR(50) UNIQUE,
-    RequestClaimID INT,
-    DamageAmount DECIMAL(15,2),
-    Deductible DECIMAL(15,2),
-    ClaimAmount DECIMAL(15,2),
-    FOREIGN KEY (RequestClaimID) REFERENCES RequestClaims(ID)
-);
-
--- Reduction
-CREATE TABLE Reduction (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100),
-    Rate DECIMAL(5,2),
-    Description TEXT
-);
-
--- ClaimReduction
-CREATE TABLE ClaimReduction (
-    ClaimID INT,
-    ReductionID INT,
-    PRIMARY KEY (ClaimID, ReductionID),
-    FOREIGN KEY (ClaimID) REFERENCES Claims(ID),
-    FOREIGN KEY (ReductionID) REFERENCES Reduction(ID)
-);
-
--- Functions
-CREATE TABLE Functions (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    FunctionName VARCHAR(100),
-    Description TEXT
-);
-
--- Actions
-CREATE TABLE Actions (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    ActionName VARCHAR(100),
-    Description TEXT
-);
-
--- GroupsFunctionsActions
 CREATE TABLE GroupsFunctionsActions (
-    ID INT AUTO_INCREMENT PRIMARY KEY,
-    GroupID INT NOT NULL,
-    FunctionID INT NOT NULL,
-    ActionID INT NOT NULL,
-    FOREIGN KEY (GroupID) REFERENCES GroupsUsers(ID),
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    GroupID INT,
+    FunctionID INT,
+    ActionID INT,
+    FOREIGN KEY (GroupID) REFERENCES Groups(ID),
     FOREIGN KEY (FunctionID) REFERENCES Functions(ID),
     FOREIGN KEY (ActionID) REFERENCES Actions(ID)
 );
 
-
--- Sample data
-USE VehicleInsuranceDB;
-
-INSERT INTO GroupsUsers (GroupName, Description)
+-- sample data 
+-- Customers
+INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone)
 VALUES 
-    ('Administrator', 'Manage employees, customers, groups users'),
-    ('Customer', 'Customers'),
-    ('Employee', 'Employees');
+('customer1','123456','Nguyen Van A','123 Street, Hanoi','a@example.com','0912345678'),
+('customer2','123456','Tran Thi B','456 Street, HCMC','b@example.com','0987654321');
 
-INSERT INTO Employees(Username, Fullname, Email, Phone, Password, GroupID)
-VALUES 
-    ('admin', 'Administrator', 'admin@gmail.com', '0999999999', '123456', 1),
-    ('customer1', 'Nguyen Van A', 'nva@gmail.com', '0888888888', '123456', 2),
-    ('employee1', 'Hoang Anh B', 'hab@gmail.com', '0777777777', '123456', 3);
+-- VehicleTypes
+INSERT INTO VehicleTypes (Name, Fee, Description, MaxClaimableAmount)
+VALUES
+('Sedan', 0.05, 'Standard sedan car', 500000000),
+('SUV', 0.07, 'Sport Utility Vehicle', 800000000);
 
-INSERT INTO Functions (FunctionName, Description)
-VALUES 
-    ('Manage Customers', 'Manage Customers'),
-    ('Manage Vehicles', 'Manage Vehicles'),
-    ('Manage Vehicle types', 'Manage Vehicle types'),
-    ('Manage Estimates', 'Manage Estimates'),
-    ('Manage Discounts', 'Manage Discounts'),
-    ('Manage Insurance Categories', 'Manage Insurance Categories'),
-    ('Manage Contracts', 'Manage Contracts'),
-    ('Manage Claim requests', 'Manage Claim requests'),
-    ('Manage Claims', 'Manage Claims'),
-    ('Manage Reductions', 'Manage Reductions'),
-    ('Manage Expenses', 'Manage Expenses'),
-    ('Manage Employees', 'Manage Employees'),
-    ('Manage Groups users', 'Manage Groups users');
+-- Vehicles
+INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate)
+VALUES
+('Car A',1,'Model X',1,400000000,'B12345','E12345','30A-11111','2022-01-01'),
+('Car B',2,'Model Y',2,700000000,'B67890','E67890','30B-22222','2023-03-01');
 
-INSERT INTO Actions (ActionName, Description)
-VALUES 
-    ('View', 'View Info'),
-    ('Create', 'Add new data'),
-    ('Edit', 'Update data'),
-    ('Delete', 'Delete data'),
-    ('Download', 'Download data'),
-    ('Print', 'Print data'),
-    ('Export', 'Export data');
+-- InsuranceCategories
+INSERT INTO InsuranceCategories (Name, Description)
+VALUES
+('Bảo hiểm toàn bộ','Comprehensive insurance');
 
-INSERT INTO GroupsFunctionsActions (GroupID, FunctionID, ActionID)
-VALUES 
-    -- Administrator
-    (1, 1, 1), (1, 1, 2), (1, 1, 3), (1, 1, 4), 
-    (1, 12, 1), (1, 12, 2), (1, 12, 3), (1, 12, 4), 
-    (1, 13, 1), (1, 13, 2), (1, 13, 3), (1, 13, 4),
+-- Duration
+INSERT INTO Duration (Months)
+VALUES
+(12),(60),(120),(180);
 
-    -- Customers
-    (2, 1, 1), (2, 1, 2), (2, 1, 3), 
-    (2, 2, 1), (2, 2, 2), (2, 2, 3), (2, 2, 4), 
-    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 4), 
-    (2, 7, 1), (2, 7, 3), (2, 7, 5), (2, 7, 6),
-    (2, 8, 1), (2, 8, 2), (2, 8, 3), (2, 8, 4), 
-    (2, 9, 1), (2, 9, 3), (2, 9, 5), (2, 9, 6), 
-    
-    -- Employees
-    (3, 3, 1), (3, 3, 2), (3, 3, 3), (3, 3, 4), 
-    (3, 4, 1), (3, 3, 3),
-    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), 
-    (3, 6, 1), (3, 6, 2), (3, 6, 3), (3, 6, 4), 
-    (3, 7, 1), (3, 7, 2), (3, 7, 3), (3, 7, 4), (3, 7, 5), (3, 7, 6),
-    (3, 8, 1), (3, 8, 3),
-    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4), (3, 9, 5), (3, 9, 6),
-    (3, 10, 1), (3, 10, 2), (3, 10, 3), (3, 10, 4), 
-    (3, 11, 1), (3, 11, 2), (3, 11, 3), (3, 11, 4), 
-    (3, 12, 1), (3, 12, 2), (3, 12, 3);
+-- InsurancePriceList (based on your image)
+INSERT INTO InsurancePriceList (InsuranceCategoryID, DurationID, Years, Rate)
+VALUES
+(1,1,5,5),(1,2,10,6),(1,3,15,7),
+(1,1,5,8),(1,2,10,10),(1,3,15,12);
+
+-- Expenses
+INSERT INTO Expenses (Content, Amount, Date)
+VALUES
+('Office rent', 5000000, '2025-01-01'),
+('Electricity', 1200000, '2025-01-15'),
+('Internet', 800000, '2025-01-20');

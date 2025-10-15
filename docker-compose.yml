@@ -1,13 +1,14 @@
 version: "3.9"
 
 services:
+  # volume name: vehicle_insurance_db_data
   vehicle_mysql_db:
     image: mysql:8.0
     container_name: vehicle_mysql_db
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: A_123456
-      MYSQL_DATABASE: VehicleInsuranceDB
+      MYSQL_DATABASE: vehicleinsurancedb
       MYSQL_USER: admin
       MYSQL_PASSWORD: A_123456
     ports:
@@ -26,4 +27,6 @@ services:
 
 networks:
   dev_network:
+    name: dev_network
     driver: bridge
+    external: true

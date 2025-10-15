@@ -1,0 +1,131 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>Expense List</h6>
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex justify-content-between mb-2">
+            <div>
+              {% if can_add %}
+                <a href="{% url 'expenses:expense_create' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add Expense
+                </a>
+              {% endif %}
+              <a href="{% url 'expenses:expense_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Content</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Amount</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for expense in expenses %}
+                <tr>
+                  <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
+                  <td class="align-middle">
+                    <a href="{% url 'expenses:expense_detail' expense.id %}">
+                      <p class="text-xs font-weight-bold mb-0">{{ expense.content|truncatechars:50 }}</p>
+                    </a>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ expense.amount }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ expense.date }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <a href="{% url 'expenses:expense_detail' expense.id %}" class="btn btn-sm btn-info">
+                      <i class="fa-solid fa-circle-info"></i>
+                    </a>
+                    {% if can_edit %}
+                      <a href="{% url 'expenses:expense_update' expense.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                    {% endif %}
+                    {% if can_delete %}
+                      <form method="post" action="{% url 'expenses:expense_delete' expense.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the expense: {{ expense.content|truncatechars:30 }}?');">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-secondary">No expenses found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "includes/footer.html" %}
+
+    <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'expenses:expense_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- JavaScript to show modal if error exists -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

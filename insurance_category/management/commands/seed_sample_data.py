@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from discount.models import Discount
 from insurance_category.models import InsuranceCategory
+from customer.models import Customer
 
 class Command(BaseCommand):
     help = "Seed sample insurance categories"
@@ -92,6 +93,21 @@ class Command(BaseCommand):
                 "description": "Covers legal fees arising from vehicle-related disputes."
             },
         ]
+        sample_data_customer = [
+    {"fullname": "John Smith", "address": "123 Main St, New York, NY 10001", "email": "john.smith@email.com", "phone": "(212) 555-0101", "username": "johnsmith", "password": "123456"},
+    {"fullname": "Emily Johnson", "address": "456 Oak Ave, Los Angeles, CA 90210", "email": "emily.johnson@gmail.com", "phone": "(310) 555-0202", "username": "emilyjohnson", "password": "123456"},
+    {"fullname": "Michael Brown", "address": "789 Pine Rd, Chicago, IL 60601", "email": "michael.brown@yahoo.com", "phone": "(312) 555-0303", "username": "michaelbrown", "password": "123456"},
+    {"fullname": "Sarah Davis", "address": "101 Elm St, Houston, TX 77001", "email": "sarah.davis@outlook.com", "phone": "(713) 555-0404", "username": "sarahdavis", "password": "123456"},
+    {"fullname": "David Wilson", "address": "202 Maple Dr, Phoenix, AZ 85001", "email": "david.wilson@protonmail.com", "phone": "(602) 555-0505", "username": "davidwilson", "password": "123456"},
+    {"fullname": "Jessica Garcia", "address": "303 Cedar Ln, Philadelphia, PA 19101", "email": "jessica.garcia@mail.com", "phone": "(215) 555-0606", "username": "jessicagarcia", "password": "123456"},
+    {"fullname": "Robert Martinez", "address": "404 Birch Blvd, San Antonio, TX 78201", "email": "robert.martinez@icloud.com", "phone": "(210) 555-0707", "username": "robertmartinez", "password": "123456"},
+    {"fullname": "Ashley Rodriguez", "address": "505 Walnut Way, San Diego, CA 92101", "email": "ashley.rodriguez@gmail.com", "phone": "(619) 555-0808", "username": "ashleyrodriguez", "password": "123456"},
+    {"fullname": "Christopher Lee", "address": "606 Spruce St, Dallas, TX 75201", "email": "christopher.lee@yahoo.com", "phone": "(214) 555-0909", "username": "christopherlee", "password": "123456"},
+    {"fullname": "Amanda Taylor", "address": "707 Ash Ave, San Jose, CA 95101", "email": "amanda.taylor@outlook.com", "phone": "(408) 555-1010", "username": "amandataylor", "password": "123456"},
+    {"fullname": "Daniel Anderson", "address": "808 Poplar Pl, Austin, TX 78701", "email": "daniel.anderson@protonmail.com", "phone": "(512) 555-1111", "username": "danielanderson", "password": "123456"},
+    {"fullname": "Megan Thomas", "address": "909 Magnolia Blvd, Portland, OR 97201", "email": "megan.thomas@mail.com", "phone": "(503) 555-1212", "username": "meganthomas", "password": "123456"},
+    {"fullname": "Kevin Jackson", "address": "1010 Willow Way, Columbus, OH 43201", "email": "kevin.jackson@icloud.com", "phone": "(614) 555-1313", "username": "kevinjackson", "password": "123456"}
+]
 
         for data in sample_data_insurance_category:
             obj, created = InsuranceCategory.objects.get_or_create(name=data["name"], defaults=data)
@@ -106,3 +122,10 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'Created: {obj.name}'))
             else:
                 self.stdout.write(f'Already exists: {obj.name}')
+        
+        for data in sample_data_customer:
+            obj, created = Customer.objects.get_or_create(email=data["email"], defaults=data)
+            if created:
+                self.stdout.write(self.style.SUCCESS(f'Created Customer: {obj.fullname}'))
+            else:
+                self.stdout.write(f'Already exists Customer: {obj.fullname}')

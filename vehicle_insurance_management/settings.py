@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'employee',
     'vehicle',
     'insurance_category',
-    'discount'
+    'discount',
+    'permissions',
+    'expenses',
+    'customer'
 ]
 
 MIDDLEWARE = [
@@ -84,6 +87,15 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 
 DATABASES = {
     'default': {
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'vehicleinsurancedb',
+        # 'USER': 'root',
+        # 'PASSWORD': 'Hieu@02090711',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '3306',
+        # 'OPTIONS': {
+        #     'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+        # },
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'VehicleInsuranceDB',
         'USER': 'root',
@@ -91,11 +103,22 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
-            'auth_plugin': 'mysql_native_password',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
     }
 }
 
+# Session
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Cache
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators

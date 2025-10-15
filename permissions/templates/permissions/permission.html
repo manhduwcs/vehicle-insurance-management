@@ -1,0 +1,98 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">Assigning Permissions to {{ group.group_name }}</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <form method="post" action="{% url 'permissions:assign_permission' group.id %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6">
+                <h5 class="form-label fs-5">Functions</h5>
+                <ul class="list-group">
+                  {% for func in functions %}
+                  <li class="list-group-item {% if func.id == selected_function.id %}active{% endif %}">
+                    <a href="?function_id={{ func.id }}" class="text-decoration-none">{{ func.function_name }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h5 class="form-label fs-5">Assigning actions to function {{ selected_function.function_name|default:"Function" }}</h5>
+                {% if selected_function %}
+                  <input type="hidden" name="function_id" value="{{ selected_function.id }}">
+                  {% for action in actions %}
+                  <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" name="actions" value="{{ action.id }}" id="action-{{ action.id }}" {% if action.id in selected_actions %}checked{% endif %}>
+                    <label class="form-check-label" for="action-{{ action.id }}">{{ action.action_name }}</label>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <p>Select a function to display the actions.</p>
+                {% endif %}
+              </div>
+            </div>
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Save</button>
+              <a href="{% url 'permissions:groups_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'permissions:groups_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- JavaScript to show modal if error exists -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

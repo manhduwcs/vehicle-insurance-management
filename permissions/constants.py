@@ -1,0 +1,23 @@
+class FunctionIds:
+    ManageCustomers = "Manage Customers"
+    ManageVehicles = "Manage Vehicles"
+    ManageVehicleTypes = "Manage Vehicle types"
+    ManageEstimates = "Manage Estimates"
+    ManageDiscounts = "Manage Discounts"
+    ManageInsuranceCategories = "Manage Insurance Categories"
+    ManageContracts = "Manage Contracts"
+    ManageClaimRequests = "Manage Claim requests"
+    ManageClaims = "Manage Claims"
+    ManageReductions = "Manage Reductions"
+    ManageExpenses = "Manage Expenses"
+    ManageEmployees = "Manage Employees"
+    ManageGroupsUsers = "Manage Groups users"
+
+class ActionIds:
+    View = "View"
+    Create = "Create"
+    Edit = "Edit"
+    Delete = "Delete"
+    Download = "Download"
+    Print = "Print"
+    Export = "Export"

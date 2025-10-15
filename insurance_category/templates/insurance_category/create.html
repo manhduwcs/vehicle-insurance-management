@@ -1,0 +1,83 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">Create Insurance Category</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+
+          <form action="{% url 'insurance_category:insurance_category_create' %}" method="post">
+            {% csrf_token %}
+
+            <!-- Category Name -->
+            <div class="mb-3">
+              <span class="form-label">Category Name</span>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-tag"></i></span>
+                <input type="text" name="name" class="form-control" placeholder="Category Name" value="{{ category.name }}">
+              </div>
+            </div>
+
+            <!-- Type dropdown -->
+            <div class="mb-3">
+              <span class="form-label">Type</span>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-list"></i></span>
+                <select name="type" class="form-control">
+                  <option value="Liability Insurance" {% if category.type == "Liability Insurance" %}selected{% endif %}>Liability Insurance</option>
+                  <option value="Property Insurance" {% if category.type == "Property Insurance" %}selected{% endif %}>Property Insurance</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Fee -->
+            <div class="mb-3">
+              <span class="form-label">Fee</span>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
+                <input type="number" name="fee" class="form-control" placeholder="Fee" value="{{ category.fee }}">
+              </div>
+            </div>
+
+            <!-- Rate -->
+            <div class="mb-3">
+              <span class="form-label">Rate</span>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-percent"></i></span>
+                <input type="number" name="rate" class="form-control" placeholder="Rate" value="{{ category.rate }}">
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <span class="form-label">Description</span>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-info-circle"></i></span>
+                <input type="text" name="description" class="form-control" placeholder="Description" value="{{ category.description }}">
+              </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Create</button>
+              <a href="{% url 'insurance_category:insurance_category_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

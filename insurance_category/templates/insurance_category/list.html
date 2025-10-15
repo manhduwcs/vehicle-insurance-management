@@ -9,6 +9,25 @@
       <div class="card mb-4">
         <div class="card-header pb-0">
           <h6>Insurance Categories</h6>
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex justify-content-between mb-2">
+            <div>
+              {% if can_add %}
+              <a href="{% url 'insurance_category:insurance_category_create' %}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-plus"></i> Add Category
+              </a>
+              {% endif %}
+              <a href="{% url 'insurance_category:insurance_category_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </a>
+            </div>
+          </div>
         </div>
         <div class="card-body px-0 pt-0 pb-2">
           <div class="table-responsive p-0">
@@ -28,7 +47,7 @@
                 <tr>
                   <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
                   <td class="align-middle">
-                    <a href="{% url 'insurance_category_detail' category.id %}">
+                    <a href="{% url 'insurance_category:insurance_category_detail' category.id %}">
                       <p class="text-xs font-weight-bold mb-0">{{ category.name }}</p>
                     </a>
                   </td>
