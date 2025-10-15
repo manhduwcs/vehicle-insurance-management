@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Contract - {{ category.Name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card mb-4">
+                    <div class="card-header pb-0 px-3">
+                        <h4 class="mb-0">Purchase {{ category.Name }}</h4>
+                    </div>
+                    <div class="card-body pt-4 p-3">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <form method="post" id="contract-form">
+                            {% csrf_token %}
+                            {{ form.vehicle_id }}
+                            <input type="hidden" name="insurance_category_id" value="{{ category.id }}">
+                            <div class="table-responsive p-0">
+                                <table class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Duration (Months)</th>
+                                            <th class="text-center">Estimate Premium (VND)</th>
+                                            <th class="text-center">Max Person Compensation (VND)</th>
+                                            <th class="text-center">Max Property Compensation (VND)</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="duration-table">
+                                        {% for duration in durations %}
+                                            <tr>
+                                                <td class="text-center">{{ duration.Months }}</td>
+                                                <td class="text-center" id="premium-{{ duration.id }}">-</td>
+                                                <td class="text-center" id="person-{{ duration.id }}">-</td>
+                                                <td class="text-center" id="property-{{ duration.id }}">-</td>
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-primary purchase-btn" data-duration-id="{{ duration.id }}" disabled>Purchase</button>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="text-end mt-3">
+                                <a href="{% url 'contracts:list' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirm Purchase</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to buy this insurance?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="button" class="btn btn-primary" id="confirm-purchase">Yes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function() {
+            $('#vehicle-select').change(function() {
+                var vehicleId = $(this).val();
+                var categoryId = '{{ category.id }}';
+                if (vehicleId) {
+                    $.ajax({
+                        url: '{% url 'contracts:calculate_insurance' %}',
+                        method: 'POST',
+                        data: {
+                            vehicle_id: vehicleId,
+                            category_id: categoryId,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function(response) {
+                            $('.purchase-btn').prop('disabled', true);
+                            $('#duration-table tr').each(function(index) {
+                                var durationId = $(this).find('.purchase-btn').data('duration-id');
+                                var data = response.data[index];
+                                if (data.available) {
+                                    $('#premium-' + durationId).text(data.estimate_premium.toLocaleString('en-US'));
+                                    $('#person-' + durationId).text(data.max_person_compensation.toLocaleString('en-US'));
+                                    $('#property-' + durationId).text(data.max_property_compensation.toLocaleString('en-US'));
+                                    $('#duration-table tr').eq(index).find('.purchase-btn').prop('disabled', false);
+                                } else {
+                                    $('#premium-' + durationId).text(data.error);
+                                    $('#person-' + durationId).text('-');
+                                    $('#property-' + durationId).text('-');
+                                }
+                            });
+                        },
+                        error: function(xhr) {
+                            alert('Error: ' + xhr.responseJSON.error);
+                        }
+                    });
+                } else {
+                    $('#duration-table tr').each(function() {
+                        var durationId = $(this).find('.purchase-btn').data('duration-id');
+                        $('#premium-' + durationId).text('-');
+                        $('#person-' + durationId).text('-');
+                        $('#property-' + durationId).text('-');
+                        $(this).find('.purchase-btn').prop('disabled', true);
+                    });
+                }
+            });
+
+            $('.purchase-btn').click(function() {
+                var durationId = $(this).data('duration-id');
+                $('#contract-form input[name="duration_id"]').val(durationId);
+                new bootstrap.Modal(document.getElementById('confirmModal')).show();
+            });
+
+            $('#confirm-purchase').click(function() {
+                $('#contract-form').submit();
+            });
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
