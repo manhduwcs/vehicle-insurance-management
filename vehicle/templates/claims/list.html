@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Danh sách đơn bồi thường</h2>
+<a href="{% url 'claim_create' %}" class="btn btn-primary mb-2">Tạo đơn bồi thường mới</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Xe</th>
+            <th>Hợp đồng</th>
+            <th>Ngày tạo</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in claims %}
+        <tr>
+            <td>{{ claim.claim_no }}</td>
+            <td>{{ claim.customer.fullname }}</td>
+            <td>{{ claim.vehicle.name }}</td>
+            <td>{{ claim.contract.contract_no }}</td>
+            <td>{{ claim.date }}</td>
+            <td>{{ claim.status }}</td>
+            <td>
+                <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-info btn-sm">Xem</a>
+                {% if user.is_staff %}
+                <a href="{% url 'claim_update' claim.pk %}" class="btn btn-warning btn-sm">Cập nhật</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7">Không có đơn bồi thường nào.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

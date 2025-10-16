@@ -29,3 +29,23 @@ class Vehicle(models.Model):
 
     def __str__(self):
         return self.name
+
+class Claim(models.Model):
+    claim_no = models.CharField(max_length=255, unique=True)
+    customer = models.ForeignKey('admin_soft.Customer', on_delete=models.CASCADE)
+    vehicle = models.ForeignKey('Vehicle', on_delete=models.CASCADE)
+    contract = models.ForeignKey('Contract', on_delete=models.CASCADE)
+    place = models.TextField()
+    date = models.DateField()
+    human_damage = models.DecimalField(max_digits=15, decimal_places=2)
+    property_damage = models.DecimalField(max_digits=15, decimal_places=2)
+    deduction = models.DecimalField(max_digits=15, decimal_places=2)
+    personal_compensation = models.DecimalField(max_digits=15, decimal_places=2)
+    property_compensation = models.DecimalField(max_digits=15, decimal_places=2)
+    note = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=[
+        ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Completed', 'Completed'),
+        ('Rejected', 'Rejected')
+    ], default='Pending')

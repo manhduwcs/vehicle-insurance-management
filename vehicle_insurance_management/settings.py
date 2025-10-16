@@ -92,6 +92,13 @@ DATABASES = {
     'default': {
         # Hieu
         'ENGINE': 'django.db.backends.mysql',
+<<<<<<< HEAD
+        'NAME': 'VehicleInsuranceDB',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
+=======
         'NAME': 'vehicleinsurancedb',
         'USER': 'root',
         'PASSWORD': 'Hieu@02090711',
@@ -113,6 +120,7 @@ DATABASES = {
         # 'PASSWORD': '',
         # 'HOST': 'localhost',
         # 'PORT': '3306',
+>>>>>>> a766a79e981debfe82cba625a230a30f78c5c6e3
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
