@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'discount',
     'permissions',
     'expenses',
-    'customer'
+    'customer',
+    'contracts'
 ]
 
 MIDDLEWARE = [
@@ -91,20 +92,22 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 DATABASES = {
     'default': {
         # Hieu
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vehicleinsurancedb',
-        'USER': 'root',
-        'PASSWORD': 'Hieu@02090711',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        # --------------- 
-        # Manh 
         # 'ENGINE': 'django.db.backends.mysql',
         # 'NAME': 'vehicleinsurancedb',
-        # 'USER': 'admin',
-        # 'PASSWORD': 'A_123456',
+        # 'USER': 'root',
+        # 'PASSWORD': 'Hieu@02090711',
         # 'HOST': '127.0.0.1',
-        # 'PORT': '3307',
+        # 'PORT': '3306',
+        # --------------- 
+        # --------------- 
+        # Manh 
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vehicleinsurancedb',
+        'USER': 'admin',
+        'PASSWORD': 'A_123456',
+        'HOST': '127.0.0.1',
+        'PORT': '3307',
+        # --------------- 
         # --------------- 
         # user ?
         # 'ENGINE': 'django.db.backends.mysql',

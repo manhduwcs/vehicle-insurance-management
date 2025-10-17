@@ -1,6 +1,9 @@
 # Active venv
 source venv/bin/activate
 
+# collectstatic
+python manage.py collectstatic --no-input
+
 # Run django port 8002
 python manage.py runserver 8002
 
@@ -16,3 +19,7 @@ docker exec -i vehicle_mysql_db mysql -u admin -pA_123456 < ./database.sql
 # Enter container db
 docker exec -it vehicle_mysql_db mysql -u admin -pA_123456
 drop database vehicleinsurancedb;
+
+# fast test customer with pwd 123456:
+# paste this to password field in customer db
+pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=

@@ -122,4 +122,4 @@ def vehicle_delete(request, pk):
     if request.method == "POST":
         vehicle.delete()
         return redirect("vehicle_list")
-    return redirect("vehicle_list")
+    return redirect(" ehicle_list")

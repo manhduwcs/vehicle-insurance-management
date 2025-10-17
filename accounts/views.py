@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm, LoginForm
+from django.contrib.auth.hashers import check_password
 
 # -------------------
 # REGISTER
@@ -23,6 +24,7 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
+            print(form.cleaned_data)  # prints all cleaned form input data
             customer = form.cleaned_data['customer']
             request.session['user_id'] = customer.id
             request.session['user_type'] = 'customer'

@@ -2,13 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from .models import InsuranceCategories, Vehicles, VehicleTypes, InsurancePriceList, Duration, Depreciations, Contracts
 from .forms import ContractForm
 from accounts.decorators import customer_login_required
 from permissions.views import has_permission
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.db.models import Q
+from .models import Contracts
+from vehicle.models import Vehicle, VehicleType
+from categories.models import Duration
+
 
 
 @customer_login_required
@@ -19,7 +22,7 @@ def list_insurance_categories(request):
 
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
-        vehicles = Vehicles.objects.filter(CustomerID_id=request.session['user_id'])
+        vehicles = Vehicle.objects.filter(customer_id=request.session['user_id'])
         if not vehicles.exists():
             messages.error(request, "You need to register your vehicle on the system before purchasing insurance.")
             return render(request, 'categories/list.html', {'categories': InsuranceCategories.objects.all()})
@@ -50,7 +53,7 @@ def create_contract_civil(request, category_id):
             insurance_category_id = form.cleaned_data['insurance_category_id']
 
             # Calculate EstimatePremium
-            vehicle_type = vehicle.VehicleTypeID
+            vehicle_type = vehicle.vehicle_type
             price_list = InsurancePriceList.objects.filter(
                 InsuranceCategoryID_id=insurance_category_id,
                 DurationID_id=duration_id.id
@@ -243,8 +246,10 @@ def calculate_insurance(request):
 
 @customer_login_required
 def contract_list(request):
-    contracts = Contracts.objects.select_related('VehicleID', 'InsuranceCategoryID', 'DurationID').filter(
-        CreatedBy_id=request.session['user_id'])
-    return render(request, 'contracts/list_customer.html', {
+    contracts = Contracts.objects.select_related(
+        'vehicle_id', 'insurance_category_id', 'duration_id'
+    ).filter(created_by_id=request.session['user_id'])
+    return render(request, 'contracts/list.html', {
+        'segment': 'contracts',
         'contracts': contracts
     })

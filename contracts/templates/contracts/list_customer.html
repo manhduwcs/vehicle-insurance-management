@@ -37,13 +37,13 @@
                                 <tbody>
                                     {% for contract in contracts %}
                                         <tr>
-                                            <td class="text-center">{{ contract.ContractNo }}</td>
-                                            <td class="text-center">{{ contract.VehicleID.Name }}</td>
-                                            <td class="text-center">{{ contract.InsuranceCategoryID.Name }}</td>
-                                            <td class="text-center">{{ contract.DurationID.Months }}</td>
-                                            <td class="text-center">{{ contract.EstimatePremium }}</td>
-                                            <td class="text-center">{{ contract.Status }}</td>
-                                            <td class="text-center">{{ contract.CreatedAt|date:"Y-m-d H:i" }}</td>
+                                            <td class="text-center">{{ contract.contract_no }}</td>
+                                            <td class="text-center">{{ contract.vehicle_id.name }}</td>
+                                            <td class="text-center">{{ contract.insurance_category_id.name }}</td>
+                                            <td class="text-center">{{ contract.duration_id.months }}</td>
+                                            <td class="text-center">{{ contract.estimate_premium }}</td>
+                                            <td class="text-center">{{ contract.status }}</td>
+                                            <td class="text-center">{{ contract.created_at|date:"Y-m-d H:i" }}</td>
                                         </tr>
                                     {% empty %}
                                         <tr>

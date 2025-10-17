@@ -5,7 +5,8 @@ class VehicleType(models.Model):
     name = models.CharField(max_length=50, db_column="Name")
     fee = models.DecimalField(max_digits=15, decimal_places=2, db_column="Fee")
     description = models.TextField(blank=True, null=True, db_column="Description")
-    max_claimable_amount = models.DecimalField(max_digits=15, decimal_places=2, db_column="MaxClaimableAmount")
+    max_personal_compensation = models.DecimalField(max_digits=15, decimal_places=2, db_column="MaxPersonalCompensation")
+    max_property_compensation = models.DecimalField(max_digits=15, decimal_places=2, db_column="MaxPropertyCompensation")
 
     class Meta:
         db_table = "VehicleTypes"
@@ -17,8 +18,8 @@ class Vehicle(models.Model):
     name = models.CharField(max_length=100, db_column="Name")
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, db_column="CustomerID")
     model = models.CharField(max_length=50, db_column="Model")
-    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE, db_column="TypeID")
-    rate = models.DecimalField(max_digits=15, decimal_places=2, db_column="Rate")
+    vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE, db_column="VehicleTypeID")
+    purchase_price = models.DecimalField(max_digits=15, decimal_places=2, db_column="PurchasePrice")
     body_number = models.CharField(max_length=50, db_column="BodyNumber")
     engine_number = models.CharField(max_length=50, db_column="EngineNumber")
     number = models.CharField(max_length=20, db_column="Number")
