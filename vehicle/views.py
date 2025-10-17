@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import VehicleType, Vehicle, Claim, Contract
+from .models import VehicleType, Vehicle, Claim
 from .forms import VehicleTypeForm, VehicleForm, ClaimForm
 from django.contrib.auth.decorators import login_required
-
+from contracts.models import Contracts
 # VehicleType CRUD
 
 def vehicle_type_list(request):
@@ -149,7 +149,7 @@ def claim_create(request):
         form = ClaimForm()
         # Chỉ hiện xe của khách hàng đang đăng nhập
         form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=request.user.customer)
-        form.fields['contract'].queryset = Contract.objects.none()
+        form.fields['contract'].queryset = Contracts.objects.none()
     return render(request, "claims/create.html", {"form": form, "segment": "claim"})
 
 @login_required
