@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 
-# Hàm hash password
+# Hash password
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 

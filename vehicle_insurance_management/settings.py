@@ -48,7 +48,9 @@ INSTALLED_APPS = [
     'discount',
     'permissions',
     'expenses',
-    'customer'
+    'customer',
+    'contracts',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -92,35 +94,11 @@ DATABASES = {
     'default': {
         # Hieu
         'ENGINE': 'django.db.backends.mysql',
-<<<<<<< HEAD
-        'NAME': 'VehicleInsuranceDB',
-        'USER': 'root',
+        'NAME': 'vehicleinsurancedb',
+        'USER': 'admin',
         'PASSWORD': '',
         'HOST': 'localhost',
-        'PORT': '3306',
-=======
-        'NAME': 'vehicleinsurancedb',
-        'USER': 'root',
-        'PASSWORD': 'Hieu@02090711',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        # --------------- 
-        # Manh 
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'vehicleinsurancedb',
-        # 'USER': 'admin',
-        # 'PASSWORD': 'A_123456',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '3307',
-        # --------------- 
-        # user ?
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'vehicleinsurancedb',
-        # 'USER': 'root',
-        # 'PASSWORD': '',
-        # 'HOST': 'localhost',
-        # 'PORT': '3306',
->>>>>>> a766a79e981debfe82cba625a230a30f78c5c6e3
+        'PORT': '3307',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
         },
