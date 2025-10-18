@@ -15,6 +15,7 @@ scp -r dist/ root@113.20.107.226:/var/www/fdi-internal-fe/staging/
 
 # Dump initial data into mysql (docker only)
 docker exec -i vehicle_mysql_db mysql -u admin -pA_123456 < ./database.sql
+docker exec -i vehicle_mysql_db mysql -u admin -pA_123456 < ./sample_data_contract_claim.sql
 
 # Enter container db
 docker exec -it vehicle_mysql_db mysql -u admin -pA_123456

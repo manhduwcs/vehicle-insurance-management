@@ -1,6 +1,7 @@
 from django import forms
 from vehicle.models import Vehicle
 from categories.models import Duration
+from .models import Contracts
 
 class ContractForm(forms.Form):
     vehicle_id = forms.ModelChoiceField(
@@ -24,3 +25,43 @@ class ContractForm(forms.Form):
         super().__init__(*args, **kwargs)
         if customer_id:
             self.fields['vehicle_id'].queryset = Vehicle.objects.filter(CustomerID_id=customer_id)
+
+# for update contract only
+class ContractUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Contracts
+        fields = [
+            'deductible_value',
+            'deductible_addon',
+            'actual_value',
+            'actual_premium',
+            'status',
+            'note',
+        ]
+        widgets = {
+            'deductible_value': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'deductible_addon': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'actual_value': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'actual_premium': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
+            'status': forms.Select(attrs={'class': 'form-control'}),
+            'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        deductible_value = cleaned_data.get('deductible_value')
+        deductible_addon = cleaned_data.get('deductible_addon')
+        actual_value = cleaned_data.get('actual_value')
+        actual_premium = cleaned_data.get('actual_premium')
+
+        # ✅ Validate numeric fields
+        for field in ['deductible_value', 'deductible_addon', 'actual_value', 'actual_premium']:
+            value = cleaned_data.get(field)
+            if value is not None and value < 0:
+                self.add_error(field, "Value must be non-negative.")
+
+        # ✅ Logical consistency checks
+        if actual_premium and actual_premium > actual_value:
+            self.add_error('actual_premium', "Actual premium cannot exceed actual value.")
+
+        return cleaned_data

@@ -1,5 +1,5 @@
 from django.db import models
-from admin_soft.models import Customer
+from customer.models import Customer
 
 class VehicleType(models.Model):
     name = models.CharField(max_length=50, db_column="Name")
@@ -16,7 +16,7 @@ class VehicleType(models.Model):
 
 class Vehicle(models.Model):
     name = models.CharField(max_length=100, db_column="Name")
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, db_column="CustomerID")
+    customer = models.ForeignKey('customer.Customer', on_delete=models.CASCADE, db_column="CustomerID")
     model = models.CharField(max_length=50, db_column="Model")
     vehicle_type = models.ForeignKey(VehicleType, on_delete=models.CASCADE, db_column="VehicleTypeID")
     purchase_price = models.DecimalField(max_digits=15, decimal_places=2, db_column="PurchasePrice")
