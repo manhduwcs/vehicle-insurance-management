@@ -52,9 +52,9 @@ def index(request):
 
     # Card Data
     total_revenue = Contracts.objects.filter(
-        Status__in=['Actived','Inactived']
+        status__in=['Actived','Inactived']
     ).aggregate(
-        total_revenue=Sum('ActualValue')
+        total_revenue=Sum('actual_value')
     )['total_revenue'] or 0
     total_customer = Customer.objects.count()
     total_contract = Contracts.objects.count()
@@ -64,10 +64,10 @@ def index(request):
     #Revenue month
     # Step 1: Query Actived + Inactived contracts
     contracts = (
-        Contracts.objects.filter(Status__in=["Actived", "Inactived"])
-        .annotate(month=ExtractMonth("StartDate"), year=ExtractYear("StartDate"))
+        Contracts.objects.filter(status__in=["Actived", "Inactived"])
+        .annotate(month=ExtractMonth("start_date"), year=ExtractYear("start_date"))
         .values("month", "year")
-        .annotate(revenue=Sum("ActualPremium"))
+        .annotate(revenue=Sum("actual_premium"))
         .order_by("year", "month")
     )
 
@@ -94,28 +94,28 @@ def index(request):
 
     contracts_qs = (
         Contracts.objects
-        .select_related("CreatedBy", "VehicleID", "InsuranceCategoryID", "DurationID")
-        .filter(Status__in=["Actived", "Inactived"])
+        .select_related("created_by", "vehicle", "insurance_category", "duration")
+        .filter(status__in=["Actived", "Inactived"])
     )
 
     contract_list = []
     for c in contracts_qs:
-        if not c.StartDate:
+        if not c.start_date:
             continue
 
         # 🧮 Compute Expiration Date
-        months = c.DurationID.months if c.DurationID else 12
-        expiration_date = c.StartDate + relativedelta(months=months)
+        months = c.duration.months if c.duration else 12
+        expiration_date = c.start_date + relativedelta(months=months)
 
         # 🕓 Days Remaining
         days_remaining = (expiration_date - today).days
 
         # 🧾 Build display data
         contract_list.append({
-            "contractNo": c.ContractNo,
-            "customerName": getattr(c.CreatedBy, "fullname", "Unknown"),
-            "vehicleName": getattr(c.VehicleID, "name", "Unknown"),
-            "insuranceCategory": getattr(c.InsuranceCategoryID, "name", "N/A"),
+            "contractNo": c.contract_no,
+            "customerName": getattr(c.created_by, "fullname", "Unknown"),
+            "vehicleName": getattr(c.vehicle, "name", "Unknown"),
+            "insuranceCategory": getattr(c.insurance_category, "name", "N/A"),
             "expirationDate": expiration_date.strftime("%Y-%m-%d"),
             "daysRemaining": days_remaining,
         })
@@ -126,8 +126,8 @@ def index(request):
         .annotate(month=ExtractMonth("date"), year=ExtractYear("date"))
         .values("month", "year")
         .annotate(
-            personal=Sum("personal_compensation"),
-            property=Sum("property_compensation")
+            personal_compensation=Sum("personal_compensation"),
+            property_compensation=Sum("property_compensation")
         )
         .order_by("year", "month")
     )
@@ -136,16 +136,14 @@ def index(request):
         {
             "month": calendar.month_abbr[c["month"]],
             "year": c["year"],
-            "personal_compensation": float(c["personal"] or 0),
-            "property_compensation": float(c["property"] or 0),
+            "personal_compensation": float(c["personal_compensation"] or 0),
+            "property_compensation": float(c["property_compensation"] or 0),
         }
         for c in claims_queryset
     ]
     
 
     claims_data_json = json.dumps(all_claims_data)
-   
-   
 
     context["expense_data"] = json.dumps(expense_data)
     context['total_revenue'] = total_revenue
@@ -163,13 +161,13 @@ def index(request):
 
 def get_vehicle_revenue_data():
     data = (
-        Contracts.objects.filter(Status__in=["Actived", "Inactived"])
-        .values("VehicleID__vehicle_type__name")
+        Contracts.objects.filter(status__in=["Actived", "Inactived"])
+        .values("vehicle__vehicle_type__name")
         .annotate(
-            revenue=Sum("ActualPremium"),
+            revenue=Sum("actual_premium"),
             count=Count("id")
         )
-        .order_by("VehicleID__vehicle_type__name")
+        .order_by("vehicle__vehicle_type__name")
     )
 
     # Optional: map some icons based on vehicle type name
@@ -186,10 +184,10 @@ def get_vehicle_revenue_data():
 
     result = [
         {
-            "type": item["VehicleID__vehicle_type__name"],
+            "type": item["vehicle__vehicle_type__name"],
             "revenue": float(item["revenue"] or 0),
             "count": item["count"],
-            "icon": icon_map.get(item["VehicleID__vehicle_type__name"], "🚗"),
+            "icon": icon_map.get(item["vehicle__vehicle_type__name"], "🚗"),
         }
         for item in data
     ]
