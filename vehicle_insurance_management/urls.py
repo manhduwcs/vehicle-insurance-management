@@ -31,7 +31,8 @@ urlpatterns = [
     path('customers/', include('customer.urls')),
     path('accounts/', include('accounts.urls')),
     path('vehicle/', include('vehicle.urls')),
-    path('categories/', include('categories.urls'))
+    path('categories/', include('categories.urls')),
+    path('contracts/', include('contracts.urls'))
 ]
 
 # if settings.DEBUG:

@@ -170,3 +170,4 @@ def claim_update(request, pk):
 def claim_detail(request, pk):
     claim = get_object_or_404(Claim, pk=pk)
     return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})
+    return redirect(" ehicle_list")

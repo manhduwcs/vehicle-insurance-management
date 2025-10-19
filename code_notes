@@ -1,0 +1,3 @@
+# Nếu một model dùng model từ app name khác thì không được import và dùng trực tiếp
+from customer.models import Customer -> models.ForeignKey(Customer, ..) -> lỗi
+fix: models.ForeignKey('customer.Customer', ...) -> ok

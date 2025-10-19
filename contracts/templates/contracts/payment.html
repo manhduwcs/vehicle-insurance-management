@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+
+<div class="container-fluid py-4">
+    <h6>Payment for Contract {{ contract.contract_no }}</h6>
+  <!-- Contract Info Header -->
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card shadow-sm p-3">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+          <div>
+            <h6 class="mb-1 ms-2 fw-bold">Contract No</h6>
+            <p class="mb-0 ms-2">{{ contract.contract_no }}</p>
+          </div>
+          <div>
+            <h6 class="mb-1 fw-bold">Payment Amount</h6>
+            <p class="mb-0">{{ contract.actual_value|intcomma }}</p>
+          </div>
+          <div>
+            <h6 class="mb-1 me-2 fw-bold">Insurance Category</h6>
+            <p class="mb-0 me-2">{{ contract.insurance_category.name }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment QR & Banking Info -->
+  <div class="row mt-4">
+    <div class="col-md-12">
+      <div class="card shadow-sm p-3">
+        <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+          
+          <!-- QR Panel -->
+          <div class="flex-shrink-0 bg-white rounded shadow-soft d-flex justify-content-center align-items-center" 
+               style="width: 300px; height: 300px;">
+              <img src="{{ qr_url }}" 
+                   alt="Payment QR" 
+                   class="img-fluid rounded" 
+                   style="max-width: 90%; max-height: 90%;">
+          </div>
+
+          <!-- Banking Info Panel -->
+            <div class="flex-grow-1 bg-white rounded shadow-soft d-flex flex-column justify-content-center p-4 ms-3">
+                <p style="margin-bottom: 0.6rem; line-height: 1.5;"><strong>Receiver:</strong> {{ receiver_name }}</p>
+                <p style="margin-bottom: 0.6rem; line-height: 1.5;"><strong>Bank:</strong> {{ bank_name }} ({{ bank_code }})</p>
+                <p style="margin-bottom: 0.6rem; line-height: 1.5;"><strong>Account No:</strong> {{ account_number }}</p>
+                <p style="margin-bottom: 0.6rem; line-height: 1.5;"><strong>Amount:</strong> <span class="text-danger fw-bold">{{ amount }}</span></p>
+                <p style="margin-bottom: 0; line-height: 1.5;"><strong>Message:</strong> {{ message }}</p>
+            </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
