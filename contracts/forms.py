@@ -78,7 +78,7 @@ class ContractUpdateForm(forms.ModelForm):
                 self.add_error(field, "Value must be non-negative.")
 
         # ✅ Logical consistency checks
-        if actual_premium and actual_premium > actual_value:
+        if actual_premium and isinstance(actual_premium, (int, float)) and actual_premium > actual_value:
             self.add_error('actual_premium', "Actual premium cannot exceed actual value.")
 
         return cleaned_data
