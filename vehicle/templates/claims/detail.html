@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Chi tiết đơn bồi thường</h2>
+<table class="table table-bordered">
+    <tr><th>Mã đơn</th><td>{{ claim.claim_no }}</td></tr>
+    <tr><th>Khách hàng</th><td>{{ claim.customer.fullname }}</td></tr>
+    <tr><th>Xe</th><td>{{ claim.vehicle.name }}</td></tr>
+    <tr><th>Hợp đồng</th><td>{{ claim.contract.contract_no }}</td></tr>
+    <tr><th>Địa điểm</th><td>{{ claim.place }}</td></tr>
+    <tr><th>Ngày xảy ra</th><td>{{ claim.date }}</td></tr>
+    <tr><th>Thiệt hại về người</th><td>{{ claim.human_damage }}</td></tr>
+    <tr><th>Thiệt hại về tài sản</th><td>{{ claim.property_damage }}</td></tr>
+    <tr><th>Khấu trừ</th><td>{{ claim.deduction }}</td></tr>
+    <tr><th>Bồi thường người</th><td>{{ claim.personal_compensation }}</td></tr>
+    <tr><th>Bồi thường tài sản</th><td>{{ claim.property_compensation }}</td></tr>
+    <tr><th>Ghi chú</th><td>{{ claim.note }}</td></tr>
+    <tr><th>Trạng thái</th><td>{{ claim.status }}</td></tr>
+</table>
+<a href="{% url 'claim_list' %}" class="btn btn-secondary">Quay lại</a>
+{% if user.is_staff %}
+<a href="{% url 'claim_update' claim.pk %}" class="btn btn-warning">Cập nhật</a>
+{% endif %}
+{% endblock %}
