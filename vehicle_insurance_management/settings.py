@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'vehicleinsurancedb',
         'USER': 'admin',
-        'PASSWORD': '',
+        'PASSWORD': 'A_123456',
         'HOST': 'localhost',
         'PORT': '3307',
         'OPTIONS': {

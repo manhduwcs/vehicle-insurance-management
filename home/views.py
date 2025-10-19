@@ -2,8 +2,17 @@ from django.shortcuts import render
 from accounts.decorators import customer_login_required
 import json
 from expenses.models import Expenses
+from contracts.models import Contracts
+from django.db.models import Sum,Count,F
+from customer.models import Customer
+from vehicle.models import Claim
+from django.db.models.functions import ExtractMonth, ExtractYear
+import calendar
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
-icon_map = {
+from django.core.paginator import Paginator
+icon_map_expense = {
         "rent": "🏢",
         "electricity": "💡",
         "internet": "🌐",
@@ -26,18 +35,163 @@ def index(request):
         "message": "This is the home page!"
     }
 
+    #Expenses
     expenses = Expenses.objects.all().values("content", "amount", "date")
 
     def get_icon(content):
         text = content.lower()
-        for key, icon in icon_map.items():
+        for key, icon in icon_map_expense.items():
             if key in text:
                 return icon
-        return icon_map["default"]
+        return icon_map_expense["default"]
     
     expense_data = [
         {"category": e["content"], "amount": float(e["amount"]), "icon": get_icon(e["content"])}
         for e in expenses
     ]
+
+    # Card Data
+    total_revenue = Contracts.objects.filter(
+        Status__in=['Actived','Inactived']
+    ).aggregate(
+        total_revenue=Sum('ActualValue')
+    )['total_revenue'] or 0
+    total_customer = Customer.objects.count()
+    total_contract = Contracts.objects.count()
+    total_claim = Claim.objects.count()
+ 
+
+    #Revenue month
+    # Step 1: Query Actived + Inactived contracts
+    contracts = (
+        Contracts.objects.filter(Status__in=["Actived", "Inactived"])
+        .annotate(month=ExtractMonth("StartDate"), year=ExtractYear("StartDate"))
+        .values("month", "year")
+        .annotate(revenue=Sum("ActualPremium"))
+        .order_by("year", "month")
+    )
+
+    # Step 2: Convert queryset to list of dicts
+    all_monthly_revenue = [
+        {
+            "month": calendar.month_abbr[c["month"]],  # e.g. "Jan"
+            "year": c["year"],
+            "revenue": float(c["revenue"] or 0),
+        }
+        for c in contracts
+    ]
+
+    # Step 3: Convert to JSON for JS
+    monthly_revenue_json = json.dumps(all_monthly_revenue)
+
+    #Revenue Vehicle Type
+    vehicle_data = get_vehicle_revenue_data()
+
+    # =========================
+    # CONTRACT TABLE
+    # =========================
+    today = timezone.now().date()
+
+    contracts_qs = (
+        Contracts.objects
+        .select_related("CreatedBy", "VehicleID", "InsuranceCategoryID", "DurationID")
+        .filter(Status__in=["Actived", "Inactived"])
+    )
+
+    contract_list = []
+    for c in contracts_qs:
+        if not c.StartDate:
+            continue
+
+        # 🧮 Compute Expiration Date
+        months = c.DurationID.months if c.DurationID else 12
+        expiration_date = c.StartDate + relativedelta(months=months)
+
+        # 🕓 Days Remaining
+        days_remaining = (expiration_date - today).days
+
+        # 🧾 Build display data
+        contract_list.append({
+            "contractNo": c.ContractNo,
+            "customerName": getattr(c.CreatedBy, "fullname", "Unknown"),
+            "vehicleName": getattr(c.VehicleID, "name", "Unknown"),
+            "insuranceCategory": getattr(c.InsuranceCategoryID, "name", "N/A"),
+            "expirationDate": expiration_date.strftime("%Y-%m-%d"),
+            "daysRemaining": days_remaining,
+        })
+
+   
+    claims_queryset = (
+        Claim.objects.filter(status='Completed')
+        .annotate(month=ExtractMonth("date"), year=ExtractYear("date"))
+        .values("month", "year")
+        .annotate(
+            personal=Sum("personal_compensation"),
+            property=Sum("property_compensation")
+        )
+        .order_by("year", "month")
+    )
+
+    all_claims_data = [
+        {
+            "month": calendar.month_abbr[c["month"]],
+            "year": c["year"],
+            "personal_compensation": float(c["personal"] or 0),
+            "property_compensation": float(c["property"] or 0),
+        }
+        for c in claims_queryset
+    ]
+    
+
+    claims_data_json = json.dumps(all_claims_data)
+   
+   
+
     context["expense_data"] = json.dumps(expense_data)
+    context['total_revenue'] = total_revenue
+    context['total_customer'] = total_customer
+    context['total_contract'] = total_contract
+    context['total_claim'] = total_claim
+    context['monthly_revenue_json'] = monthly_revenue_json
+    context['vehicle_data_json'] = json.dumps(vehicle_data)
+    context['contract_list'] = json.dumps(contract_list)
+    context['claims_data_json'] = claims_data_json
+   
     return render(request, "home/index.html", context)
+
+
+
+def get_vehicle_revenue_data():
+    data = (
+        Contracts.objects.filter(Status__in=["Actived", "Inactived"])
+        .values("VehicleID__vehicle_type__name")
+        .annotate(
+            revenue=Sum("ActualPremium"),
+            count=Count("id")
+        )
+        .order_by("VehicleID__vehicle_type__name")
+    )
+
+    # Optional: map some icons based on vehicle type name
+    icon_map = {
+        "Motorcycle under 50cc": "🏍️",
+        "Motorcycle over 50cc": "🏍️",
+        "Car under 6 seats (non-commercial)": "🚗",
+        "Car from 6 to 11 seats": "🚙",
+        "Commercial car under 6 seats": "🚐",
+        "Truck under 3.5 tons": "🚚",
+        "Truck from 3.5 to 7 tons": "🚛",
+        "Tractor head": "🚜",
+    }
+
+    result = [
+        {
+            "type": item["VehicleID__vehicle_type__name"],
+            "revenue": float(item["revenue"] or 0),
+            "count": item["count"],
+            "icon": icon_map.get(item["VehicleID__vehicle_type__name"], "🚗"),
+        }
+        for item in data
+    ]
+
+    return result

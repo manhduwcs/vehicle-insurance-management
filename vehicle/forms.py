@@ -14,7 +14,7 @@ class VehicleTypeForm(forms.ModelForm):
 class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
-        fields = ["name", "customer", "model", "vehicle_type", "rate", "body_number", "engine_number", "number", "registration_date"]
+        fields = ["name", "customer", "model", "vehicle_type", "body_number", "engine_number", "number", "registration_date"]
 
 class ClaimForm(forms.ModelForm):
     class Meta:

@@ -1,22 +1,93 @@
-// Global variables for charts
+// ============================================
+// GLOBAL VARIABLES
+// ============================================
 var revenueLineChart, vehicleBarChart, expensePieChart, areaChart;
 var allMonthlyRevenue, allVehicleData, allExpenseData, allContracts;
 var currentExpensePieType = "donut";
 var currentVehicleSort = "default";
+var currentPage = 1;
+var itemsPerPage = 5;
+var filteredContracts = [];
+var currentFilter = "all";
 
+// ============================================
+// CONFIGURATION CONSTANTS
+// ============================================
+const CHART_CONFIG = {
+  height: 400,
+  animationSpeed: 800,
+  strokeWidth: [4, 2],
+  markerSize: [6, 0],
+  colors: ["#5e72e4", "#f5365c"],
+};
+
+const QUARTER_MONTHS = {
+  q1: ["Jan", "Feb", "Mar"],
+  q2: ["Apr", "May", "Jun"],
+  q3: ["Jul", "Aug", "Sep"],
+  q4: ["Oct", "Nov", "Dec"],
+};
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+function formatVND(amount) {
+  if (amount == null || isNaN(amount)) return "0 ₫";
+  return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+}
+
+function formatVNDShort(val) {
+  if (val == null || isNaN(val)) return "0 ₫";
+
+  if (val >= 1_000_000_000) {
+    return (val / 1_000_000_000).toFixed(1) + "B ₫"; // Billion
+  } else if (val >= 1_000_000) {
+    return (val / 1_000_000).toFixed(1) + "M ₫"; // Million
+  } else if (val >= 1_000) {
+    return (val / 1_000).toFixed(1) + "K ₫"; // Thousand
+  }
+  return val.toLocaleString("vi-VN") + " ₫";
+}
+
+function calculateAverage(revenues) {
+  return revenues.reduce((a, b) => a + b, 0) / revenues.length;
+}
+
+function updateActiveButton(targetButton, parentSelector) {
+  const parent = parentSelector
+    ? document.querySelector(parentSelector)
+    : targetButton?.parentElement;
+
+  if (parent) {
+    parent.querySelectorAll("button").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    if (targetButton && targetButton.tagName === "BUTTON") {
+      targetButton.classList.add("active");
+    }
+  }
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
 document.addEventListener("DOMContentLoaded", function () {
-  // Initialize sample data
   initializeData();
+  populateYearFilter();
 
-  // Initialize all components
-  updateRevenueStats(allMonthlyRevenue);
-  initializeRevenueChart(allMonthlyRevenue);
+  const filteredData = getDataByYearAndQuarter("all");
+  updateRevenueStats(filteredData);
+  initializeRevenueChart(filteredData);
+
   initializeVehicleBarChart(allVehicleData);
   initializeExpensePieChart(allExpenseData);
-  initializeAreaChart();
+  initializeClaimsChart();
   populateContractsTable(allContracts);
+
   const searchInput = document.getElementById("contract-search");
-  searchInput.addEventListener("keyup", searchContracts);
+  if (searchInput) {
+    searchInput.addEventListener("keyup", searchContracts);
+  }
 });
 
 // ============================================
@@ -25,117 +96,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initializeData() {
   // Monthly revenue data for the year
-  allMonthlyRevenue = [
-    { month: "Jan", revenue: 45000 },
-    { month: "Feb", revenue: 52000 },
-    { month: "Mar", revenue: 48000 },
-    { month: "Apr", revenue: 61000 },
-    { month: "May", revenue: 55000 },
-    { month: "Jun", revenue: 67000 },
-    { month: "Jul", revenue: 72000 },
-    { month: "Aug", revenue: 58000 },
-    { month: "Sep", revenue: 63000 },
-    { month: "Oct", revenue: 70000 },
-    { month: "Nov", revenue: 68000 },
-    { month: "Dec", revenue: 75000 },
-  ];
-
+  allMonthlyRevenue = window.allMonthlyRevenue;
   // Vehicle type revenue data
-  allVehicleData = [
-    { type: "Sedan", revenue: 125000, count: 450, icon: "🚗" },
-    { type: "SUV", revenue: 185000, count: 320, icon: "🚙" },
-    { type: "Truck", revenue: 95000, count: 180, icon: "🚚" },
-    { type: "Van", revenue: 78000, count: 145, icon: "🚐" },
-    { type: "Motorcycle", revenue: 45000, count: 280, icon: "🏍️" },
-    { type: "Electric", revenue: 152000, count: 210, icon: "⚡" },
-  ];
+  allVehicleData = window.allVehicleData;
 
   // Expense data by category
   allExpenseData = window.expenseData;
 
   // Contract expiration data
-  allContracts = [
-    {
-      contractNo: "CNT-2024-001",
-      customerName: "John Smith",
-      vehicleName: "Toyota Camry 2022",
-      insuranceCategory: "Comprehensive",
-      expirationDate: "2024-11-20",
-      daysRemaining: -25,
-    },
-    {
-      contractNo: "CNT-2024-002",
-      customerName: "Sarah Johnson",
-      vehicleName: "Honda CR-V 2023",
-      insuranceCategory: "Third Party",
-      expirationDate: "2024-12-05",
-      daysRemaining: -10,
-    },
-    {
-      contractNo: "CNT-2024-003",
-      customerName: "Michael Brown",
-      vehicleName: "Ford F-150 2021",
-      insuranceCategory: "Comprehensive",
-      expirationDate: "2024-12-18",
-      daysRemaining: 3,
-    },
-    {
-      contractNo: "CNT-2024-004",
-      customerName: "Emily Davis",
-      vehicleName: "Tesla Model 3 2024",
-      insuranceCategory: "Premium",
-      expirationDate: "2024-12-25",
-      daysRemaining: 10,
-    },
-    {
-      contractNo: "CNT-2024-005",
-      customerName: "David Wilson",
-      vehicleName: "BMW X5 2023",
-      insuranceCategory: "Comprehensive",
-      expirationDate: "2025-01-10",
-      daysRemaining: 26,
-    },
-    {
-      contractNo: "CNT-2024-006",
-      customerName: "Lisa Anderson",
-      vehicleName: "Mercedes C-Class 2022",
-      insuranceCategory: "Premium",
-      expirationDate: "2025-01-15",
-      daysRemaining: 31,
-    },
-    {
-      contractNo: "CNT-2024-007",
-      customerName: "James Martinez",
-      vehicleName: "Chevrolet Silverado 2023",
-      insuranceCategory: "Third Party",
-      expirationDate: "2025-02-20",
-      daysRemaining: 67,
-    },
-    {
-      contractNo: "CNT-2024-008",
-      customerName: "Maria Garcia",
-      vehicleName: "Nissan Altima 2021",
-      insuranceCategory: "Comprehensive",
-      expirationDate: "2025-03-05",
-      daysRemaining: 80,
-    },
-    {
-      contractNo: "CNT-2024-009",
-      customerName: "Robert Taylor",
-      vehicleName: "Audi A4 2024",
-      insuranceCategory: "Premium",
-      expirationDate: "2025-04-12",
-      daysRemaining: 118,
-    },
-    {
-      contractNo: "CNT-2024-010",
-      customerName: "Jennifer Lee",
-      vehicleName: "Hyundai Tucson 2023",
-      insuranceCategory: "Third Party",
-      expirationDate: "2025-05-01",
-      daysRemaining: 137,
-    },
-  ];
+  allContracts = window.contractList;
 }
 
 // ============================================
@@ -159,8 +128,7 @@ function updateRevenueStats(data) {
   var growthRate = (((lastMonth - firstMonth) / firstMonth) * 100).toFixed(1);
 
   // Update displays
-  document.getElementById("total-revenue").textContent =
-    "$" + totalRevenue.toLocaleString();
+
   document.getElementById("highest-month").textContent =
     data[maxIndex].month + " - $" + maxRevenue.toLocaleString();
   document.getElementById("lowest-month").textContent =
@@ -169,48 +137,142 @@ function updateRevenueStats(data) {
     "$" + Math.round(avgRevenue).toLocaleString();
   document.getElementById("growth-rate").textContent =
     (growthRate > 0 ? "+" : "") + growthRate + "%";
+}
 
-  document.getElementById("total-users").textContent = "2,543";
-  document.getElementById("total-contracts").textContent = "156";
-  document.getElementById("total-claims").textContent = "89";
+// ============================================
+// YEAR FILTER FUNCTIONS
+// ============================================
+function populateYearFilter() {
+  const yearFilter = document.getElementById("year-filter");
+  if (!yearFilter) return;
+
+  yearFilter.innerHTML = "";
+
+  const years = [...new Set(allMonthlyRevenue.map((item) => item.year))].sort(
+    (a, b) => b - a
+  );
+  const currentYear = new Date().getFullYear();
+
+  years.forEach((year) => {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    yearFilter.appendChild(option);
+  });
+
+  if (years.includes(currentYear)) {
+    yearFilter.value = currentYear;
+  } else if (years.length > 0) {
+    yearFilter.value = years[0];
+  }
+}
+
+function getDataByYearAndQuarter(quarter) {
+  const selectedYear = document.getElementById("year-filter")?.value;
+
+  let filteredData = allMonthlyRevenue.filter(
+    (item) => item.year == selectedYear
+  );
+
+  if (quarter !== "all" && QUARTER_MONTHS[quarter]) {
+    const quarterMonthsList = QUARTER_MONTHS[quarter];
+    filteredData = filteredData.filter((item) =>
+      quarterMonthsList.includes(item.month)
+    );
+  }
+
+  return filteredData;
+}
+
+// ============================================
+// REVENUE STATS FUNCTIONS
+// ============================================
+function updateRevenueStats(data) {
+  if (!data || data.length === 0) {
+    clearStatsDisplay();
+    return;
+  }
+
+  var revenues = data.map((m) => m.revenue);
+  var avgRevenue = calculateAverage(revenues);
+
+  var maxRevenue = Math.max(...revenues);
+  var minRevenue = Math.min(...revenues);
+  var maxIndex = revenues.indexOf(maxRevenue);
+  var minIndex = revenues.indexOf(minRevenue);
+
+  var firstMonth = revenues[0];
+  var lastMonth = revenues[revenues.length - 1];
+  var growthRate = (((lastMonth - firstMonth) / firstMonth) * 100).toFixed(1);
+
+  document.getElementById("highest-month").textContent =
+    data[maxIndex].month + " - " + formatVNDShort(maxRevenue);
+  document.getElementById("lowest-month").textContent =
+    data[minIndex].month + " - " + formatVNDShort(minRevenue);
+  document.getElementById("avg-revenue-display").textContent = formatVNDShort(
+    Math.round(avgRevenue)
+  );
+  document.getElementById("growth-rate").textContent =
+    (growthRate > 0 ? "+" : "") + growthRate + "%";
+}
+
+function clearStatsDisplay() {
+  const ids = [
+    "highest-month",
+    "lowest-month",
+    "avg-revenue-display",
+    "growth-rate",
+  ];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "-";
+  });
 }
 
 // ============================================
 // REVENUE LINE CHART
 // ============================================
-
 function initializeRevenueChart(data) {
+  if (!data || data.length === 0) {
+    showNoDataMessage("#revenue-line-chart");
+    return;
+  }
+
   var months = data.map((m) => m.month);
   var revenues = data.map((m) => m.revenue);
-  var avgRevenue = revenues.reduce((a, b) => a + b, 0) / revenues.length;
+  var avgRevenue = calculateAverage(revenues);
   var avgRevenueArray = new Array(revenues.length).fill(avgRevenue);
 
   var revenueLineOptions = {
     chart: {
       id: "revenue-chart",
       type: "line",
-      height: 400,
+      height: CHART_CONFIG.height,
       toolbar: { show: false },
       animations: {
         enabled: true,
-        speed: 800,
+        speed: CHART_CONFIG.animationSpeed,
         animateGradually: { enabled: true, delay: 150 },
       },
       events: {
         dataPointSelection: function (event, chartContext, config) {
-          var monthData = allMonthlyRevenue[config.dataPointIndex];
-          alert(
-            "Month: " +
-              monthData.month +
-              "\nRevenue: $" +
-              monthData.revenue.toLocaleString()
-          );
+          var monthData = data[config.dataPointIndex];
+          if (monthData) {
+            alert(
+              "Month: " +
+                monthData.month +
+                " " +
+                monthData.year +
+                "\nRevenue: " +
+                formatVNDShort(monthData.revenue)
+            );
+          }
         },
       },
     },
     stroke: {
       curve: "smooth",
-      width: [4, 2],
+      width: CHART_CONFIG.strokeWidth,
       dashArray: [0, 5],
     },
     series: [
@@ -236,14 +298,12 @@ function initializeRevenueChart(data) {
     },
     yaxis: {
       labels: {
-        formatter: function (val) {
-          return "$" + (val / 1000).toFixed(0) + "K";
-        },
+        formatter: formatVNDShort,
       },
     },
-    colors: ["#5e72e4", "#f5365c"],
+    colors: CHART_CONFIG.colors,
     markers: {
-      size: [6, 0],
+      size: CHART_CONFIG.markerSize,
       strokeWidth: 2,
       hover: { size: 9, sizeOffset: 3 },
     },
@@ -255,13 +315,15 @@ function initializeRevenueChart(data) {
       shared: true,
       intersect: false,
       y: {
-        formatter: function (val) {
-          return "$" + val.toLocaleString();
-        },
+        formatter: formatVNDShort,
       },
     },
     legend: { show: false },
   };
+
+  if (revenueLineChart) {
+    revenueLineChart.destroy();
+  }
 
   revenueLineChart = new ApexCharts(
     document.querySelector("#revenue-line-chart"),
@@ -271,16 +333,17 @@ function initializeRevenueChart(data) {
 }
 
 function updateRevenueChart(period) {
-  var data;
-  if (period === "q1") data = allMonthlyRevenue.slice(0, 3);
-  else if (period === "q2") data = allMonthlyRevenue.slice(3, 6);
-  else if (period === "q3") data = allMonthlyRevenue.slice(6, 9);
-  else if (period === "q4") data = allMonthlyRevenue.slice(9, 12);
-  else data = allMonthlyRevenue;
+  var data = getDataByYearAndQuarter(period);
+
+  if (data.length === 0) {
+    showNoDataMessage("#revenue-line-chart");
+    clearStatsDisplay();
+    return;
+  }
 
   var months = data.map((m) => m.month);
   var revenues = data.map((m) => m.revenue);
-  var avgRevenue = revenues.reduce((a, b) => a + b, 0) / revenues.length;
+  var avgRevenue = calculateAverage(revenues);
   var avgRevenueArray = new Array(revenues.length).fill(avgRevenue);
 
   revenueLineChart.updateOptions({
@@ -294,11 +357,17 @@ function updateRevenueChart(period) {
 
   updateRevenueStats(data);
 
-  // Update button states
-  document
-    .querySelectorAll(".btn-group button")
-    .forEach((btn) => btn.classList.remove("active"));
-  event.target.classList.add("active");
+  if (event && event.target) {
+    updateActiveButton(event.target);
+  }
+}
+
+function showNoDataMessage(selector) {
+  const element = document.querySelector(selector);
+  if (element) {
+    element.innerHTML =
+      '<p class="text-center text-muted py-5">No data available for selected period</p>';
+  }
 }
 
 // ============================================
@@ -317,16 +386,29 @@ function initializeVehicleBarChart(data) {
     topVehicle.icon +
     " " +
     topVehicle.type +
-    " - $" +
-    topVehicle.revenue.toLocaleString();
+    " - " +
+    formatVND(topVehicle.revenue);
   document.getElementById("total-vehicles").textContent =
     totalVehicles.toLocaleString();
+
+  // --- Dynamic column width ---
+  var count = types.length;
+  let columnWidth;
+  if (count <= 5) columnWidth = "70%";
+  else if (count <= 10) columnWidth = "55%";
+  else if (count <= 20) columnWidth = "40%";
+  else if (count <= 30) columnWidth = "30%";
+  else columnWidth = "20%";
+
+  // --- Dynamic chart height ---
+  // Minimum 350px, then add 10px per bar (max around 700px)
+  let chartHeight = Math.min(700, 350 + count * 10);
 
   var vehicleBarOptions = {
     chart: {
       id: "vehicle-bar-chart",
       type: "bar",
-      height: 350,
+      height: chartHeight, // Increased height for better visibility
       toolbar: { show: false },
       animations: {
         enabled: true,
@@ -339,8 +421,8 @@ function initializeVehicleBarChart(data) {
           alert(
             "Vehicle Type: " +
               vehicle.type +
-              "\nRevenue: $" +
-              vehicle.revenue.toLocaleString() +
+              "\nRevenue: " +
+              formatVND(vehicle.revenue) +
               "\nCount: " +
               vehicle.count
           );
@@ -349,23 +431,26 @@ function initializeVehicleBarChart(data) {
     },
     plotOptions: {
       bar: {
-        borderRadius: 10,
+        borderRadius: 8,
         dataLabels: { position: "top" },
         distributed: true,
         horizontal: false,
-        columnWidth: "60%",
+        columnWidth: columnWidth, // Wider bars
       },
     },
     dataLabels: {
       enabled: true,
       formatter: function (val) {
-        return "$" + (val / 1000).toFixed(0) + "K";
+        return formatVNDShort(val);
       },
       offsetY: -25,
       style: {
-        fontSize: "11px",
-        colors: ["#304758"],
-        fontWeight: 600,
+        fontSize: "12px",
+        colors: ["#344767"],
+        fontWeight: 700,
+      },
+      background: {
+        enabled: false,
       },
     },
     series: [
@@ -378,48 +463,97 @@ function initializeVehicleBarChart(data) {
       categories: types,
       labels: {
         style: {
-          fontSize: "12px",
+          fontSize: "13px",
           fontWeight: 600,
+          colors: "#344767",
         },
-        rotate: -45,
-        rotateAlways: false,
+        rotate: 0, // No rotation for better readability
+        trim: true,
+        hideOverlappingLabels: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
       },
     },
     yaxis: {
       labels: {
         formatter: function (val) {
-          return "$" + (val / 1000).toFixed(0) + "K";
+          return formatVNDShort(val);
         },
-        style: { fontSize: "11px" },
+        style: {
+          fontSize: "12px",
+          colors: "#8392ab",
+        },
       },
       title: {
-        text: "Revenue (USD)",
-        style: { fontSize: "12px", fontWeight: 600 },
+        text: "Revenue",
+        style: {
+          fontSize: "13px",
+          fontWeight: 600,
+          color: "#344767",
+        },
       },
     },
     colors: ["#5e72e4", "#2dce89", "#f5365c", "#fb6340", "#11cdef", "#ffd600"],
     tooltip: {
+      theme: "light",
+      style: {
+        fontSize: "13px",
+      },
       y: {
         formatter: function (val, { seriesIndex, dataPointIndex, w }) {
           var vehicle = allVehicleData[dataPointIndex];
-          return (
-            "$" + val.toLocaleString() + " (" + vehicle.count + " vehicles)"
-          );
+          return formatVND(val) + " (" + vehicle.count + " vehicles)";
         },
+      },
+      marker: {
+        show: true,
       },
     },
     grid: {
-      borderColor: "#e7e7e7",
-      strokeDashArray: 5,
+      show: true,
+      borderColor: "#e9ecef",
+      strokeDashArray: 3,
       padding: {
-        top: 0,
-        right: 10,
-        bottom: 0,
-        left: 10,
+        top: 10,
+        right: 20,
+        bottom: 10,
+        left: 20,
+      },
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
+        },
       },
     },
     legend: { show: false },
+    states: {
+      hover: {
+        filter: {
+          type: "darken",
+          value: 0.85,
+        },
+      },
+      active: {
+        filter: {
+          type: "darken",
+          value: 0.75,
+        },
+      },
+    },
   };
+
+  if (vehicleBarChart) {
+    vehicleBarChart.destroy();
+  }
 
   vehicleBarChart = new ApexCharts(
     document.querySelector("#vehicle-bar-chart"),
@@ -443,18 +577,28 @@ function sortVehicleChart(sortType) {
   var types = sortedData.map((v) => v.type);
   var revenues = sortedData.map((v) => v.revenue);
 
+  // Store the sorted data reference
+  window.currentSortedVehicleData = sortedData;
+
   vehicleBarChart.updateOptions({
     xaxis: { categories: types },
   });
-  vehicleBarChart.updateSeries([{ data: revenues }]);
+
+  vehicleBarChart.updateSeries([
+    {
+      name: "Revenue",
+      data: revenues,
+    },
+  ]);
 
   // Update button states
-  event.target.parentElement
-    .querySelectorAll("button")
-    .forEach((btn) => btn.classList.remove("active"));
-  event.target.classList.add("active");
+  if (event && event.target) {
+    event.target.parentElement
+      .querySelectorAll("button")
+      .forEach((btn) => btn.classList.remove("active"));
+    event.target.classList.add("active");
+  }
 }
-
 // ============================================
 // EXPENSE PIE/DONUT CHART
 // ============================================
@@ -478,7 +622,7 @@ function initializeExpensePieChart(data) {
     chart: {
       id: "expense-pie-chart",
       type: currentExpensePieType,
-      height: 350,
+      height: 450,
       toolbar: { show: false },
       animations: {
         enabled: true,
@@ -631,82 +775,274 @@ function changeExpensePieType(type) {
 }
 
 // ============================================
-// AREA CHART
+// CLAIMS DUAL LINE CHART
 // ============================================
 
-function initializeAreaChart() {
-  var months = allMonthlyRevenue.map((m) => m.month);
-  var revenues = allMonthlyRevenue.map((m) => m.revenue);
+function populateClaimsYearFilter() {
+  const select = document.getElementById("claims-year-filter");
+  if (!select) return;
 
-  var areaOptions = {
+  select.innerHTML = "";
+
+  const years = [
+    ...new Set(window.allClaimsData.map((item) => item.year)),
+  ].sort((a, b) => b - a);
+
+  if (years.length === 0) {
+    const currentYear = new Date().getFullYear();
+    select.innerHTML = `<option value="${currentYear}">${currentYear}</option>`;
+  } else {
+    years.forEach((year) => {
+      const opt = document.createElement("option");
+      opt.value = year;
+      opt.textContent = year;
+      select.appendChild(opt);
+    });
+  }
+
+  select.addEventListener("change", function () {
+    updateClaimsChartByYear(this.value);
+  });
+}
+
+function initializeClaimsChart() {
+  populateClaimsYearFilter();
+}
+
+function updateClaimsChartByYear(year) {
+  if (!window.allClaimsData || window.allClaimsData.length === 0) {
+    showNoDataMessage("#area-chart");
+    return;
+  }
+
+  // Filter claims data by selected year
+  const yearData = window.allClaimsData.filter((item) => item.year == year);
+
+  if (yearData.length === 0) {
+    showNoDataMessage("#area-chart");
+    clearClaimsStats();
+    return;
+  }
+
+  var months = yearData.map((m) => m.month);
+  var personalCompensation = yearData.map((m) => m.personal_compensation || 0);
+  var propertyCompensation = yearData.map((m) => m.property_compensation || 0);
+
+  // Calculate averages
+  var avgPersonal = calculateAverage(personalCompensation);
+  var avgProperty = calculateAverage(propertyCompensation);
+  var avgPersonalArray = new Array(personalCompensation.length).fill(
+    avgPersonal
+  );
+  var avgPropertyArray = new Array(propertyCompensation.length).fill(
+    avgProperty
+  );
+
+  var claimsOptions = {
     chart: {
-      id: "area-chart",
-      type: "area",
+      id: "claims-chart",
+      type: "line",
       height: 350,
       toolbar: { show: false },
       animations: {
         enabled: true,
         speed: 800,
+        animateGradually: { enabled: true, delay: 150 },
       },
       zoom: {
         enabled: true,
         type: "x",
         autoScaleYaxis: true,
       },
+      events: {
+        dataPointSelection: function (event, chartContext, config) {
+          var claimData = yearData[config.dataPointIndex];
+          if (claimData) {
+            const seriesName = config.w.config.series[config.seriesIndex].name;
+            const value =
+              config.w.config.series[config.seriesIndex].data[
+                config.dataPointIndex
+              ];
+            alert(
+              "Month: " +
+                claimData.month +
+                " " +
+                claimData.year +
+                "\n" +
+                seriesName +
+                ": " +
+                formatVND(value)
+            );
+          }
+        },
+      },
     },
-    dataLabels: { enabled: false },
     stroke: {
       curve: "smooth",
-      width: 2,
+      width: [3, 3, 2, 2],
+      dashArray: [0, 0, 5, 5],
     },
     series: [
       {
-        name: "Active Users",
-        data: revenues.map((r) => Math.floor(r / 1000)),
+        name: "Personal Compensation",
+        data: personalCompensation,
+        color: "#f5365c",
+      },
+      {
+        name: "Property Compensation",
+        data: propertyCompensation,
+        color: "#11cdef",
+      },
+      {
+        name: "Avg Personal",
+        data: avgPersonalArray,
+        color: "#f5365c",
+      },
+      {
+        name: "Avg Property",
+        data: avgPropertyArray,
+        color: "#11cdef",
       },
     ],
     xaxis: {
       categories: months,
-      labels: { style: { fontSize: "12px" } },
+      labels: {
+        style: {
+          fontSize: "12px",
+          fontWeight: 600,
+          colors: "#344767",
+        },
+      },
+      axisBorder: {
+        show: false,
+      },
+      axisTicks: {
+        show: false,
+      },
     },
     yaxis: {
       labels: {
-        formatter: function (val) {
-          return val + " users";
+        formatter: formatVNDShort,
+        style: {
+          fontSize: "12px",
+          colors: "#8392ab",
+        },
+      },
+      title: {
+        text: "Compensation Amount",
+        style: {
+          fontSize: "13px",
+          fontWeight: 600,
+          color: "#344767",
         },
       },
     },
-    fill: {
-      type: "gradient",
-      gradient: {
-        shadeIntensity: 1,
-        opacityFrom: 0.7,
-        opacityTo: 0.3,
-        stops: [0, 90, 100],
+    markers: {
+      size: [5, 5, 0, 0],
+      strokeWidth: 2,
+      hover: {
+        size: 7,
+        sizeOffset: 3,
       },
     },
-    colors: ["#2dce89"],
     tooltip: {
+      shared: true,
+      intersect: false,
       y: {
-        formatter: function (val) {
-          return val + " users";
-        },
+        formatter: formatVND,
+      },
+    },
+    legend: {
+      show: true,
+      position: "top",
+      horizontalAlign: "right",
+      fontSize: "13px",
+      fontWeight: 600,
+      markers: {
+        width: 12,
+        height: 12,
+        radius: 12,
+      },
+      itemMargin: {
+        horizontal: 10,
+        vertical: 5,
       },
     },
     grid: {
-      borderColor: "#e7e7e7",
+      show: true,
+      borderColor: "#e9ecef",
+      strokeDashArray: 3,
+      xaxis: {
+        lines: {
+          show: false,
+        },
+      },
+      yaxis: {
+        lines: {
+          show: true,
+        },
+      },
+    },
+    dataLabels: {
+      enabled: false,
     },
   };
 
+  if (areaChart) {
+    areaChart.destroy();
+  }
+
   areaChart = new ApexCharts(
     document.querySelector("#area-chart"),
-    areaOptions
+    claimsOptions
   );
   areaChart.render();
+
+  // Update claims stats
+  updateClaimsStats(personalCompensation, propertyCompensation);
+}
+
+function updateClaimsStats(personalComp, propertyComp) {
+  const totalPersonal = personalComp.reduce((a, b) => a + b, 0);
+  const totalProperty = propertyComp.reduce((a, b) => a + b, 0);
+  const totalClaims = totalPersonal + totalProperty;
+
+  const personalPercentage =
+    totalClaims > 0 ? ((totalPersonal / totalClaims) * 100).toFixed(1) : 0;
+  const propertyPercentage =
+    totalClaims > 0 ? ((totalProperty / totalClaims) * 100).toFixed(1) : 0;
+
+  const totalClaimsEl = document.getElementById("total-claims-amount");
+  const personalEl = document.getElementById("personal-claims");
+  const propertyEl = document.getElementById("property-claims");
+
+  if (totalClaimsEl) {
+    totalClaimsEl.textContent = formatVNDShort(totalClaims);
+  }
+
+  if (personalEl) {
+    personalEl.textContent =
+      formatVNDShort(totalPersonal) + ` (${personalPercentage}%)`;
+  }
+
+  if (propertyEl) {
+    propertyEl.textContent =
+      formatVNDShort(totalProperty) + ` (${propertyPercentage}%)`;
+  }
+}
+
+function clearClaimsStats() {
+  const ids = ["total-claims-amount", "personal-claims", "property-claims"];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "-";
+  });
 }
 
 function resetAreaZoom() {
-  areaChart.resetSeries();
+  if (areaChart) {
+    areaChart.resetSeries();
+  }
 }
 
 // ============================================
@@ -714,9 +1050,10 @@ function resetAreaZoom() {
 // ============================================
 
 var currentPage = 1;
-var itemsPerPage = 5;
+var itemsPerPage = 10;
 var filteredContracts = [];
 var currentFilter = "all";
+var expiredSoonDay = 45;
 
 function populateContractsTable(contracts) {
   filteredContracts = contracts;
@@ -769,7 +1106,7 @@ function renderContractsTable() {
           '<span class="text-danger text-xs font-weight-bold">' +
           Math.abs(daysRemaining) +
           " days ago</span>";
-      } else if (daysRemaining <= 15) {
+      } else if (daysRemaining <= expiredSoonDay) {
         statusBadge =
           '<span class="badge badge-sm bg-gradient-warning">Expiring Soon</span>';
         statusClass = "expiring";
@@ -947,9 +1284,9 @@ function filterContracts(status) {
       if (status === "expired") {
         return daysRemaining < 0;
       } else if (status === "expiring") {
-        return daysRemaining >= 0 && daysRemaining <= 15;
+        return daysRemaining >= 0 && daysRemaining <= expiredSoonDay;
       } else if (status === "active") {
-        return daysRemaining > 15;
+        return daysRemaining > expiredSoonDay;
       }
       return true;
     });
@@ -1011,9 +1348,9 @@ function applySearch(searchTerm) {
       if (currentFilter === "expired") {
         return daysRemaining < 0;
       } else if (currentFilter === "expiring") {
-        return daysRemaining >= 0 && daysRemaining <= 15;
+        return daysRemaining >= 0 && daysRemaining <= expiredSoonDay;
       } else if (currentFilter === "active") {
-        return daysRemaining > 15;
+        return daysRemaining > expiredSoonDay;
       }
       return true;
     });

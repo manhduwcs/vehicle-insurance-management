@@ -33,3 +33,31 @@
   gap: 15px;                       /* space between text and buttons */
 }
 
+
+/* Custom styling for the year filter dropdown */
+#year-filter {
+    border: 1px solid #5e72e4;
+    color: #5e72e4;
+    background-color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-weight: 600;
+    transition: all 0.15s ease-in-out;
+}
+
+#year-filter:hover {
+    background-color: #5e72e4;
+    color: white;
+}
+
+#year-filter:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+}
+
+/* Style the options */
+#year-filter option {
+    background-color: white;
+    color: #344767;
+    padding: 0.5rem;
+}
