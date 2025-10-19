@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %} 
+{% load humanize %} 
 {% load static %} 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/style.css' %}" />
@@ -6,14 +7,13 @@
 <style>
   .contract-detail span.text-xs {
     font-size: 0.95rem; /* slightly larger text */
-    line-height: 1.8;   /* more spacing between lines */
-    display: block;     /* ensure each field sits on its own line */
+    line-height: 1.8; /* more spacing between lines */
+    display: block; /* ensure each field sits on its own line */
   }
 
   .contract-detail .text-dark {
-    font-weight: 600;   /* make value text bolder */
+    font-weight: 600; /* make value text bolder */
   }
-
 </style>
 <script src="{% static 'js/showConfirmDelete.js' %}"></script>
 <!-- Overlay -->
@@ -21,121 +21,265 @@
 
 <div class="container-fluid py-4">
   <div class="row">
-    <div class="col-md-12 mt-4">
+    <div class="mt-4">
       <div class="card">
-        <div class="card-header pb-0 px-3">
-          <h6 class="mb-0">Contract Detailed Information</h6>
-        </div>
-        <div class="card-body pt-4 p-3 contract-detail">
-          <ul class="list-group">
-            <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
-              <div class="d-flex flex-column">
-                <h6 class="mb-3 text-sm">{{ contract.contract_no }}</h6>
+        <div
+          class="card-header pb-0 px-3 d-flex justify-content-between align-items-center w-100 flex-wrap"
+        >
+          <div class="d-flex flex-column gap-3 w-100 px-3">
+            <!-- Row: Contract No + Contract Status -->
+            <div class="d-flex gap-3 w-100">
+              <!-- Contract No -->
+              <div
+                class="px-4 py-3 border rounded-3 flex-grow-1 d-flex flex-column justify-content-center"
+              >
+                <h5 class="fw-bold mb-1">Contract No</h5>
+                <p class="mb-0 fs-5">{{ contract.contract_no }}</p>
+              </div>
 
-                <span class="text-xs">Vehicle:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.vehicle_id.name }}</span>
-                </span><br>
+              <!-- Contract Status -->
+              <div
+                class="px-4 py-3 border rounded-3 flex-grow-1 d-flex flex-column justify-content-center"
+              >
+                <h5 class="fw-bold mb-1">Contract Status</h5>
+                <p class="mb-0 fs-5">
+                  {{ contract.get_status_display|default:contract.status }}
+                </p>
+              </div>
+            </div>
 
-                <span class="text-xs">Insurance Category:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.insurance_category_id.name }}</span>
-                </span><br>
 
-                <span class="text-xs">Duration:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.duration_id.months }} months</span>
-                </span><br>
+<!-- Status Message & Action -->
+            <div class="px-4 py-3 border rounded-3 d-flex justify-content-between align-items-center">
+              {% if contract.status == "Actived" %}
+                <span class="text-dark mb-0" style="line-height:1.2;max-width: 70%;">
+                  This contract is active. The customer has successfully made payment and the contract is currently running. All contract benefits are available.
+                </span>
+                <a href="{% url 'contracts:contract_payment' contract.id %}" class="btn btn-primary btn-sm">
+                  View Payment
+                </a>
 
-                <span class="text-xs">Estimate Value:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.estimate_value }}</span>
-                </span><br>
+              {% elif contract.status == "Inactivate" %}
+                <span class="text-dark mb-0" style="line-height:1.2;max-width: 70%;">
+                  This contract has ended and is no longer active. No further actions are required.
+                </span>
 
-                <span class="text-xs">Estimate Premium:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.estimate_premium }}</span>
-                </span><br>
+              {% elif contract.status == "Pending" %}
+                <div class="d-flex align-items-center flex-grow-1">
+                    <span class="text-dark mb-0 text-wrap" style="line-height:1.2; max-width:70%; display:inline-block;">
+                      Assessment has been completed and this contract is ready for payment. Please proceed to make the payment to activate your contract.
+                    </span>
+                </div>
+                <div class="d-flex align-items-center">
+                  <a href="{% url 'contracts:contract_payment' contract.id %}" class="btn btn-primary btn-sm mt-3">
+                    Make Payment
+                  </a>
+                </div>
 
-                <span class="text-xs">Deductible Value:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.deductible_value }}</span>
-                </span><br>
+              {% elif contract.status == "Awaiting" %}
+                <span class="text-dark mb-0" style="line-height:1.2;max-width: 70%;">
+                  This contract is currently under assessment. Please wait until the evaluation is complete before taking further action.
+                </span>
 
-                <span class="text-xs">Deductible Addon:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.deductible_addon }}</span>
-                </span><br>
+              {% elif contract.status == "Rejected" %}
+                <span class="text-dark mb-0" style="line-height:1.2; max-width: 70%;">
+                  This contract has been rejected. Please review the information you submitted and ensure all details are correct before attempting again.
+                </span>
 
-                <span class="text-xs">Actual Value:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.actual_value }}</span>
-                </span><br>
+              {% elif contract.status == "Canceled" %}
+                <span class="text-dark mb-0" style="line-height:1.2;max-width: 70%;">
+                  The customer has cancelled this contract. No further actions can be performed.
+                </span>
+              {% endif %}
+            </div>
+          </div>
 
-                <span class="text-xs">Actual Premium:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.actual_premium }}</span>
-                </span><br>
+          <!-- Right side: Button -->
+          <!--   <div class="ms-auto mt-2 mt-md-0"> -->
+          <!--     <a href="{% url 'contracts:contract_payment' contract.id %}" class="btn btn-primary btn-sm"> -->
+          <!--       Make Payment -->
+          <!--     </a> -->
+          <!--   </div> -->
+          <!-- </div> -->
+          <div class="card-body pt-4 p-3 contract-detail">
+            <ul class="list-group">
+              <li
+                class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg"
+              >
+                <div class="d-flex flex-column">
+                  <!-- <h6 class="mb-3 text-sm">{{ contract.contract_no }}</h6> -->
 
-                <span class="text-xs">Fixed Deduction:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.fixed_deduction }}</span>
-                </span><br>
+                  <!-- Status -->
+                  <span class="text-xs"
+                    >Vehicle:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.vehicle.name }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Max Person Compensation:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.max_person_compensation }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Insurance Category:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.insurance_category.name }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Max Property Compensation:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.max_property_compensation }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Duration:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.duration.months }} months</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Available Person Compensation:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.available_person_compensation }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Estimate Value:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.estimate_value }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Available Property Compensation:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.available_property_compensation }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Estimate Premium:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.estimate_premium }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Start Date:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.start_date }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Deductible Value:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.deductible_value }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Status:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.status }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Deductible Addon:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.deductible_addon }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Note:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.note }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Actual Value:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.actual_value }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Created By:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.created_by.name }}</span>
-                </span><br>
+                  <span class="text-xs"
+                    >Actual Premium:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.actual_premium }}</span
+                    > </span
+                  ><br />
 
-                <span class="text-xs">Updated By:
-                    {% if contract.updated_by %}
-                      <span class="text-dark font-weight-bold ms-sm-2">{{ contract.updated_by.name }}</span>
-                    {% else %}
-                      <span class="text-dark font-weight-bold ms-sm-2">-</span>
+                  <span class="text-xs"
+                    >Fixed Deduction:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.fixed_deduction }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Max Person Compensation:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.max_person_compensation }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Max Property Compensation:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.max_property_compensation }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Available Person Compensation:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.available_person_compensation }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Available Property Compensation:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.available_property_compensation }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Start Date:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.start_date }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Note:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.note }}</span
+                    > </span
+                  ><br />
+
+                  <span class="text-xs"
+                    >Created By:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.vehicle.customer.fullname }}</span
+                    > </span
+                  ><br />
+
+                  <!-- <span class="text-xs" -->
+                  <!--   >Updated By: {% if contract.updated_by %} -->
+                  <!--   <span class="text-dark font-weight-bold ms-sm-2" -->
+                  <!--     >{{ contract.updated_by.name }}</span -->
+                  <!--   > -->
+                  <!--   {% else %} -->
+                  <!--   <span class="text-dark font-weight-bold ms-sm-2">-</span> -->
+                  <!--   {% endif %} </span -->
+                  <!-- ><br /> -->
+
+                  <span class="text-xs"
+                    >Created At:
+                    <span class="text-dark font-weight-bold ms-sm-2"
+                      >{{ contract.created_at }}</span
+                    > </span
+                  ><br />
+
+                  <!-- <span class="text-xs" -->
+                  <!--   >Updated At: -->
+                  <!--   <span class="text-dark font-weight-bold ms-sm-2" -->
+                  <!--     >{{ contract.updated_at }}</span -->
+                  <!--   > </span -->
+                  <!-- ><br /> -->
+                </div>
+
+                <div class="ms-auto text-end">
+                    {% if contract.status == "Awaiting" %}
+                    <form
+                        action="{% url 'contracts:contract_update' contract.id %}"
+                        method="GET"
+                        style="display: inline"
+                    >
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="btn btn-link text-dark px-3 mb-0"
+                        >
+                            <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>
+                            Edit
+                        </button>
+                    </form>
                     {% endif %}
-                </span><br>
-
-                <span class="text-xs">Created At:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.created_at }}</span>
-                </span><br>
-
-                <span class="text-xs">Updated At:
-                  <span class="text-dark font-weight-bold ms-sm-2">{{ contract.updated_at }}</span>
-                </span><br>
-              </div>
-
-              <div class="ms-auto text-end">
-
-                <form action="{% url 'contracts:contract_update' contract.id %}" method="GET" style="display: inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-link text-dark px-3 mb-0">
-                    <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
-                  </button>
-                </form>
-              </div>
-            </li>
-          </ul>
+                </div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
 </div>
 
 {% endblock content %}

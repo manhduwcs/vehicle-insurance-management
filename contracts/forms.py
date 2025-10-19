@@ -1,7 +1,7 @@
 from django import forms
 from vehicle.models import Vehicle
 from categories.models import Duration
-from .models import Contracts
+from .models import ContractStatus, Contracts
 
 class ContractForm(forms.Form):
     vehicle_id = forms.ModelChoiceField(
@@ -43,9 +43,26 @@ class ContractUpdateForm(forms.ModelForm):
             'deductible_addon': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'actual_value': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
             'actual_premium': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'min': '0'}),
-            'status': forms.Select(attrs={'class': 'form-control'}),
+            'status': forms.Select(attrs={
+                'class': 'form-select',  # applies Bootstrap/Soft UI style
+            }),
             'note': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
+    def __init__(self, *args, **kwargs):
+        contract = kwargs.pop('instance', None)
+        super().__init__(*args, **kwargs)
+
+        if contract:
+            allowed = ContractStatus.transitions().get(contract.status, [])
+            self.fields["status"].choices = [
+                (s.value, s.label)
+                for s in allowed
+            ]
+            print(f"current contract status: {contract.status}")
+            self.fields['status'].initial = contract.status
+
 
     def clean(self):
         cleaned_data = super().clean()
@@ -65,3 +82,4 @@ class ContractUpdateForm(forms.ModelForm):
             self.add_error('actual_premium', "Actual premium cannot exceed actual value.")
 
         return cleaned_data
+

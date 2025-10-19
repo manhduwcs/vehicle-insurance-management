@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block content %}
@@ -59,7 +60,9 @@
         <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
       </td>
       <td class="align-middle">
-        <p class="text-xs text-secondary mb-0">{{ contract.actual_premium }}</p>
+        <p class="text-xs text-secondary mb-0">
+          {{ contract.actual_premium|floatformat:2|intcomma }}
+        </p>
       </td>
       <td class="align-middle">
         <p class="text-xs text-secondary mb-0">{{ contract.status }}</p>

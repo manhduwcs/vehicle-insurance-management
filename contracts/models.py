@@ -40,12 +40,39 @@ from vehicle.models import VehicleType, Vehicle
 #     class Meta:
 #         db_table = 'Duration'
 
+
 class Depreciations(models.Model):
     Age = models.IntegerField()
     Rate = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
         db_table = 'Depreciations'
+
+
+class ContractStatus(models.TextChoices):
+    AWAITING = 'Awaiting', 'Awaiting'
+    PENDING = 'Pending', 'Pending'
+    REJECTED = 'Rejected', 'Rejected'
+    ACTIVED = 'Actived', 'Actived'
+    CANCELED = 'Canceled', 'Canceled'
+    INACTIVED = 'Inactived', 'Inactived'
+
+    @classmethod
+    def transitions(cls):
+        return {
+            cls.AWAITING: [cls.AWAITING, cls.PENDING, cls.REJECTED, cls.CANCELED],
+            cls.PENDING: [cls.PENDING, cls.ACTIVED, cls.REJECTED, cls.CANCELED],
+            cls.ACTIVED: [cls.ACTIVED, cls.INACTIVED],
+            cls.INACTIVED: [],  
+            cls.REJECTED: [],   
+            cls.CANCELED: []    
+        }
+
+    @classmethod
+    def can_transition(cls, current, new):
+        """Check if status change is allowed."""
+        return new in cls.transitions().get(current, [])
+
 
 # class InsurancePriceList(models.Model):
 #     InsuranceCategoryID = models.ForeignKey(InsuranceCategories, on_delete=models.CASCADE, db_column='InsuranceCategoryID')
