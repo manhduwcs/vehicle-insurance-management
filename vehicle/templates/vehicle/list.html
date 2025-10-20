@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Danh sách xe</h2>
+<a href="{% url 'vehicle_create' %}" class="btn btn-primary mb-2">Thêm xe</a>
+<table class="table table-striped">
+  <thead>
+    <tr><th>#</th><th>Biển số</th><th>Loại xe</th><th>Chủ</th><th>Hành động</th></tr>
+  </thead>
+  <tbody>
+    {% for v in vehicles %}
+    <tr>
+      <td>{{ forloop.counter }}</td>
+      <td>{{ v.number }}</td>
+      <td>{{ v.vehicle_type.name }}</td>
+      <td>{{ v.customer.fullname }}</td>
+      <td>
+        <a href="{% url 'vehicle_detail' v.pk %}" class="btn btn-sm btn-info">Xem</a>
+        <a href="{% url 'vehicle_update' v.pk %}" class="btn btn-sm btn-warning">Sửa</a>
+        <form action="{% url 'vehicle_delete' v.pk %}" method="post" style="display:inline">
+          {% csrf_token %}
+          <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa xe?')">Xóa</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Không có xe.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
