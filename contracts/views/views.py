@@ -12,7 +12,7 @@ from vehicle.models import Vehicle, VehicleType
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.models import Contracts, Depreciations
 from vehicle.models import Vehicle
-
+from decimal import Decimal
 
 
 @customer_login_required
@@ -68,7 +68,9 @@ def create_contract_civil(request, category_id):
                     'category': InsuranceCategories.objects.get(id=category_id)
                 })
 
-            estimate_premium = vehicle_type.fee * (price_list.rate / 100) * (duration_id.months / 12)
+            rate_percentage = Decimal(str(price_list.rate)) / Decimal('100')
+            duration_factor = Decimal(str(duration_id.months)) / Decimal('12')
+            estimate_premium = vehicle_type.fee * rate_percentage * duration_factor
 
             # Generate ContractNo
             contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
@@ -154,9 +156,13 @@ def create_contract_other(request, category_id):
                 })
 
             # Calculate EstimatePremium and EstimateValue
+            rate_percentage = Decimal(str(price_list.rate)) / Decimal('100')
+            max_coverage_percentage = Decimal(str(price_list.max_coverage_rate)) / Decimal('100')
+            duration_factor = Decimal(str(duration_id.months)) / Decimal('12')
             estimate_premium = (
-                        vehicle.purchase_price * depreciation.Rate * (price_list.rate / 100) * (duration_id.months / 12))
-            estimate_value = vehicle.purchase_price * depreciation.Rate * (price_list.max_coverage_rate / 100)
+                    vehicle.purchase_price * Decimal(str(depreciation.Rate)) * rate_percentage * duration_factor
+            )
+            estimate_value = vehicle.purchase_price * Decimal(str(depreciation.Rate)) * max_coverage_percentage
 
             # Generate ContractNo
             contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
@@ -210,7 +216,7 @@ def calculate_insurance(request):
                     duration=duration
                 ).first()
                 if price_list:
-                    item['estimate_premium'] = float((vehicle.vehicle_type.fee * price_list.rate) / 100)
+                    item['estimate_premium'] = float((vehicle.vehicle_type.fee * price_list.rate) / 100 * duration.months / 12)
                     item['max_person_compensation'] = float(vehicle.vehicle_type.max_personal_compensation)
                     item['max_property_compensation'] = float(vehicle.vehicle_type.max_property_compensation)
                 else:
@@ -236,10 +242,16 @@ def calculate_insurance(request):
                         ).first()
                         if price_list:
                             print(f"Price list rate: {price_list.rate}")  # Debug
+                            rate_percentage = Decimal(str(price_list.rate)) / Decimal('100')
+                            max_coverage_percentage = Decimal(str(price_list.max_coverage_rate)) / Decimal('100')
+                            duration_factor = Decimal(str(duration.months)) / Decimal('12')
                             item['estimate_premium'] = float(
-                                (vehicle.purchase_price * (depreciation.Rate) * (price_list.rate / 100) * (duration.months / 12)))
+                                vehicle.purchase_price * Decimal(
+                                    str(depreciation.Rate)) * rate_percentage * duration_factor
+                            )
                             item['max_estimate_property_compensation'] = float(
-                                vehicle.purchase_price * (depreciation.Rate) * (price_list.max_coverage_rate / 100))
+                                vehicle.purchase_price * Decimal(str(depreciation.Rate)) * max_coverage_percentage
+                            )
                         else:
                             item['available'] = False
                             item['error'] = "No matching price list for this duration and age."
