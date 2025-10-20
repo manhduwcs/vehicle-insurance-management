@@ -33,7 +33,8 @@ class InsurancePriceList(models.Model):
     duration = models.ForeignKey(Duration, on_delete=models.CASCADE, db_column='DurationID')
     min_age = models.IntegerField(db_column='MinAge')
     max_age = models.IntegerField(db_column='MaxAge')
-    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0, db_column='Rate')
+    rate = models.DecimalField(max_digits=5, decimal_places=2, default=0, db_column='RatePremium')
+    max_coverage_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0, db_column='MaxCoverageRate')
 
     class Meta:
         db_table = 'InsurancePriceList'
@@ -56,5 +57,6 @@ def create_price_list(sender, instance, created, **kwargs):
                     duration=duration,
                     min_age=min_age,
                     max_age=max_age,
-                    rate=0
+                    rate=0,
+                    max_coverage_rate=0
                 )

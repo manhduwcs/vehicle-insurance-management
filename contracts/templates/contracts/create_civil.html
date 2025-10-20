@@ -26,6 +26,7 @@
                             {% csrf_token %}
                             {{ form.vehicle_id }}
                             <input type="hidden" name="insurance_category_id" value="{{ category.id }}">
+                            <input type="hidden" name="duration_id" id="id_duration_id" value="">
                             <div class="table-responsive p-0">
                                 <table class="table align-items-center mb-0">
                                     <thead>
@@ -40,7 +41,7 @@
                                     <tbody id="duration-table">
                                         {% for duration in durations %}
                                             <tr>
-                                                <td class="text-center">{{ duration.Months }}</td>
+                                                <td class="text-center">{{ duration.months }}</td>
                                                 <td class="text-center" id="premium-{{ duration.id }}">-</td>
                                                 <td class="text-center" id="person-{{ duration.id }}">-</td>
                                                 <td class="text-center" id="property-{{ duration.id }}">-</td>
@@ -84,7 +85,10 @@
         $(document).ready(function() {
             $('#vehicle-select').change(function() {
                 var vehicleId = $(this).val();
-                var categoryId = '{{ category.id }}';
+                var categoryId = '{{ category.id|escapejs }}';  // Escape để tránh lỗi cú pháp
+                console.log('Vehicle ID:', vehicleId);
+                console.log('Category ID:', categoryId);
+                console.log('CSRF Token:', '{{ csrf_token|escapejs }}');  // Escape token
                 if (vehicleId) {
                     $.ajax({
                         url: '{% url 'contracts:calculate_insurance' %}',
@@ -92,9 +96,10 @@
                         data: {
                             vehicle_id: vehicleId,
                             category_id: categoryId,
-                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                            csrfmiddlewaretoken: '{{ csrf_token|escapejs }}'  // Escape token
                         },
                         success: function(response) {
+                            console.log('Response:', response);
                             $('.purchase-btn').prop('disabled', true);
                             $('#duration-table tr').each(function(index) {
                                 var durationId = $(this).find('.purchase-btn').data('duration-id');
@@ -112,7 +117,7 @@
                             });
                         },
                         error: function(xhr) {
-                            alert('Error: ' + xhr.responseJSON.error);
+                            console.log('Error:', xhr.responseJSON ? xhr.responseJSON.error : xhr.statusText);
                         }
                     });
                 } else {
@@ -128,13 +133,16 @@
 
             $('.purchase-btn').click(function() {
                 var durationId = $(this).data('duration-id');
-                $('#contract-form input[name="duration_id"]').val(durationId);
+                $('#id_duration_id').val(durationId);
                 new bootstrap.Modal(document.getElementById('confirmModal')).show();
             });
 
             $('#confirm-purchase').click(function() {
-                $('#contract-form').submit();
+                console.log('Submitting with duration_id:', $('#contract-form input[name="duration_id"]').val());
+                $('#contract-form').off('submit').submit();
             });
+
+
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

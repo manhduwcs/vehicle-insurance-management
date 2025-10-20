@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <style>
@@ -52,6 +53,11 @@
                   <i class="fas fa-edit"></i> Update Price List
                 </a>
               {% endif %}
+              {% if can_edit %}
+                  <a href="{% url 'categories:update_max_coverage' %}" class="btn btn-warning btn-sm">
+                    <i class="fas fa-edit"></i> Update Coverage Rate
+                  </a>
+                {% endif %}
               <a href="{% url 'categories:category_list' %}" class="btn btn-secondary btn-sm">
                 <i class="fas fa-sync-alt"></i> Refresh
               </a>
@@ -70,6 +76,7 @@
                       {{ age_range.min_age }} - {{ age_range.max_age }} years
                     </th>
                   {% endfor %}
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Max Coverage Rate</th>
                 </tr>
               </thead>
               <tbody>
@@ -110,6 +117,11 @@
                             {% endif %}
                           {% endfor %}
                         {% endfor %}
+                        {% if forloop.first %}
+                          <td class="align-middle text-center" rowspan="{{ durations|length }}">
+                            <p class="text-xs text-secondary mb-0">{{ category_max_coverage|get_item:category.id }}%</p>
+                          </td>
+                        {% endif %}
                       </tr>
                   {% endfor %}
                 {% empty %}

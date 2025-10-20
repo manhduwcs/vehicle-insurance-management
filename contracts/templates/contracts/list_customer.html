@@ -27,6 +27,7 @@
                                     <tr>
                                         <th class="text-center">Contract No</th>
                                         <th class="text-center">Vehicle</th>
+                                        <th class="text-center">Number</th>
                                         <th class="text-center">Insurance Type</th>
                                         <th class="text-center">Duration (Months)</th>
                                         <th class="text-center">Estimate Premium (VND)</th>
@@ -38,16 +39,17 @@
                                     {% for contract in contracts %}
                                         <tr>
                                             <td class="text-center">{{ contract.contract_no }}</td>
-                                            <td class="text-center">{{ contract.vehicle_id.name }}</td>
-                                            <td class="text-center">{{ contract.insurance_category_id.name }}</td>
-                                            <td class="text-center">{{ contract.duration_id.months }}</td>
+                                            <td class="text-center">{{ contract.vehicle.name }}</td>
+                                            <td class="text-center">{{ contract.vehicle.number }}</td>
+                                            <td class="text-center">{{ contract.insurance_category.name }}</td>
+                                            <td class="text-center">{{ contract.duration.months }}</td>
                                             <td class="text-center">{{ contract.estimate_premium }}</td>
                                             <td class="text-center">{{ contract.status }}</td>
                                             <td class="text-center">{{ contract.created_at|date:"Y-m-d H:i" }}</td>
                                         </tr>
                                     {% empty %}
                                         <tr>
-                                            <td colspan="7" class="text-center">No contracts found.</td>
+                                            <td colspan="8" class="text-center">No contracts found.</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

@@ -1,28 +1,28 @@
 USE vehicleinsurancedb;
 
--- INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID) VALUES
--- ('user_5500_lopez', '123456', 'Sophia Jones', '98 Nguyen Hue, Ho Chi Minh City', 'sophia.jones5500@example.com', '0941713113', '893154017', 'Ho Chi Minh City', '2019-04-14', 'Police Dept Hai Phong', 'TX25127'),
--- ('user_3344_davis', '123456', 'Mia Williams', '17 Ly Thuong Kiet, Ho Chi Minh City', 'mia.williams3344@example.com', '0915778296', '767129186', 'Hue', '2016-07-16', 'Police Dept Da Nang', 'TX17402'),
--- ('user_1330_jones', '123456', 'Amelia Taylor', '25 Le Loi, Hue', 'amelia.taylor1330@example.com', '0914926868', '213028694', 'Hanoi', '2023-04-23', 'Police Dept Da Nang', 'TX64985'),
--- ('user_5451_thomas', '123456', 'Robert Hernandez', '75 Nguyen Hue, Hai Phong', 'robert.hernandez5451@example.com', '0918320183', '696219349', 'Da Nang', '2019-07-12', 'Police Dept Hai Phong', 'TX53201'),
--- ('user_1981_smith', '123456', 'Sarah Martinez', '4 Ly Thuong Kiet, Da Nang', 'sarah.martinez1981@example.com', '0999230104', '663882996', 'Hanoi', '2015-02-15', 'Police Dept Hanoi', 'TX44270'),
--- ('user_4291_martinez', '123456', 'Ethan Smith', '76 Nguyen Hue, Hai Phong', 'ethan.smith4291@example.com', '0916027300', '409672394', 'Ho Chi Minh City', '2022-02-24', 'Police Dept Hai Phong', 'TX67758'),
--- ('user_8352_thomas', '123456', 'Amelia Johnson', '26 Cau Giay, Da Nang', 'amelia.johnson8352@example.com', '0952266604', '260369571', 'Da Nang', '2017-08-08', 'Police Dept Hai Phong', 'TX78610'),
--- ('user_9082_martinez', '123456', 'Emily Jones', '5 Nguyen Trai, Da Nang', 'emily.jones9082@example.com', '0920308832', '543626599', 'Hue', '2020-01-06', 'Police Dept Da Nang', 'TX94389'),
--- ('user_8705_lopez', '123456', 'Michael Martinez', '94 Cau Giay, Ho Chi Minh City', 'michael.martinez8705@example.com', '0963380659', '935815683', 'Ho Chi Minh City', '2023-08-08', 'Police Dept Hai Phong', 'TX90501'),
--- ('user_2590_wilson', '123456', 'Robert Miller', '16 Le Loi, Hanoi', 'robert.miller2590@example.com', '0998594644', '371082479', 'Da Nang', '2022-10-12', 'Police Dept Hue', 'TX91822'),
--- ('user_1883_moore', '123456', 'Christopher Jones', '46 Nguyen Trai, Hai Phong', 'christopher.jones1883@example.com', '0970319499', '540797220', 'Da Nang', '2021-04-06', 'Police Dept HCM', 'TX27604'),
--- ('user_6158_lopez', '123456', 'Amelia Miller', '24 Le Loi, Hanoi', 'amelia.miller6158@example.com', '0922983074', '288037139', 'Hanoi', '2021-10-13', 'Police Dept Da Nang', 'TX77041'),
--- ('user_1884_hernandez', '123456', 'Christopher Jackson', '6 Cau Giay, Da Nang', 'christopher.jackson1884@example.com', '0988690310', '527042841', 'Hai Phong', '2015-06-15', 'Police Dept HCM', 'TX61374'),
--- ('user_5553_davis', '123456', 'Christopher Jones', '91 Ly Thuong Kiet, Hanoi', 'christopher.jones5553@example.com', '0968528518', '771742281', 'Da Nang', '2015-07-25', 'Police Dept Hanoi', 'TX85870'),
--- ('user_2184_lopez', '123456', 'Michael Williams', '19 Cau Giay, Ho Chi Minh City', 'michael.williams2184@example.com', '0983770010', '862650671', 'Hue', '2017-12-05', 'Police Dept Hai Phong', 'TX89105'),
--- ('user_4328_davis', '123456', 'Harper Jones', '33 Nguyen Hue, Hanoi', 'harper.jones4328@example.com', '0926990086', '782220271', 'Hai Phong', '2022-10-21', 'Police Dept Hanoi', 'TX37962'),
--- ('user_2938_martin', '123456', 'Harper Brown', '82 Ly Thuong Kiet, Da Nang', 'harper.brown2938@example.com', '0913647936', '844819655', 'Ho Chi Minh City', '2018-08-07', 'Police Dept Hue', 'TX44970'),
--- ('user_9539_martinez', '123456', 'Sarah Martinez', '4 Le Loi, Hue', 'sarah.martinez9539@example.com', '0994586026', '244749736', 'Ho Chi Minh City', '2018-03-25', 'Police Dept Da Nang', 'TX69061'),
--- ('user_3156_thomas', '123456', 'Thomas Lopez', '69 Nguyen Hue, Hai Phong', 'thomas.lopez3156@example.com', '0950108888', '284925933', 'Hue', '2015-04-13', 'Police Dept HCM', 'TX12063'),
--- ('user_4194_garcia', '123456', 'Christopher Johnson', '68 Nguyen Hue, Ho Chi Minh City', 'christopher.johnson4194@example.com', '0978466131', '244978980', 'Ho Chi Minh City', '2015-02-08', 'Police Dept Hanoi', 'TX65651');
+REPLACE INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID) VALUES
+('user_5500_lopez', '123456', 'Sophia Jones', '98 Nguyen Hue, Ho Chi Minh City', 'sophia.jones5500@example.com', '0941713113', '893154017', 'Ho Chi Minh City', '2019-04-14', 'Police Dept Hai Phong', 'TX25127'),
+('user_3344_davis', '123456', 'Mia Williams', '17 Ly Thuong Kiet, Ho Chi Minh City', 'mia.williams3344@example.com', '0915778296', '767129186', 'Hue', '2016-07-16', 'Police Dept Da Nang', 'TX17402'),
+('user_1330_jones', '123456', 'Amelia Taylor', '25 Le Loi, Hue', 'amelia.taylor1330@example.com', '0914926868', '213028694', 'Hanoi', '2023-04-23', 'Police Dept Da Nang', 'TX64985'),
+('user_5451_thomas', '123456', 'Robert Hernandez', '75 Nguyen Hue, Hai Phong', 'robert.hernandez5451@example.com', '0918320183', '696219349', 'Da Nang', '2019-07-12', 'Police Dept Hai Phong', 'TX53201'),
+('user_1981_smith', '123456', 'Sarah Martinez', '4 Ly Thuong Kiet, Da Nang', 'sarah.martinez1981@example.com', '0999230104', '663882996', 'Hanoi', '2015-02-15', 'Police Dept Hanoi', 'TX44270'),
+('user_4291_martinez', '123456', 'Ethan Smith', '76 Nguyen Hue, Hai Phong', 'ethan.smith4291@example.com', '0916027300', '409672394', 'Ho Chi Minh City', '2022-02-24', 'Police Dept Hai Phong', 'TX67758'),
+('user_8352_thomas', '123456', 'Amelia Johnson', '26 Cau Giay, Da Nang', 'amelia.johnson8352@example.com', '0952266604', '260369571', 'Da Nang', '2017-08-08', 'Police Dept Hai Phong', 'TX78610'),
+('user_9082_martinez', '123456', 'Emily Jones', '5 Nguyen Trai, Da Nang', 'emily.jones9082@example.com', '0920308832', '543626599', 'Hue', '2020-01-06', 'Police Dept Da Nang', 'TX94389'),
+('user_8705_lopez', '123456', 'Michael Martinez', '94 Cau Giay, Ho Chi Minh City', 'michael.martinez8705@example.com', '0963380659', '935815683', 'Ho Chi Minh City', '2023-08-08', 'Police Dept Hai Phong', 'TX90501'),
+('user_2590_wilson', '123456', 'Robert Miller', '16 Le Loi, Hanoi', 'robert.miller2590@example.com', '0998594644', '371082479', 'Da Nang', '2022-10-12', 'Police Dept Hue', 'TX91822'),
+('user_1883_moore', '123456', 'Christopher Jones', '46 Nguyen Trai, Hai Phong', 'christopher.jones1883@example.com', '0970319499', '540797220', 'Da Nang', '2021-04-06', 'Police Dept HCM', 'TX27604'),
+('user_6158_lopez', '123456', 'Amelia Miller', '24 Le Loi, Hanoi', 'amelia.miller6158@example.com', '0922983074', '288037139', 'Hanoi', '2021-10-13', 'Police Dept Da Nang', 'TX77041'),
+('user_1884_hernandez', '123456', 'Christopher Jackson', '6 Cau Giay, Da Nang', 'christopher.jackson1884@example.com', '0988690310', '527042841', 'Hai Phong', '2015-06-15', 'Police Dept HCM', 'TX61374'),
+('user_5553_davis', '123456', 'Christopher Jones', '91 Ly Thuong Kiet, Hanoi', 'christopher.jones5553@example.com', '0968528518', '771742281', 'Da Nang', '2015-07-25', 'Police Dept Hanoi', 'TX85870'),
+('user_2184_lopez', '123456', 'Michael Williams', '19 Cau Giay, Ho Chi Minh City', 'michael.williams2184@example.com', '0983770010', '862650671', 'Hue', '2017-12-05', 'Police Dept Hai Phong', 'TX89105'),
+('user_4328_davis', '123456', 'Harper Jones', '33 Nguyen Hue, Hanoi', 'harper.jones4328@example.com', '0926990086', '782220271', 'Hai Phong', '2022-10-21', 'Police Dept Hanoi', 'TX37962'),
+('user_2938_martin', '123456', 'Harper Brown', '82 Ly Thuong Kiet, Da Nang', 'harper.brown2938@example.com', '0913647936', '844819655', 'Ho Chi Minh City', '2018-08-07', 'Police Dept Hue', 'TX44970'),
+('user_9539_martinez', '123456', 'Sarah Martinez', '4 Le Loi, Hue', 'sarah.martinez9539@example.com', '0994586026', '244749736', 'Ho Chi Minh City', '2018-03-25', 'Police Dept Da Nang', 'TX69061'),
+('user_3156_thomas', '123456', 'Thomas Lopez', '69 Nguyen Hue, Hai Phong', 'thomas.lopez3156@example.com', '0950108888', '284925933', 'Hue', '2015-04-13', 'Police Dept HCM', 'TX12063'),
+('user_4194_garcia', '123456', 'Christopher Johnson', '68 Nguyen Hue, Ho Chi Minh City', 'christopher.johnson4194@example.com', '0978466131', '244978980', 'Ho Chi Minh City', '2015-02-08', 'Police Dept Hanoi', 'TX65651');
 
-INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate) VALUES
+REPLACE INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate) VALUES
 ('Honda', 1, 'Honda Sirius 2019', 4, 1182771390.04, 'BODY38379', 'ENG37812', '29G-56302', '2020-11-11'),
 ('Mazda', 1, 'Mazda Staria 2020', 2, 1038812626.22, 'BODY18365', 'ENG52825', '29H-90603', '2024-08-28'),
 ('Honda', 1, 'Honda Ranger 2022', 4, 750206966.07, 'BODY61394', 'ENG19473', '29B-57164', '2025-12-05'),
@@ -97,7 +97,7 @@ INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, Bod
 ('Suzuki', 20, 'Suzuki Truck 2019', 4, 1673825458.71, 'BODY61047', 'ENG94073', '30A-77019', '2025-03-25'),
 ('Hino', 20, 'Hino Sirius 2020', 8, 1718026330.67, 'BODY42507', 'ENG75925', '29A-53667', '2024-11-15');
 
-INSERT INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
+REPLACE INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
 ('6TBSBZ', 41, 3, 1073944598.31, 36606614.35, 3, 27300569.99, 3755704.66, 1068173969.43, 34821138.41, 6664411.58, 150000000.00, 100000000.00, 137369005.65, 59877387.05, '2025-06-05', 'Awaiting', 'New policy', 14, 1, '2024-10-26 10:29:26', '2025-06-22 10:29:26'),
 ('T0WZCJ', 13, 4, 449212975.62, 11207998.77, 1, 10262769.49, 3985551.57, 444032425.05, 11064510.82, 22392257.67, 150000000.00, 100000000.00, 97979730.91, 67941969.18, '2024-12-04', 'Rejected', 'New policy', 20, 1, '2024-01-23 23:06:10', '2025-01-01 23:06:10'),
 ('B0JHGB', 19, 6, 202770817.86, 3313141.24, 1, 9109906.64, 848374.42, 207974870.44, 3296868.90, 47016019.57, 150000000.00, 100000000.00, 96357108.93, 73012732.14, '2023-11-19', 'Rejected', 'With additional coverage', 15, 1, '2023-06-27 09:57:23', '2023-12-03 09:57:23'),
@@ -202,7 +202,7 @@ INSERT INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue
 ('56C488', 6, 1, 1784819191.60, 42406245.20, 3, 61550220.60, 3808859.38, 1776704294.88, 43786687.56, 22866493.45, 150000000.00, 100000000.00, 107009913.11, 89957146.21, '2025-05-15', 'Canceled', 'Renewal', 4, 1, '2024-10-21 05:28:13', '2025-06-10 05:28:13');
 
 
-INSERT INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
+REPLACE INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
 ('ZH88KG', 11, 5, 1869498687.66, 6526270.5, 2, 1298984.67, 134065.41, 1955521122.12, 6516627.16, 7862592.3, 107658996.11, 71083611.5, 57767734.45, 36632396.29, '2023-10-10', 'Rejected', 'Standard policy', 5, 1, '2023-10-09 00:00:00', '2024-07-17 00:00:00'),
 ('MKXE6V', 26, 4, 1611458951.82, 12385360.94, 1, 668830.11, 1801003.12, 1626606535.08, 15287829.25, 7627932.43, 144950178.43, 97829004.75, 141839395.37, 51574582.48, '2023-10-18', 'Canceled', 'Standard policy', 16, 1, '2023-10-16 00:00:00', '2023-12-11 00:00:00'),
 ('M0L306', 4, 5, 1351942691.69, 6050199.32, 3, 743727.93, 4773336.1, 1375711907.63, 5712574.51, 1407832.09, 57595602.55, 80330669.99, 43673641.35, 68161894.06, '2024-11-12', 'Pending', 'Standard policy', 17, 1, '2024-10-18 00:00:00', '2025-02-04 00:00:00'),
@@ -350,7 +350,7 @@ INSERT INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue
 ('VWX12L', 59, 2, 6690176917.90, 66901771.67, 1, 6579067.34, 669017.23, 6714687027.91, 67146867.34, 6579067.34, 150000000.00, 100000000.00, 758460631.89, 0.00, '2025-06-15', 'Actived', 'Full comprehensive renewal', 9, 1, '2025-05-25 00:00:00', '2026-01-15 00:00:00'),
 ('YZA34M', 60, 3, 6801288028.01, 68012882.78, 3, 6690178.45, 680128.34, 6825798138.02, 68257978.45, 6690178.45, 150000000.00, 100000000.00, 769581742.90, 0.00, '2022-10-25', 'Rejected', 'Liability basic', 10, 1, '2022-10-05 00:00:00', '2023-03-25 00:00:00');
 
-INSERT INTO Claims (ID, ClaimNo, CustomerID, VehicleID, ContractID, Place, Date, HumanDamage, PropertyDamage, Deduction, PersonalCompensation, PropertyCompensation, Note, Status) VALUES
+REPLACE INTO Claims (ID, ClaimNo, CustomerID, VehicleID, ContractID, Place, Date, HumanDamage, PropertyDamage, Deduction, PersonalCompensation, PropertyCompensation, Note, Status) VALUES
 (101, 'CLM101234', 2, 5, 6, 'Ho Chi Minh City, District 1', '2023-06-15', 25000000.00, 15000000.00, 5000000.00, 20000000.00, 10000000.00, 'Minor accident with third party', 'Approved'),
 (102, 'CLM102345', 3, 11, 7, 'Hanoi, Ba Dinh District', '2024-01-20', 35000000.00, 20000000.00, 7000000.00, 28000000.00, 13000000.00, 'Collision during rain', 'Completed'),
 (103, 'CLM103456', 4, 15, 8, 'Da Nang, Hai Chau District', '2022-09-10', 18000000.00, 12000000.00, 4000000.00, 14000000.00, 8000000.00, 'Parking lot damage', 'Rejected'),
@@ -454,7 +454,7 @@ INSERT INTO Claims (ID, ClaimNo, CustomerID, VehicleID, ContractID, Place, Date,
 
 
 -- Additional 300 contracts to reach total of 500
-INSERT INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
+REPLACE INTO Contracts (ContractNo, VehicleID, InsuranceCategoryID, EstimateValue, EstimatePremium, DurationID, DeductibleValue, DeductibleAddon, ActualValue, ActualPremium, FixedDeduction, MaxPersonCompensation, MaxPropertyCompensation, AvailablePersonCompensation, AvailablePropertyCompensation, StartDate, Status, Note, CreatedBy, UpdatedBy, CreatedAt, UpdatedAt) VALUES
 ('ABC01N', 1, 1, 1245678901.23, 12456789.01, 1, 1234567.89, 123456.78, 1267890123.45, 12678901.23, 1345678.90, 150000000.00, 100000000.00, 135456789.01, 91234567.89, '2024-01-15', 'Actived', 'Premium policy', 1, 1, '2023-12-20 10:30:00', '2024-01-15 10:30:00'),
 ('DEF02O', 2, 2, 987654321.12, 9876543.21, 2, 987654.32, 98765.43, 1001234567.89, 10012345.67, 1098765.43, 150000000.00, 100000000.00, 128765432.10, 88765432.10, '2024-02-20', 'Pending', 'Standard renewal', 2, 1, '2024-01-25 11:00:00', '2024-02-20 11:00:00'),
 ('GHI03P', 3, 3, 876543210.98, 8765432.10, 3, 876543.21, 87654.32, 890123456.78, 8901234.56, 987654.32, 150000000.00, 100000000.00, 121876543.21, 85876543.21, '2024-03-25', 'Awaiting', 'New customer', 3, 1, '2024-03-01 09:15:00', '2024-03-25 09:15:00'),
