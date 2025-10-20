@@ -250,4 +250,19 @@ def calculate_insurance(request):
     except Vehicle.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
+@customer_login_required
+def contract_list_customer(request):
+    # Fetch contracts for the current customer
+    customer_id = request.session['user_id']
+    contracts = Contracts.objects.select_related(
+        'vehicle',
+        'vehicle__customer',
+        'insurance_category',
+        'duration',
+        'created_by'
+    ).filter(created_by_id=customer_id)
 
+    return render(request, 'contracts/list_customer.html', {
+        'segment': 'contracts',
+        'contracts': contracts
+    })

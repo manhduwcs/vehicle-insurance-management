@@ -45,7 +45,7 @@ CREATE TABLE InsuranceCategories (
 
 CREATE TABLE Duration (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Months DECIMAL(5,2)
+    Months INT
 );
 
 
@@ -95,7 +95,8 @@ CREATE TABLE InsurancePriceList (
     DurationID INT,
     MinAge INT,
     MaxAge INT,
-    Rate DECIMAL(5,2),
+    RatePremium DECIMAL(5,2),
+    MaxCoverageRate DECIMAL(5,2),
     FOREIGN KEY (InsuranceCategoryID) REFERENCES InsuranceCategories(ID),
     FOREIGN KEY (DurationID) REFERENCES Duration(ID)
 );
@@ -103,6 +104,7 @@ CREATE TABLE InsurancePriceList (
 CREATE TABLE Contracts (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     ContractNo VARCHAR(255) UNIQUE,
+    CreatedBy INT,
     VehicleID INT,
     InsuranceCategoryID INT,
     EstimateValue DECIMAL(15,2),
@@ -120,7 +122,6 @@ CREATE TABLE Contracts (
     StartDate DATE,
     Status ENUM('Awaiting','Pending','Rejected','Actived','Canceled','Inactived'),
     Note TEXT,
-    CreatedBy INT,
     UpdatedBy INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -174,17 +175,11 @@ USE vehicleinsurancedb;
 -- Customers
 INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID)
 VALUES
-('johnsmith', '
-pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=
-', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123'),
-('emilytran', '
-pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=
-', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '987654321', 'Hanoi', '2021-03-20', 'Police Dept Hanoi', 'TX00456'),
-('michaelle', 'pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789'),
-('hannahpham', '
-pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=
-', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001'),
-('ethannam', 'pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234');
+('johnsmith', '123456', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123'),
+('emilytran', '123456', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '987654321', 'Hanoi', '2021-03-20', 'Police Dept Hanoi', 'TX00456'),
+('michaelle', '123456', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789'),
+('hannahpham', '123456', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001'),
+('ethannam', '123456', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234');
 
 -- VehicleTypes
 INSERT INTO VehicleTypes (Name, Fee, Description, MaxPersonalCompensation, MaxPropertyCompensation)
@@ -228,7 +223,7 @@ VALUES
 ('Suzuki Carry', 5, 'Carry Truck 2022', 6, 365000000, 'THF005', 'ENF005', '30G-66666', '2022-06-30');
 
 
--- InsuranceCategories
+-- InsuranceCategories 
 INSERT INTO InsuranceCategories (Name, Description)
 VALUES
 ('Civil liability insurance', 'Civil liability insurance is insurance that covers the policyholder’s legal responsibility for damage or injury caused to other people or their property'),
@@ -271,90 +266,90 @@ VALUES
 (20, 0.08);
 
 -- InsurancePriceList demo data
-INSERT INTO InsurancePriceList (InsuranceCategoryID, DurationID, MinAge, MaxAge, Rate) VALUES
+INSERT INTO InsurancePriceList (InsuranceCategoryID, DurationID, MinAge, MaxAge, RatePremium, MaxCoverageRate) VALUES
 -- 1. Civil liability insurance
-(1, 1, 0, 3, 100),
-(1, 1, 4, 7, 100),
-(1, 1, 8, 10, 100),
-(1, 1, 11, 20, 100),
-(1, 2, 0, 3, 190),
-(1, 2, 4, 7, 190),
-(1, 2, 8, 10, 190),
-(1, 2, 11, 20, 190),
-(1, 3, 0, 3, 270),
-(1, 3, 4, 7, 270),
-(1, 3, 8, 10, 270),
-(1, 3, 11, 20, 270),
+(1, 1, 0, 3, 100, 100),
+(1, 1, 4, 7, 100, 100),
+(1, 1, 8, 10, 100, 100),
+(1, 1, 11, 20, 100, 100),
+(1, 2, 0, 3, 95, 100),
+(1, 2, 4, 7, 95, 100),
+(1, 2, 8, 10, 95, 100),
+(1, 2, 11, 20, 95, 100),
+(1, 3, 0, 3, 90, 100),
+(1, 3, 4, 7, 90, 100),
+(1, 3, 8, 10, 90, 100),
+(1, 3, 11, 20, 90, 100),
 
 -- 2. Body Damage Insurance
-(2, 1, 0, 3, 1.30),
-(2, 1, 4, 7, 1.50),
-(2, 1, 8, 10, 1.80),
-(2, 1, 11, 20, 2.00),
-(2, 2, 0, 3, 1.25),
-(2, 2, 4, 7, 1.45),
-(2, 2, 8, 10, 1.70),
-(2, 2, 11, 20, 1.90),
-(2, 3, 0, 3, 1.20),
-(2, 3, 4, 7, 1.40),
-(2, 3, 8, 10, 1.60),
-(2, 3, 11, 20, 1.80),
+(2, 1, 0, 3, 1.30, 100),
+(2, 1, 4, 7, 1.50, 100),
+(2, 1, 8, 10, 1.80, 100),
+(2, 1, 11, 20, 2.00, 100),
+(2, 2, 0, 3, 1.25, 100),
+(2, 2, 4, 7, 1.45, 100),
+(2, 2, 8, 10, 1.70, 100),
+(2, 2, 11, 20, 1.90, 100),
+(2, 3, 0, 3, 1.20, 100),
+(2, 3, 4, 7, 1.40, 100),
+(2, 3, 8, 10, 1.60, 100),
+(2, 3, 11, 20, 1.80, 100),
 
--- 3. Flood Damage
-(3, 1, 0, 3, 0.20),
-(3, 1, 4, 7, 0.25),
-(3, 1, 8, 10, 0.30),
-(3, 1, 11, 20, 0.35),
-(3, 2, 0, 3, 0.19),
-(3, 2, 4, 7, 0.23),
-(3, 2, 8, 10, 0.28),
-(3, 2, 11, 20, 0.33),
-(3, 3, 0, 3, 0.18),
-(3, 3, 4, 7, 0.22),
-(3, 3, 8, 10, 0.27),
-(3, 3, 11, 20, 0.32),
+-- 3. Hydrolock Damage
+(3, 1, 0, 3, 0.20, 35),
+(3, 1, 4, 7, 0.25, 35),
+(3, 1, 8, 10, 0.30, 35),
+(3, 1, 11, 20, 0.35, 35),
+(3, 2, 0, 3, 0.19, 35),
+(3, 2, 4, 7, 0.23, 35),
+(3, 2, 8, 10, 0.28, 35),
+(3, 2, 11, 20, 0.33, 35),
+(3, 3, 0, 3, 0.18, 35),
+(3, 3, 4, 7, 0.22, 35),
+(3, 3, 8, 10, 0.27, 35),
+(3, 3, 11, 20, 0.32, 35),
 
 -- 4. Theft Insurance
-(4, 1, 0, 3, 0.40),
-(4, 1, 4, 7, 0.45),
-(4, 1, 8, 10, 0.50),
-(4, 1, 11, 20, 0.60),
-(4, 2, 0, 3, 0.38),
-(4, 2, 4, 7, 0.43),
-(4, 2, 8, 10, 0.48),
-(4, 2, 11, 20, 0.57),
-(4, 3, 0, 3, 0.36),
-(4, 3, 4, 7, 0.41),
-(4, 3, 8, 10, 0.46),
-(4, 3, 11, 20, 0.55),
+(4, 1, 0, 3, 0.40, 100),
+(4, 1, 4, 7, 0.45, 100),
+(4, 1, 8, 10, 0.50, 100),
+(4, 1, 11, 20, 0.60, 100),
+(4, 2, 0, 3, 0.38, 100),
+(4, 2, 4, 7, 0.43, 100),
+(4, 2, 8, 10, 0.48, 100),
+(4, 2, 11, 20, 0.57, 100),
+(4, 3, 0, 3, 0.36, 100),
+(4, 3, 4, 7, 0.41, 100),
+(4, 3, 8, 10, 0.46, 100),
+(4, 3, 11, 20, 0.55, 100),
 
 -- 5. Fire & Explosion
-(5, 1, 0, 3, 0.15),
-(5, 1, 4, 7, 0.18),
-(5, 1, 8, 10, 0.20),
-(5, 1, 11, 20, 0.25),
-(5, 2, 0, 3, 0.14),
-(5, 2, 4, 7, 0.17),
-(5, 2, 8, 10, 0.19),
-(5, 2, 11, 20, 0.23),
-(5, 3, 0, 3, 0.13),
-(5, 3, 4, 7, 0.16),
-(5, 3, 8, 10, 0.18),
-(5, 3, 11, 20, 0.22),
+(5, 1, 0, 3, 0.15, 80),
+(5, 1, 4, 7, 0.18, 80),
+(5, 1, 8, 10, 0.20, 80),
+(5, 1, 11, 20, 0.25, 80),
+(5, 2, 0, 3, 0.14, 80),
+(5, 2, 4, 7, 0.17, 80),
+(5, 2, 8, 10, 0.19, 80),
+(5, 2, 11, 20, 0.23, 80),
+(5, 3, 0, 3, 0.13, 80),
+(5, 3, 4, 7, 0.16, 80),
+(5, 3, 8, 10, 0.18, 80),
+(5, 3, 11, 20, 0.22, 80),
 
 -- 6. Natural Disaster
-(6, 1, 0, 3, 0.25),
-(6, 1, 4, 7, 0.30),
-(6, 1, 8, 10, 0.35),
-(6, 1, 11, 20, 0.40),
-(6, 2, 0, 3, 0.24),
-(6, 2, 4, 7, 0.28),
-(6, 2, 8, 10, 0.33),
-(6, 2, 11, 20, 0.38),
-(6, 3, 0, 3, 0.23),
-(6, 3, 4, 7, 0.27),
-(6, 3, 8, 10, 0.32),
-(6, 3, 11, 20, 0.37);
+(6, 1, 0, 3, 0.25, 90),
+(6, 1, 4, 7, 0.30, 90),
+(6, 1, 8, 10, 0.35, 90),
+(6, 1, 11, 20, 0.40, 90),
+(6, 2, 0, 3, 0.24, 90),
+(6, 2, 4, 7, 0.28, 90),
+(6, 2, 8, 10, 0.33, 90),
+(6, 2, 11, 20, 0.38, 90),
+(6, 3, 0, 3, 0.23, 90),
+(6, 3, 4, 7, 0.27, 90),
+(6, 3, 8, 10, 0.32, 90),
+(6, 3, 11, 20, 0.37, 90);
 
 -- Expenses
 INSERT INTO Expenses (Content, Amount, Date)
@@ -419,13 +414,13 @@ VALUES
     -- Customers
     (2, 1, 1), (2, 1, 2), (2, 1, 3), 
     (2, 2, 1), (2, 2, 2), (2, 2, 3), (2, 2, 4), 
-    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 5), (2, 4, 6),
-    (2, 5, 1), (2, 5, 2), (2, 5, 3), (2, 5, 5), (2, 5, 6),
+    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 5), (2, 4, 6), 
+    (2, 5, 1), (2, 5, 2), (2, 5, 3), (2, 5, 5), (2, 5, 6), 
     
     -- Employees
     (3, 3, 1), (3, 3, 2), (3, 3, 3), (3, 3, 4), 
-    (3, 4, 1), (3, 4, 2), (3, 4, 3), (3, 4, 4), (3, 4, 5), (3, 4, 6),
-    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), (3, 5, 5), (3, 5, 6),
+    (3, 4, 1), (3, 4, 2), (3, 4, 3), (3, 4, 4), (3, 4, 5), (3, 4, 6), 
+    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), (3, 5, 5), (3, 5, 6), 
     (3, 6, 1), (3, 6, 2), (3, 6, 3), (3, 6, 4), 
-    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4),
+    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4), 
     (3, 10, 1), (3, 10, 2), (3, 10, 3), (3, 10, 4);
