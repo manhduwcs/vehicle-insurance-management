@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Chi tiết xe</h2>
+<table class="table table-bordered">
+  <tr><th>Biển số</th><td>{{ vehicle.number }}</td></tr>
+  <tr><th>Chủ</th><td>{{ vehicle.customer.fullname }}</td></tr>
+  <tr><th>Loại xe</th><td>{{ vehicle.vehicle_type.name }}</td></tr>
+  <tr><th>Mẫu</th><td>{{ vehicle.model }}</td></tr>
+  <tr><th>Giá mua</th><td>{{ vehicle.purchase_price }}</td></tr>
+  <tr><th>Ngày đăng ký</th><td>{{ vehicle.registration_date }}</td></tr>
+</table>
+<a href="{% url 'vehicle_list' %}" class="btn btn-secondary">Quay lại</a>
+<a href="{% url 'vehicle_update' vehicle.pk %}" class="btn btn-warning">Sửa</a>
+{% endblock %}
