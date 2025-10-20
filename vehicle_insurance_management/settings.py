@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-ts@-)+dp-*5f%8ugm%c4mcdqg9#0@)g1_sh4++f3x@38oj&m4@'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: don't run with debug turned on in
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'expenses',
     'customer',
     'contracts',
-    'accounts'
+    'accounts',
+    'claims',  # <-- đảm bảo có dòng này
 ]
 
 MIDDLEWARE = [

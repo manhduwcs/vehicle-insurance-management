@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Tạo đơn bồi thường</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.vehicle.label_tag }} {{ form.vehicle }}
+    </div>
+    <div class="mb-3">
+        <label for="id_contract">Hợp đồng</label>
+        <select name="contract" id="id_contract" class="form-control">
+            <option value="">-- Chọn hợp đồng --</option>
+            {# nếu form.contract có options mặc định, bạn có thể render chúng ở đây #}
+        </select>
+    </div>
+    <!-- các trường khác -->
+    {{ form.place.label_tag }} {{ form.place }}<br/>
+    {{ form.date.label_tag }} {{ form.date }}<br/>
+    {{ form.human_damage.label_tag }} {{ form.human_damage }}<br/>
+    {{ form.property_damage.label_tag }} {{ form.property_damage }}<br/>
+    {{ form.deduction.label_tag }} {{ form.deduction }}<br/>
+    {{ form.personal_compensation.label_tag }} {{ form.personal_compensation }}<br/>
+    {{ form.property_compensation.label_tag }} {{ form.property_compensation }}<br/>
+    {{ form.note.label_tag }} {{ form.note }}<br/>
+
+    <button type="submit" class="btn btn-success">Gửi đơn</button>
+    <a href="{% url 'claim_list' %}" class="btn btn-secondary">Quay lại</a>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const vehicleSelect = document.getElementById('id_vehicle') || document.querySelector('select[name="vehicle"]');
+    const contractSelect = document.getElementById('id_contract');
+
+    if (!vehicleSelect || !contractSelect) return;
+
+    vehicleSelect.addEventListener('change', function(){
+        const vehicleId = this.value;
+        // xóa options cũ
+        contractSelect.innerHTML = '<option value="">-- Chọn hợp đồng --</option>';
+        if (!vehicleId) return;
+        fetch('{% url "ajax_contracts_for_vehicle" 0 %}'.replace('/0/', '/' + vehicleId + '/'))
+            .then(resp => resp.json())
+            .then(data => {
+                data.contracts.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.text = c.contract_no;
+                    contractSelect.appendChild(opt);
+                });
+            })
+            .catch(err => console.error(err));
+    });
+});
+</script>
+{% endblock %}
