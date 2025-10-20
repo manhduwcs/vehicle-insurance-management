@@ -9,16 +9,17 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.db.models import Q
 from vehicle.models import Vehicle, VehicleType
-from categories.models import Duration
-from contracts.models import Contracts
+from categories.models import Duration, InsuranceCategories, InsurancePriceList
+from contracts.models import Contracts, Depreciations
+from vehicle.models import Vehicle
 
 
 
 @customer_login_required
 def list_insurance_categories(request):
-    if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
-        messages.error(request, "You do not have permission to create contract.")
-        return redirect("contracts:contract_list")
+    # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
+    #     messages.error(request, "You do not have permission to create contract.")
+    #     return redirect("contracts:contract_list")
 
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
@@ -30,16 +31,16 @@ def list_insurance_categories(request):
             return redirect('contracts:create_contract_civil', category_id=category_id)
         return redirect('contracts:create_contract_other', category_id=category_id)
 
-    return render(request, 'categories/list.html', {
+    return render(request, 'list_categories/list.html', {
         'categories': InsuranceCategories.objects.all()
     })
 
 
 @customer_login_required
 def create_contract_civil(request, category_id):
-    if not has_permission(group_id=2, function_id=4, action_id=2):
-        messages.error(request, "You do not have permission to create contract.")
-        return redirect("contracts:contract_list")
+    # if not has_permission(group_id=2, function_id=4, action_id=2):
+    #     messages.error(request, "You do not have permission to create contract.")
+    #     return redirect("contracts:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)
@@ -47,6 +48,7 @@ def create_contract_civil(request, category_id):
 
     if request.method == 'POST':
         form = ContractForm(request.POST, customer_id=customer_id)
+        print("Received POST data:", request.POST)  # Debug
         if form.is_valid():
             vehicle = form.cleaned_data['vehicle_id']
             duration_id = form.cleaned_data['duration_id']
@@ -55,8 +57,8 @@ def create_contract_civil(request, category_id):
             # Calculate EstimatePremium
             vehicle_type = vehicle.vehicle_type
             price_list = InsurancePriceList.objects.filter(
-                InsuranceCategoryID_id=insurance_category_id,
-                DurationID_id=duration_id.id
+                insurance_category_id=insurance_category_id,
+                duration=duration_id
             ).first()
             if not price_list:
                 messages.error(request, "No insurance available for this vehicle age and duration.")
@@ -66,28 +68,30 @@ def create_contract_civil(request, category_id):
                     'category': InsuranceCategories.objects.get(id=category_id)
                 })
 
-            estimate_premium = (vehicle_type.Fee * price_list.Rate) / 100
+            estimate_premium = vehicle_type.fee * (price_list.rate / 100) * (duration_id.months / 12)
 
             # Generate ContractNo
             contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
-            while Contracts.objects.filter(ContractNo=contract_no).exists():
+            while Contracts.objects.filter(contract_no=contract_no).exists():
                 contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
 
             # Save contract
             Contracts.objects.create(
-                ContractNo=contract_no,
-                CreatedBy_id=customer_id,
-                VehicleID=vehicle,
-                InsuranceCategoryID_id=insurance_category_id,
-                EstimatePremium=estimate_premium,
-                DurationID=duration_id,
-                MaxPersonCompensation=vehicle_type.MaxPersonalCompensation,
-                MaxPropertyCompensation=vehicle_type.MaxPropertyCompensation,
-                Status='Awaiting',
-                CreatedAt=datetime.now()
+                contract_no=contract_no,
+                created_by_id=customer_id,
+                vehicle=vehicle,
+                insurance_category_id=insurance_category_id,
+                estimate_premium=estimate_premium,
+                duration=duration_id,
+                max_person_compensation=vehicle_type.max_personal_compensation,
+                max_property_compensation=vehicle_type.max_property_compensation,
+                status='Awaiting',
+                created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts:contract_list')
+            return redirect('contracts:contract_list_customer')
+        else:
+            print("Form errors:", form.errors)
 
     return render(request, 'contracts/create_civil.html', {
         'form': form,
@@ -98,9 +102,9 @@ def create_contract_civil(request, category_id):
 
 @customer_login_required
 def create_contract_other(request, category_id):
-    if not has_permission(group_id=2, function_id=4, action_id=2):
-        messages.error(request, "You do not have permission to create contract.")
-        return redirect("contracts:contract_list")
+    # if not has_permission(group_id=2, function_id=4, action_id=2):
+    #     messages.error(request, "You do not have permission to create contract.")
+    #     return redirect("contracts:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)
@@ -115,7 +119,7 @@ def create_contract_other(request, category_id):
 
             # Calculate Age
             current_date = datetime.now().date()
-            age = relativedelta(current_date, vehicle.RegistrationDate).years
+            age = relativedelta(current_date, vehicle.registration_date).years
             if age > 20:
                 messages.error(request, "No insurance available for this vehicle age and duration.")
                 return render(request, 'contracts/create_other.html', {
@@ -136,10 +140,10 @@ def create_contract_other(request, category_id):
 
             # Get InsurancePriceList Rate
             price_list = InsurancePriceList.objects.filter(
-                InsuranceCategoryID_id=insurance_category_id,
-                DurationID_id=duration_id.id,
-                MinAge__lte=age,
-                MaxAge__gte=age
+                insurance_category_id=insurance_category_id,
+                duration=duration_id,
+                min_age__lte=age,
+                max_age__gte=age
             ).first()
             if not price_list:
                 messages.error(request, "No insurance available for this vehicle age and duration.")
@@ -150,28 +154,29 @@ def create_contract_other(request, category_id):
                 })
 
             # Calculate EstimatePremium and EstimateValue
-            estimate_premium = (vehicle.PurchasePrice * (depreciation.Rate / 100) * (price_list.Rate / 100)) * 100
-            estimate_value = vehicle.PurchasePrice * (depreciation.Rate / 100)
+            estimate_premium = (
+                        vehicle.purchase_price * depreciation.Rate * (price_list.rate / 100) * (duration_id.months / 12))
+            estimate_value = vehicle.purchase_price * depreciation.Rate * (price_list.max_coverage_rate / 100)
 
             # Generate ContractNo
             contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
-            while Contracts.objects.filter(ContractNo=contract_no).exists():
+            while Contracts.objects.filter(contract_no=contract_no).exists():
                 contract_no = f"{datetime.now().strftime('%y%m%d')}-{str(Contracts.objects.count() + 1).zfill(4)}"
 
             # Save contract
             Contracts.objects.create(
-                ContractNo=contract_no,
-                CreatedBy_id=customer_id,
-                VehicleID=vehicle,
-                InsuranceCategoryID_id=insurance_category_id,
-                EstimateValue=estimate_value,
-                EstimatePremium=estimate_premium,
-                DurationID=duration_id,
-                Status='Awaiting',
-                CreatedAt=datetime.now()
+                contract_no=contract_no,
+                created_by_id=customer_id,
+                vehicle=vehicle,
+                insurance_category_id=insurance_category_id,
+                estimate_value=estimate_value,
+                estimate_premium=estimate_premium,
+                duration=duration_id,
+                status='Awaiting',
+                created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts:contract_list')
+            return redirect('contracts:contract_list_customer')
 
     return render(request, 'contracts/create_other.html', {
         'form': form,
@@ -189,58 +194,60 @@ def calculate_insurance(request):
         return JsonResponse({'error': 'Invalid vehicle or category'}, status=400)
 
     try:
-        vehicle = Vehicles.objects.select_related('VehicleTypeID').get(id=vehicle_id,
-                                                                       CustomerID_id=request.session['user_id'])
+        vehicle = Vehicle.objects.select_related('vehicle_type').get(id=vehicle_id, customer_id=request.session['user_id'])
         category = InsuranceCategories.objects.get(id=category_id)
         durations = Duration.objects.all()
         current_date = datetime.now().date()
-        age = relativedelta(current_date, vehicle.RegistrationDate).years
+        age = relativedelta(current_date, vehicle.registration_date).years
         data = []
 
         for duration in durations:
-            item = {'duration_id': duration.id, 'months': float(duration.Months), 'available': True}
+            item = {'duration_id': duration.id, 'months': float(duration.months), 'available': True}
 
-            if category_id == '1':  # Civil liability
+            if int(category_id) == 1:  # Civil liability
                 price_list = InsurancePriceList.objects.filter(
-                    InsuranceCategoryID_id=category_id,
-                    DurationID_id=duration.id
+                    insurance_category_id=category_id,
+                    duration=duration
                 ).first()
                 if price_list:
-                    item['estimate_premium'] = float((vehicle.VehicleTypeID.Fee * price_list.Rate) / 100)
-                    item['max_person_compensation'] = float(vehicle.VehicleTypeID.MaxPersonalCompensation)
-                    item['max_property_compensation'] = float(vehicle.VehicleTypeID.MaxPropertyCompensation)
+                    item['estimate_premium'] = float((vehicle.vehicle_type.fee * price_list.rate) / 100)
+                    item['max_person_compensation'] = float(vehicle.vehicle_type.max_personal_compensation)
+                    item['max_property_compensation'] = float(vehicle.vehicle_type.max_property_compensation)
                 else:
                     item['available'] = False
-                    item['error'] = "No insurance available for this vehicle age and duration."
+                    item['error'] = "No insurance available for this duration."
             else:  # Other categories
+                print(f"Processing category {category_id}, age {age}, duration {duration.id}")  # Debug
                 if age > 20:
                     item['available'] = False
-                    item['error'] = "No insurance available for this vehicle age and duration."
+                    item['error'] = "Vehicle age exceeds 20 years."
                 else:
                     depreciation = Depreciations.objects.filter(Age=age).first()
                     if not depreciation:
                         item['available'] = False
-                        item['error'] = "No insurance available for this vehicle age and duration."
+                        item['error'] = "No depreciation rate for this vehicle age."
                     else:
+                        print(f"Depreciation rate: {depreciation.Rate}")  # Debug
                         price_list = InsurancePriceList.objects.filter(
-                            InsuranceCategoryID_id=category_id,
-                            DurationID_id=duration.id,
-                            MinAge__lte=age,
-                            MaxAge__gte=age
+                            insurance_category_id=category_id,
+                            duration=duration,
+                            min_age__lte=age,
+                            max_age__gte=age
                         ).first()
                         if price_list:
+                            print(f"Price list rate: {price_list.rate}")  # Debug
                             item['estimate_premium'] = float(
-                                (vehicle.PurchasePrice * (depreciation.Rate / 100) * (price_list.Rate / 100)) * 100)
+                                (vehicle.purchase_price * (depreciation.Rate) * (price_list.rate / 100) * (duration.months / 12)))
                             item['max_estimate_property_compensation'] = float(
-                                vehicle.PurchasePrice * (depreciation.Rate / 100))
+                                vehicle.purchase_price * (depreciation.Rate) * (price_list.max_coverage_rate / 100))
                         else:
                             item['available'] = False
-                            item['error'] = "No insurance available for this vehicle age and duration."
+                            item['error'] = "No matching price list for this duration and age."
 
             data.append(item)
 
         return JsonResponse({'data': data})
-    except Vehicles.DoesNotExist:
+    except Vehicle.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
 
@@ -259,6 +266,23 @@ def contract_list(request):
     #     print(f"contract {c.id} status: {c.status}")
 
     return render(request, 'contracts/list.html', {
+        'segment': 'contracts',
+        'contracts': contracts
+    })
+
+@customer_login_required
+def contract_list_customer(request):
+    # Fetch contracts for the current customer
+    customer_id = request.session['user_id']
+    contracts = Contracts.objects.select_related(
+        'vehicle',
+        'vehicle__customer',
+        'insurance_category',
+        'duration',
+        'created_by'
+    ).filter(created_by_id=customer_id)
+
+    return render(request, 'contracts/list_customer.html', {
         'segment': 'contracts',
         'contracts': contracts
     })

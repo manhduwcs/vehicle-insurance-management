@@ -6,7 +6,7 @@ from .models import InsuranceCategories, Duration, InsurancePriceList
 from .forms import InsuranceCategoryForm, InsurancePriceListForm
 from employee.views import has_permission
 from permissions.constants import FunctionIds, ActionIds
-
+from decimal import Decimal, InvalidOperation
 
 def category_list(request):
     if 'username' not in request.session:
@@ -21,11 +21,18 @@ def category_list(request):
     price_lists = InsurancePriceList.objects.select_related('insurance_category', 'duration').all()
     # Get a list of unique (MinAge, MaxAge) pairs, sort by MinAge
     age_ranges = InsurancePriceList.objects.values('min_age', 'max_age').distinct().order_by('min_age')
+
+    category_max_coverage = {}
+    for category in categories:
+        first_price = InsurancePriceList.objects.filter(insurance_category=category).first()  # Query trực tiếp
+        category_max_coverage[category.id] = first_price.max_coverage_rate if first_price else 0
+
     return render(request, 'categories/list.html', {
         'categories': categories,
         'durations': durations,
         'price_lists': price_lists,
         'age_ranges': age_ranges,
+        'category_max_coverage': category_max_coverage,
         'can_add': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Create),
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Delete),
@@ -128,4 +135,52 @@ def edit_price_list(request):
         'can_add': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Create),
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Delete),
+    })
+
+
+def update_max_coverage(request):
+    if 'username' not in request.session:
+        return redirect('employee:login')
+    user_group_id = request.session.get('group_id', None)
+    if not has_permission(user_group_id, FunctionIds.ManageInsurancePriceList, ActionIds.Edit):
+        messages.error(request, "You do not have permission to update max coverage rate.")
+        return redirect('employee:login')
+
+    categories = InsuranceCategories.objects.all()
+
+    # Tính category_max_coverage giống category_list
+    category_max_coverage = {}
+    for category in categories:
+        first_price = InsurancePriceList.objects.filter(insurance_category=category).first()
+        category_max_coverage[category.id] = first_price.max_coverage_rate if first_price else 0
+
+    if request.method == 'POST':
+        with transaction.atomic():
+            updated_count = 0
+            for category in categories:
+                max_coverage_input = request.POST.get(f'max_coverage_{category.id}')
+                if max_coverage_input:
+                    try:
+                        new_value = Decimal(max_coverage_input)
+                        if 0 <= new_value <= Decimal('99.99'):
+                            updated = InsurancePriceList.objects.filter(
+                                insurance_category=category
+                            ).update(max_coverage_rate=new_value)
+                            updated_count += updated
+                        else:
+                            messages.error(request, f'Invalid value for {category.name}: must be 0-99.99')
+                    except (InvalidOperation, ValueError):
+                        messages.error(request, f'Invalid number for {category.name}')
+
+            if updated_count > 0:
+                messages.success(request, f'Max coverage rate updated successfully for {updated_count} records!')
+            else:
+                messages.info(request, 'No changes were made.')
+
+        return redirect('categories:category_list')
+
+    return render(request, 'categories/update_max_coverage.html', {
+        'categories': categories,
+        'category_max_coverage': category_max_coverage,
+        'can_edit': has_permission(user_group_id, FunctionIds.ManageInsurancePriceList, ActionIds.Edit),
     })

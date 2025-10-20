@@ -24,7 +24,10 @@ class ContractForm(forms.Form):
         customer_id = kwargs.pop('customer_id', None)
         super().__init__(*args, **kwargs)
         if customer_id:
-            self.fields['vehicle_id'].queryset = Vehicle.objects.filter(CustomerID_id=customer_id)
+            # self.fields['vehicle_id'].queryset = Vehicle.objects.filter(customer_id=customer_id)
+            queryset = Vehicle.objects.filter(customer_id=customer_id)
+            self.fields['vehicle_id'].queryset = queryset
+            self.fields['vehicle_id'].label_from_instance = lambda obj: f"{obj.name} - {obj.number}"
 
 # for update contract only
 class ContractUpdateForm(forms.ModelForm):

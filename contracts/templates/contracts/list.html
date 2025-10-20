@@ -38,6 +38,7 @@
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contract No</th>
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer</th>
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle</th>
+      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actual Premium</th>
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start Date</th>
@@ -59,6 +60,9 @@
         <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
       </td>
       <td class="align-middle">
+        <p class="text-xs text-secondary mb-0">{{ contract.vehicle.number }}</p>
+      </td>
+      <td class="align-middle">
         <p class="text-xs text-secondary mb-0">{{ contract.actual_premium }}</p>
       </td>
       <td class="align-middle">
@@ -70,7 +74,7 @@
     </tr>
     {% empty %}
     <tr>
-      <td colspan="7" class="text-center text-secondary">No contracts yet.</td>
+      <td colspan="8" class="text-center text-secondary">No contracts yet.</td>
     </tr>
     {% endfor %}
   </tbody>
