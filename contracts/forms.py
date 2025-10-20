@@ -85,4 +85,3 @@ class ContractUpdateForm(forms.ModelForm):
             self.add_error('actual_premium', "Actual premium cannot exceed actual value.")
 
         return cleaned_data
-
