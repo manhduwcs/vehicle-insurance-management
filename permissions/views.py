@@ -32,6 +32,7 @@ def groups_list(request):
     groups = GroupsUsers.objects.all()
     return render(request, 'permissions/groups.html', {
         'groups': groups,
+        'segment': 'permissions',
         'can_add': has_permission(group_id, FunctionIds.ManageGroupsUsers, ActionIds.Create),
         'can_edit': has_permission(group_id, FunctionIds.ManageGroupsUsers, ActionIds.Edit),
         'can_delete': has_permission(group_id, FunctionIds.ManageGroupsUsers, ActionIds.Delete),
@@ -52,7 +53,7 @@ def add_group(request):
             return redirect('permissions:groups_list')
     else:
         form = GroupForm()
-    return render(request, 'permissions/add_group.html', {'form': form})
+    return render(request, 'permissions/add_group.html', {'form': form, 'segment': 'permissions' })
 
 def edit_group(request, group_id):
     if 'username' not in request.session:
@@ -70,7 +71,7 @@ def edit_group(request, group_id):
             return redirect('permissions:groups_list')
     else:
         form = GroupForm(instance=group_obj)
-    return render(request, 'permissions/edit_group.html', {'form': form, 'group': group_obj})
+    return render(request, 'permissions/edit_group.html', {'form': form, 'group': group_obj, 'segment': 'permissions' })
 
 def delete_group(request, group_id):
     if 'username' not in request.session:
@@ -88,7 +89,7 @@ def delete_group(request, group_id):
             cache.clear()
             messages.success(request, "Group deleted successfully!")
         return redirect('permissions:groups_list')
-    return render(request, 'permissions/groups.html', {'groups': GroupsUsers.objects.all()})
+    return render(request, 'permissions/groups.html', {'groups': GroupsUsers.objects.all(), 'segment': 'permissions' })
 
 def assign_permission(request, group_id):
     if 'username' not in request.session:
@@ -122,6 +123,7 @@ def assign_permission(request, group_id):
         selected_actions = [perm.action.id for perm in current_perms]
     return render(request, 'permissions/permission.html', {
         'functions': functions,
+        'segment': 'permissions',
         'selected_function': selected_function,
         'actions': actions,
         'selected_actions': selected_actions,

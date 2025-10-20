@@ -23,8 +23,7 @@ class CustomerAuthMiddleware:
 
 class RedirectAuthenticatedUserMiddleware:
     """
-    Middleware này sẽ chặn người dùng đã đăng nhập (qua session)
-    khỏi truy cập vào các trang login/register.
+    Middleware to redirect authenticated users away from login/register pages.
     """
 
     def __init__(self, get_response):
@@ -34,16 +33,16 @@ class RedirectAuthenticatedUserMiddleware:
         user_id = request.session.get('user_id')
         path = request.path
 
-        # Danh sách các URL cần chặn nếu đã login
+        # The list of paths that should be protected from authenticated users
         protected_paths = [
             reverse('accounts:login'),
             reverse('accounts:register'),
         ]
 
-        # Nếu user đã login mà vẫn vào login/register => redirect
+        # If the user is logged in and tries to access login/register => redirect
         if user_id and any(path.startswith(p) for p in protected_paths):
             return redirect('home')
 
-        # Cho phép request bình thường
+        # Allow normal request processing
         response = self.get_response(request)
         return response

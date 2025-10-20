@@ -251,38 +251,3 @@ def calculate_insurance(request):
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
 
-# @customer_login_required
-def contract_list(request):
-    # Fetch contracts, their vehicle, and the vehicle's customer in one query
-    contracts = Contracts.objects.select_related(
-        'vehicle',
-        'vehicle__customer',
-        'insurance_category',
-        'duration',
-        'created_by'
-    ).filter()
-
-    # for c in contracts:
-    #     print(f"contract {c.id} status: {c.status}")
-
-    return render(request, 'contracts/list.html', {
-        'segment': 'contracts',
-        'contracts': contracts
-    })
-
-@customer_login_required
-def contract_list_customer(request):
-    # Fetch contracts for the current customer
-    customer_id = request.session['user_id']
-    contracts = Contracts.objects.select_related(
-        'vehicle',
-        'vehicle__customer',
-        'insurance_category',
-        'duration',
-        'created_by'
-    ).filter(created_by_id=customer_id)
-
-    return render(request, 'contracts/list_customer.html', {
-        'segment': 'contracts',
-        'contracts': contracts
-    })
