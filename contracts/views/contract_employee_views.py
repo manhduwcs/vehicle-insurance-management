@@ -5,7 +5,7 @@ from accounts.decorators import employee_login_required
 from django.contrib import messages
 from app_helper.views import notify
 from vehicle.models import Vehicle
-import requests
+
 from pathlib import Path
 
 
