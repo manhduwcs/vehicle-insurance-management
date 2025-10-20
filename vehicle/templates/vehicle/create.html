@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Tạo xe mới</h2>
+<h2>Create Vehicle</h2>
 <form method="post">
   {% csrf_token %}
   {{ form.non_field_errors }}
@@ -9,7 +9,7 @@
   <div class="mb-3">{{ form.number.label_tag }} {{ form.number }}</div>
   <div class="mb-3">{{ form.model.label_tag }} {{ form.model }}</div>
   <div class="mb-3">{{ form.purchase_price.label_tag }} {{ form.purchase_price }}</div>
-  <button type="submit" class="btn btn-success">Lưu</button>
-  <a href="{% url 'vehicle_list' %}" class="btn btn-secondary">Hủy</a>
+  <button type="submit" class="btn btn-success">Save</button>
+  <a href="{% url 'vehicle_list' %}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock %}
