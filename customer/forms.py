@@ -30,3 +30,23 @@ class CustomerForm(forms.ModelForm):
         if qs.exists():
             raise forms.ValidationError("Username already exists.")
         return username
+
+
+class CustomerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Customer
+        fields = ['fullname', 'email', 'phone', 'address']
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        qs = Customer.objects.filter(email=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Email already exists.")
+        return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        qs = Customer.objects.filter(phone=phone).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Phone number already exists.")
+        return phone

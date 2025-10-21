@@ -10,7 +10,6 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            print(form)
             form.save()
             notify(request,"Registration successful. Please login.",'success')
             return redirect('accounts:login')
@@ -31,7 +30,7 @@ def login_view(request):
             request.session['user_type'] = 'customer'
             request.session['username'] = customer.username
             remember_me = request.POST.get('remember_me')
-            
+            print(remember_me)
             if remember_me == 'on':
                 request.session.set_expiry(7 * 24 * 60 * 60)  
             else:

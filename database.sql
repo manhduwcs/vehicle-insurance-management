@@ -24,7 +24,8 @@ CREATE TABLE Customers (
     IdentifyAddress VARCHAR(255),
     IdentifyDate DATE,
     IssuingAuthority VARCHAR(255),
-    TaxID VARCHAR(50)
+    TaxID VARCHAR(50),
+    GroupID INT
 );
 
 CREATE TABLE VehicleTypes (
@@ -168,6 +169,14 @@ CREATE TABLE GroupsFunctionsActions (
     FOREIGN KEY (FunctionID) REFERENCES Functions(ID),
     FOREIGN KEY (ActionID) REFERENCES Actions(ID)
 );
+
+-- Keys
+ALTER TABLE Customers
+ADD CONSTRAINT fk_customer_group
+FOREIGN KEY (GroupID)
+REFERENCES GroupsUsers(ID)
+ON DELETE SET NULL;
+
 
 -- sample data 
 USE vehicleinsurancedb;
