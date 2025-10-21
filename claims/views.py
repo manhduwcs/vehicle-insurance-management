@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from django import forms
 from .models import Claim
 from accounts.decorators import customer_login_required
 from vehicle.models import Vehicle
@@ -28,13 +29,14 @@ def claim_create(request):
             return redirect("claim_list")
     else:
         form = ClaimForm()
-        # show only vehicles of current customer
+        # Show only contracts of current customer, vehicle will be auto-selected
         try:
-            form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=getattr(request.user, "customer", None))
-        except Exception:
-            pass
-        try:
-            form.fields['contract'].queryset = Contracts.objects.none()
+            customer = getattr(request.user, "customer", None)
+            if customer:
+                # Get all contracts for this customer
+                form.fields['contract'].queryset = Contracts.objects.filter(created_by=customer)
+                # Hide vehicle field initially, it will be auto-populated
+                form.fields['vehicle'].widget = forms.HiddenInput()
         except Exception:
             pass
     return render(request, "claims/create.html", {"form": form, "segment": "claim"})
@@ -70,3 +72,22 @@ def contracts_for_vehicle(request, vehicle_id):
     qs = Contracts.objects.filter(vehicle_id=vehicle_id)
     data = [{"id": c.id, "contract_no": getattr(c, "contract_no", str(c.id))} for c in qs]
     return JsonResponse({"contracts": data})
+
+@customer_login_required
+def vehicle_for_contract(request, contract_id):
+    """
+    AJAX: return vehicle information for a given contract id
+    """
+    try:
+        contract = Contracts.objects.select_related('vehicle').get(id=contract_id)
+        vehicle = contract.vehicle
+        data = {
+            "id": vehicle.id,
+            "name": vehicle.name,
+            "model": vehicle.model,
+            "number": vehicle.number,
+            "vehicle_type": vehicle.vehicle_type.name if vehicle.vehicle_type else "Unknown"
+        }
+        return JsonResponse({"vehicle": data})
+    except Contracts.DoesNotExist:
+        return JsonResponse({"error": "Contract not found"}, status=404)
