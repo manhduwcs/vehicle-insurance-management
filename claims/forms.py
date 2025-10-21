@@ -1,5 +1,6 @@
 from django import forms
-from vehicle.models import Claim, Vehicle
+from .models import Claim
+from vehicle.models import Vehicle
 from contracts.models import Contracts
 
 class ClaimForm(forms.ModelForm):

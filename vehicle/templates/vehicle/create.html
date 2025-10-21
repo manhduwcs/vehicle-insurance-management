@@ -4,11 +4,15 @@
 <form method="post">
   {% csrf_token %}
   {{ form.non_field_errors }}
+  <div class="mb-3">{{ form.name.label_tag }} {{ form.name }}</div>
   <div class="mb-3">{{ form.customer.label_tag }} {{ form.customer }}</div>
-  <div class="mb-3">{{ form.vehicle_type.label_tag }} {{ form.vehicle_type }}</div>
-  <div class="mb-3">{{ form.number.label_tag }} {{ form.number }}</div>
   <div class="mb-3">{{ form.model.label_tag }} {{ form.model }}</div>
+  <div class="mb-3">{{ form.vehicle_type.label_tag }} {{ form.vehicle_type }}</div>
   <div class="mb-3">{{ form.purchase_price.label_tag }} {{ form.purchase_price }}</div>
+  <div class="mb-3">{{ form.body_number.label_tag }} {{ form.body_number }}</div>
+  <div class="mb-3">{{ form.engine_number.label_tag }} {{ form.engine_number }}</div>
+  <div class="mb-3">{{ form.number.label_tag }} {{ form.number }}</div>
+  <div class="mb-3">{{ form.registration_date.label_tag }} {{ form.registration_date }}</div>
   <button type="submit" class="btn btn-success">Save</button>
   <a href="{% url 'vehicle_list' %}" class="btn btn-secondary">Cancel</a>
 </form>

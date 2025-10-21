@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import VehicleType, Vehicle, Claim
-from .forms import VehicleTypeForm, VehicleForm, ClaimForm
+from .models import VehicleType, Vehicle
+from .forms import VehicleTypeForm, VehicleForm
 from django.contrib.auth.decorators import login_required
 from contracts.models import Contracts
 
@@ -84,7 +84,7 @@ def vehicle_create(request):
             return redirect("vehicle_list")
     else:
         form = VehicleForm()
-    from admin_soft.models import Customer
+    from customer.models import Customer
     from .models import VehicleType
     customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
@@ -105,7 +105,7 @@ def vehicle_update(request, pk):
             return redirect("vehicle_detail", pk=vehicle.pk)
     else:
         form = VehicleForm(instance=vehicle)
-    from admin_soft.models import Customer
+    from customer.models import Customer
     from .models import VehicleType
     customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
