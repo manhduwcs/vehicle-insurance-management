@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'customer',
     'contracts',
     'accounts',
-    'claims',  # <-- đảm bảo có dòng này
+    'claims',
 ]
 
 MIDDLEWARE = [

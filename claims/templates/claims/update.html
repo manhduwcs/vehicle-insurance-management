@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Cập nhật đơn bồi thường</h2>
+<h2>Update Claim</h2>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-secondary">Quay lại</a>
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-secondary">Back</a>
 </form>
 {% endblock %}

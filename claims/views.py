@@ -12,8 +12,8 @@ def claim_list(request):
     if request.user.is_staff:
         claims = Claim.objects.all().order_by('-id')
     else:
-        claims = Claim.objects.filter(customer=request.user.customer).order_by('-id')
-        # claims = Claim.objects.filter(customer=customer).order_by('-id')
+        # assume User -> Customer relation exists as request.user.customer
+        claims = Claim.objects.filter(customer=getattr(request.user, "customer", None)).order_by('-id')
     return render(request, "claims/list.html", {"claims": claims, "segment": "claim"})
 
 @customer_login_required
@@ -22,15 +22,17 @@ def claim_create(request):
         form = ClaimForm(request.POST)
         if form.is_valid():
             claim = form.save(commit=False)
-            claim.customer = request.user.customer
+            claim.customer = getattr(request.user, "customer", None)
             claim.status = 'Pending'
             claim.save()
             return redirect("claim_list")
     else:
         form = ClaimForm()
-        # chỉ hiện xe của customer đang login
-        form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=request.user.customer)
-        # contract mặc định rỗng; sẽ load bằng AJAX khi chọn vehicle
+        # show only vehicles of current customer
+        try:
+            form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=getattr(request.user, "customer", None))
+        except Exception:
+            pass
         try:
             form.fields['contract'].queryset = Contracts.objects.none()
         except Exception:
@@ -40,7 +42,7 @@ def claim_create(request):
 @customer_login_required
 def claim_detail(request, pk):
     claim = get_object_or_404(Claim, pk=pk)
-    # quyền truy cập: staff xem tất cả, customer chỉ xem claim của mình
+    # permission: staff can view all; customers only their own
     if not request.user.is_staff and claim.customer != getattr(request.user, "customer", None):
         return redirect("claim_list")
     return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})
@@ -48,7 +50,7 @@ def claim_detail(request, pk):
 @customer_login_required
 def claim_update(request, pk):
     claim = get_object_or_404(Claim, pk=pk)
-    # chỉ nhân viên mới được cập nhật (thẩm định)
+    # only staff can update / assess
     if not request.user.is_staff:
         return redirect("claim_list")
     if request.method == "POST":
@@ -63,7 +65,7 @@ def claim_update(request, pk):
 @customer_login_required
 def contracts_for_vehicle(request, vehicle_id):
     """
-    AJAX: trả về danh sách hợp đồng liên quan tới xe (vehicle_id)
+    AJAX: return list of contracts for a given vehicle id
     """
     qs = Contracts.objects.filter(vehicle_id=vehicle_id)
     data = [{"id": c.id, "contract_no": getattr(c, "contract_no", str(c.id))} for c in qs]
