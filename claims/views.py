@@ -1,9 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from accounts.decorators import customer_login_required
-from vehicle.models import Claim, Vehicle
-from customer.models import Customer
+from .models import Claim
+from vehicle.models import Vehicle
 from contracts.models import Contracts
 from .forms import ClaimForm
 
