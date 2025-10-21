@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 {% block content %}
 <h2>Claims List</h2>
 <a href="{% url 'claim_create' %}" class="btn btn-primary mb-2">Create Claim</a>
@@ -16,22 +16,25 @@
     </thead>
     <tbody>
         {% for claim in claims %}
-        <tr>
-            <td>{{ claim.claim_no }}</td>
-            <td>{{ claim.customer.fullname }}</td>
-            <td>{{ claim.vehicle.name }}</td>
-            <td>{{ claim.contract.contract_no }}</td>
-            <td>{{ claim.date }}</td>
-            <td>{{ claim.status }}</td>
-            <td>
-                <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-info btn-sm">View</a>
-                {% if user.is_staff %}
-                <a href="{% url 'claim_update' claim.pk %}" class="btn btn-warning btn-sm">Update</a>
-                {% endif %}
-            </td>
-        </tr>
+            <tr>
+                <td>{{ claim.claim_no }}</td>
+                <td>{{ claim.customer.fullname }}</td>
+                <td>{{ claim.vehicle.name }}</td>
+                <td>{{ claim.contract.contract_no }}</td>
+                <td>{{ claim.date }}</td>
+                <td>{{ claim.status }}</td>
+                <td>
+                    <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-info btn-sm">View</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'claim_update' claim.pk %}"
+                           class="btn btn-warning btn-sm">Update</a>
+                    {% endif %}
+                </td>
+            </tr>
         {% empty %}
-        <tr><td colspan="7">No claims found.</td></tr>
+            <tr>
+                <td colspan="7">No claims found.</td>
+            </tr>
         {% endfor %}
     </tbody>
 </table>

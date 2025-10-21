@@ -5,7 +5,7 @@
     </head>
     <body>
         {% for category in categories %}
-            <form method="post" action="{% url 'contracts_customer:list' %}">
+            <form method="post" action="{% url 'contracts_customer:list_category' %}">
                 {% csrf_token %}
                 <input type="hidden" name="category_id" value="{{ category.id }}" />
                 <button type="submit">{{ category.name }}</button>
