@@ -1,45 +1,26 @@
-{% extends "base.html" %}
+{% extends "layouts/base.html" %}
 {% block content %}
 <h2>Create Claim</h2>
 <form method="post">
     {% csrf_token %}
-    <div class="mb-3">
-        {{ form.vehicle.label_tag }} {{ form.vehicle }}
-    </div>
+    <div class="mb-3">{{ form.vehicle.label_tag }} {{ form.vehicle }}</div>
     <div class="mb-3">
         <label for="id_contract">Contract</label>
         <select name="contract" id="id_contract" class="form-control">
             <option value="">-- Select contract --</option>
         </select>
     </div>
-    <div class="mb-3">
-        {{ form.place.label_tag }} {{ form.place }}
-    </div>
-    <div class="mb-3">
-        {{ form.date.label_tag }} {{ form.date }}
-    </div>
-    <div class="mb-3">
-        {{ form.human_damage.label_tag }} {{ form.human_damage }}
-    </div>
-    <div class="mb-3">
-        {{ form.property_damage.label_tag }} {{ form.property_damage }}
-    </div>
-    <div class="mb-3">
-        {{ form.deduction.label_tag }} {{ form.deduction }}
-    </div>
-    <div class="mb-3">
-        {{ form.personal_compensation.label_tag }} {{ form.personal_compensation }}
-    </div>
-    <div class="mb-3">
-        {{ form.property_compensation.label_tag }} {{ form.property_compensation }}
-    </div>
-    <div class="mb-3">
-        {{ form.note.label_tag }} {{ form.note }}
-    </div>
+    <div class="mb-3">{{ form.place.label_tag }} {{ form.place }}</div>
+    <div class="mb-3">{{ form.date.label_tag }} {{ form.date }}</div>
+    <div class="mb-3">{{ form.human_damage.label_tag }} {{ form.human_damage }}</div>
+    <div class="mb-3">{{ form.property_damage.label_tag }} {{ form.property_damage }}</div>
+    <div class="mb-3">{{ form.deduction.label_tag }} {{ form.deduction }}</div>
+    <div class="mb-3">{{ form.personal_compensation.label_tag }} {{ form.personal_compensation }}</div>
+    <div class="mb-3">{{ form.property_compensation.label_tag }} {{ form.property_compensation }}</div>
+    <div class="mb-3">{{ form.note.label_tag }} {{ form.note }}</div>
     <button type="submit" class="btn btn-success">Submit Claim</button>
     <a href="{% url 'claim_list' %}" class="btn btn-secondary">Back</a>
 </form>
-
 <script>
 document.addEventListener('DOMContentLoaded', function(){
     const vehicleSelect = document.getElementById('id_vehicle') || document.querySelector('select[name="vehicle"]');

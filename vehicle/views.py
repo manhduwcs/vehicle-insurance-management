@@ -3,6 +3,7 @@ from .models import VehicleType, Vehicle, Claim
 from .forms import VehicleTypeForm, VehicleForm, ClaimForm
 from django.contrib.auth.decorators import login_required
 from contracts.models import Contracts
+from app_helper.views import notify
 
 # VehicleType CRUD
 

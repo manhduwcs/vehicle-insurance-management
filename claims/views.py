@@ -1,11 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
+from accounts.decorators import customer_login_required
 from vehicle.models import Claim, Vehicle
+from customer.models import Customer
 from contracts.models import Contracts
 from .forms import ClaimForm
 
-@login_required
+@customer_login_required
 def claim_list(request):
     if request.user.is_staff:
         claims = Claim.objects.all().order_by('-id')
@@ -14,7 +16,7 @@ def claim_list(request):
         claims = Claim.objects.filter(customer=getattr(request.user, "customer", None)).order_by('-id')
     return render(request, "claims/list.html", {"claims": claims, "segment": "claim"})
 
-@login_required
+@customer_login_required
 def claim_create(request):
     if request.method == "POST":
         form = ClaimForm(request.POST)
@@ -37,7 +39,7 @@ def claim_create(request):
             pass
     return render(request, "claims/create.html", {"form": form, "segment": "claim"})
 
-@login_required
+@customer_login_required
 def claim_detail(request, pk):
     claim = get_object_or_404(Claim, pk=pk)
     # permission: staff can view all; customers only their own
@@ -45,7 +47,7 @@ def claim_detail(request, pk):
         return redirect("claim_list")
     return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})
 
-@login_required
+@customer_login_required
 def claim_update(request, pk):
     claim = get_object_or_404(Claim, pk=pk)
     # only staff can update / assess
@@ -60,7 +62,7 @@ def claim_update(request, pk):
         form = ClaimForm(instance=claim)
     return render(request, "claims/update.html", {"form": form, "claim": claim, "segment": "claim"})
 
-@login_required
+@customer_login_required
 def contracts_for_vehicle(request, vehicle_id):
     """
     AJAX: return list of contracts for a given vehicle id
