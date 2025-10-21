@@ -15,6 +15,7 @@ from contracts.forms import ContractForm, ContractUpdateForm
 from contracts.models import ContractStatus, Contracts, Depreciations
 from permissions.views import has_permission
 from vehicle.models import Vehicle, VehicleType
+from app_helper.views import notify
 
 
 from pathlib import Path
