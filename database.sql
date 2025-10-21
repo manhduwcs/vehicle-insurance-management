@@ -101,8 +101,7 @@ CREATE TABLE InsurancePriceList (
     FOREIGN KEY (DurationID) REFERENCES Duration(ID)
 );
 
-CREATE TABLE Contracts (
-    ID INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Contracts ( ID INT PRIMARY KEY AUTO_INCREMENT,
     ContractNo VARCHAR(255) UNIQUE,
     CreatedBy INT,
     VehicleID INT,
@@ -122,6 +121,9 @@ CREATE TABLE Contracts (
     StartDate DATE,
     Status ENUM('Awaiting','Pending','Rejected','Actived','Canceled','Inactived'),
     Note TEXT,
+    PaymentType VARCHAR(20),          
+    PaymentAt DATETIME,               
+    PaymentAmount DECIMAL(15,2),      
     UpdatedBy INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
