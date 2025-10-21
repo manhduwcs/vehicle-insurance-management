@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from .models import GroupsUsers, Functions, Actions, GroupsFunctionsActions
 from .forms import GroupForm
 from .constants import FunctionIds, ActionIds
@@ -9,12 +10,15 @@ from django.contrib.auth.models import Group
 
 
 def has_permission(group_id, function_name, action_name):
-    # Không sử dụng cache, truy vấn trực tiếp từ database
-    perm = GroupsFunctionsActions.objects.filter(
-        group_id=group_id,
-        function__function_name=function_name,
-        action__action_name=action_name
-    ).exists()
+    cache_key = f"perm_{group_id}_{function_name}_{action_name}"
+    perm = cache.get(cache_key)
+    if perm is None:
+        perm = GroupsFunctionsActions.objects.filter(
+            group_id=group_id,
+            function__function_name=function_name,
+            action__action_name=action_name
+        ).exists()
+        cache.set(cache_key, perm, timeout=3600)  # Cache 1 hour
     return perm
 
 
@@ -82,7 +86,7 @@ def delete_group(request, group_id):
             messages.error(request, "Cannot delete group because it has associated users.")
         else:
             group_obj.delete()
-            # Không cần clear cache nữa vì không sử dụng cache
+            cache.clear()
             messages.success(request, "Group deleted successfully!")
         return redirect('permissions:groups_list')
     return render(request, 'permissions/groups.html', {'groups': GroupsUsers.objects.all(), 'segment': 'permissions' })
@@ -108,7 +112,7 @@ def assign_permission(request, group_id):
             for action_id in selected_actions_post:
                 action = get_object_or_404(Actions, id=action_id)
                 GroupsFunctionsActions.objects.create(group=group_obj, function=function, action=action)
-            # Không cần clear cache nữa vì không sử dụng cache
+            # cache.clear()
             messages.success(request, "Permission saved successfully!")
         return redirect('permissions:assign_permission', group_id=group_id)
     function_id = request.GET.get('function_id')
