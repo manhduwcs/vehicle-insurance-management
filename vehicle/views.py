@@ -67,7 +67,7 @@ def vehicle_list(request):
         "vehicles": vehicles,
         "segment": "vehicle",
     }
-    return render(request, "vehicles/list.html", context)
+    return render(request, "vehicle/list.html", context)
 
 def vehicle_detail(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
@@ -75,7 +75,7 @@ def vehicle_detail(request, pk):
         "vehicle": vehicle,
         "segment": "vehicle",
     }
-    return render(request, "vehicles/detail.html", context)
+    return render(request, "vehicle/detail.html", context)
 
 def vehicle_create(request):
     if request.method == "POST":
