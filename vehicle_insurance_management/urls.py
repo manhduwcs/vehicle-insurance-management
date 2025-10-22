@@ -25,14 +25,15 @@ urlpatterns = [
     path('employees/', include('employee.urls')),
     path('login/', login_view, name='login'),
     path('', include('home.urls')),
-    # path('insurance-category/', include('insurance_category.urls')),
     path('discount/', include('discount.urls')),
     path('expenses/', include('expenses.urls')),
     path('customers/', include('customer.urls')),
     path('accounts/', include('accounts.urls')),
     path('vehicle/', include('vehicle.urls')),
+    path('claims/', include('claims.urls')),
     path('categories/', include('categories.urls')),
-    path('contracts/', include('contracts.urls'))
+    path('contracts/customer/', include('contracts.urls.contract_customer_urls', namespace='contracts_customer')),
+    path('contracts/employee/', include('contracts.urls.contract_employee_urls', namespace='contracts_employee')),
 ]
 
 # if settings.DEBUG:

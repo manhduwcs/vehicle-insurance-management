@@ -1,0 +1,62 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+<h2>Claim Detail</h2>
+<table class="table table-bordered">
+    <tr>
+        <th>Claim No</th>
+        <td>{{ claim.claim_no }}</td>
+    </tr>
+    <tr>
+        <th>Customer</th>
+        <td>{{ claim.customer.fullname }}</td>
+    </tr>
+    <tr>
+        <th>Vehicle</th>
+        <td>{{ claim.vehicle.name }}</td>
+    </tr>
+    <tr>
+        <th>Contract</th>
+        <td>{{ claim.contract.contract_no }}</td>
+    </tr>
+    <tr>
+        <th>Place</th>
+        <td>{{ claim.place }}</td>
+    </tr>
+    <tr>
+        <th>Date</th>
+        <td>{{ claim.date }}</td>
+    </tr>
+    <tr>
+        <th>Human Damage</th>
+        <td>{{ claim.human_damage }}</td>
+    </tr>
+    <tr>
+        <th>Property Damage</th>
+        <td>{{ claim.property_damage }}</td>
+    </tr>
+    <tr>
+        <th>Deduction</th>
+        <td>{{ claim.deduction }}</td>
+    </tr>
+    <tr>
+        <th>Personal Compensation</th>
+        <td>{{ claim.personal_compensation }}</td>
+    </tr>
+    <tr>
+        <th>Property Compensation</th>
+        <td>{{ claim.property_compensation }}</td>
+    </tr>
+    <tr>
+        <th>Note</th>
+        <td>{{ claim.note }}</td>
+    </tr>
+    <tr>
+        <th>Status</th>
+        <td>{{ claim.status }}</td>
+    </tr>
+</table>
+<a href="{% url 'claim_list' %}" class="btn btn-secondary">Back</a>
+{% if user.is_staff %}
+    <a href="{% url 'claim_update' claim.pk %}" class="btn btn-warning">Update</a>
+{% endif %}
+{% endblock %}

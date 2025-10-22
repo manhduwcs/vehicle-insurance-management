@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import VehicleType, Vehicle, Claim
-from .forms import VehicleTypeForm, VehicleForm, ClaimForm
+from .models import VehicleType, Vehicle
+from .forms import VehicleTypeForm, VehicleForm
 from django.contrib.auth.decorators import login_required
 from contracts.models import Contracts
+from app_helper.views import notify
+
 # VehicleType CRUD
 
 def vehicle_type_list(request):
@@ -41,7 +43,7 @@ def vehicle_type_update(request, pk):
         form = VehicleTypeForm(request.POST, instance=vehicle_type)
         if form.is_valid():
             form.save()
-            return redirect("vehicle_type_list")
+            return redirect("vehicle_type_detail", pk=vehicle_type.pk)
     else:
         form = VehicleTypeForm(instance=vehicle_type)
     context = {
@@ -55,7 +57,6 @@ def vehicle_type_delete(request, pk):
     vehicle_type = get_object_or_404(VehicleType, pk=pk)
     if request.method == "POST":
         vehicle_type.delete()
-        return redirect("vehicle_type_list")
     return redirect("vehicle_type_list")
 
 # Vehicle CRUD
@@ -84,7 +85,7 @@ def vehicle_create(request):
             return redirect("vehicle_list")
     else:
         form = VehicleForm()
-    from admin_soft.models import Customer
+    from customer.models import Customer
     from .models import VehicleType
     customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
@@ -94,7 +95,7 @@ def vehicle_create(request):
         "customers": customers,
         "vehicle_types": vehicle_types
     }
-    return render(request, "vehicles/create.html", context)
+    return render(request, "vehicle/create.html", context)
 
 def vehicle_update(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
@@ -102,10 +103,10 @@ def vehicle_update(request, pk):
         form = VehicleForm(request.POST, instance=vehicle)
         if form.is_valid():
             form.save()
-            return redirect("vehicle_list")
+            return redirect("vehicle_detail", pk=vehicle.pk)
     else:
         form = VehicleForm(instance=vehicle)
-    from admin_soft.models import Customer
+    from customer.models import Customer
     from .models import VehicleType
     customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
@@ -116,57 +117,15 @@ def vehicle_update(request, pk):
         "customers": customers,
         "vehicle_types": vehicle_types
     }
-    return render(request, "vehicles/update.html", context)
+    return render(request, "vehicle/update.html", context)
 
 def vehicle_delete(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
     if request.method == "POST":
         vehicle.delete()
         return redirect("vehicle_list")
-    return redirect("vehicle_list")
+    # if GET, render confirm page or redirect
+    return redirect("vehicle_detail", pk=pk)
 
-# Claim CRUD
-
-@login_required
-def claim_list(request):
-    if request.user.is_staff:
-        claims = Claim.objects.all().order_by('-id')
-    else:
-        claims = Claim.objects.filter(customer=request.user.customer).order_by('-id')
-    return render(request, "claims/list.html", {"claims": claims, "segment": "claim"})
-
-@login_required
-def claim_create(request):
-    if request.method == "POST":
-        form = ClaimForm(request.POST)
-        if form.is_valid():
-            claim = form.save(commit=False)
-            claim.customer = request.user.customer
-            claim.status = 'Pending'
-            claim.save()
-            return redirect("claim_list")
-    else:
-        form = ClaimForm()
-        # Chỉ hiện xe của khách hàng đang đăng nhập
-        form.fields['vehicle'].queryset = Vehicle.objects.filter(customer=request.user.customer)
-        form.fields['contract'].queryset = Contracts.objects.none()
-    return render(request, "claims/create.html", {"form": form, "segment": "claim"})
-
-@login_required
-def claim_update(request, pk):
-    claim = get_object_or_404(Claim, pk=pk)
-    if not request.user.is_staff:
-        return redirect("claim_list")
-    if request.method == "POST":
-        form = ClaimForm(request.POST, instance=claim)
-        if form.is_valid():
-            form.save()
-            return redirect("claim_list")
-    else:
-        form = ClaimForm(instance=claim)
-    return render(request, "claims/update.html", {"form": form, "claim": claim, "segment": "claim"})
-
-@login_required
-def claim_detail(request, pk):
-    claim = get_object_or_404(Claim, pk=pk)
-    return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})
+# NOTE: Claims views have been moved to the separate 'claims' app.
+# If any old claim_* functions remain here, remove them to avoid duplication.

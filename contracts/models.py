@@ -84,6 +84,11 @@ class ContractStatus(models.TextChoices):
 #     class Meta:
 #         db_table = 'InsurancePriceList'
 
+class PaymentType(models.TextChoices):
+    DIRECT = "direct", "Direct (Money)"
+    CARD = "card", "Card"
+    BANK = "bank", "Bank (QR)"
+
 class Contracts(models.Model):
     contract_no = models.CharField(max_length=255, unique=True, db_column='ContractNo')
     created_by = models.ForeignKey('customer.Customer', on_delete=models.CASCADE, db_column='CreatedBy', related_name='created_contracts')
@@ -111,6 +116,28 @@ class Contracts(models.Model):
         ('Inactived', 'Inactived'),
     ], db_column='Status')
     note = models.TextField(blank=True, db_column='Note')
+
+    payment_type = models.CharField(
+        max_length=20,
+        choices=PaymentType.choices,
+        null=True,
+        blank=True,
+        db_column="PaymentType"
+    )
+    payment_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        db_column="PaymentAmount"
+    )
+    payment_at = models.DateTimeField(
+        auto_now_add=True,
+        null=True,
+        blank=True,
+        db_column="PaymentAt"
+    )
+
     updated_by = models.ForeignKey('employee.Employees', on_delete=models.SET_NULL, null=True, db_column='UpdatedBy')
     created_at = models.DateTimeField(auto_now_add=True, db_column='CreatedAt')
     updated_at = models.DateTimeField(auto_now=True, db_column='UpdatedAt')

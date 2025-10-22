@@ -1,25 +1,247 @@
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-from accounts.decorators import customer_login_required
-from contracts.forms import ContractForm
-from permissions.views import has_permission
-from dateutil.relativedelta import relativedelta
 from datetime import datetime
-from django.db.models import Q
-from vehicle.models import Vehicle, VehicleType
-from categories.models import Duration, InsuranceCategories, InsurancePriceList
-from contracts.models import Contracts, Depreciations
-from vehicle.models import Vehicle
 from decimal import Decimal
+
+from dateutil.relativedelta import relativedelta
+from django.contrib import messages
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_POST
+
+from accounts.decorators import customer_login_required, employee_login_required
+from categories.models import Duration, InsuranceCategories, InsurancePriceList
+from contracts.forms import ContractForm, ContractUpdateForm
+from contracts.models import ContractStatus, Contracts, Depreciations
+from permissions.views import has_permission
+from vehicle.models import Vehicle, VehicleType
+from app_helper.views import notify
+
+
+from pathlib import Path
+
+
+# @customer_login_required
+def contract_list(request):
+    # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
+    #     messages.error(request, "You do not have permission to create contract.")
+    #     return redirect("contracts_customer:contract_list")
+
+    contracts = Contracts.objects.select_related(
+        'vehicle',
+        'vehicle__customer',
+        'insurance_category',
+        'duration',
+        'created_by'
+    ).order_by('-id')
+
+    return render(request, 'contracts/customer/list.html', {
+        'segment': 'contracts',
+        'contracts': contracts
+    })
+
+# @employee_login_required
+def contract_detail(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle',
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+            'created_by'
+        ),
+        pk=pk
+    )
+
+    context = {
+        'segment': 'contracts',
+        'contract': contract,
+        'vehicle': contract.vehicle,
+        'customer': contract.vehicle.customer,
+        'insurance_category': contract.insurance_category,
+        'duration': contract.duration,
+    }
+    return render(request, 'contracts/customer/detail.html', context)
+
+# @employee_login_required
+def contract_update(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
+
+    # This must be set before calling form.is_valid() 
+    current_status = contract.status
+    # if request.method == "GET":
+    #     form = ContractUpdateForm(instance=contract)  # binds current contract
+    #     form.fields['status'].initial = current_status  # enforce default
+    #     return
+
+    if request.method == 'POST':
+        form = ContractUpdateForm(request.POST, instance=contract)
+        if form.is_valid():
+            new_status = form.cleaned_data["status"]
+            if ContractStatus.can_transition(current=current_status, new=new_status):
+                print(f"can transition: {current_status}")
+                contract.status = new_status
+            else:
+                messages.error(request, "This contract status transition is invalid !")
+                return render(request, 'contracts/update.html', {
+                    'form': form,        
+                    'contract': contract,
+                    'segment': 'contracts'
+                })
+
+            contract.deductible_value = form.cleaned_data['deductible_value']
+            contract.deductible_addon = form.cleaned_data['deductible_addon']
+            contract.actual_value = form.cleaned_data['actual_value']
+            contract.actual_premium = form.cleaned_data['actual_premium']
+            contract.note = form.cleaned_data['note']
+                
+            contract.save(update_fields=[
+                'deductible_value',
+                'deductible_addon',
+                'actual_value',
+                'actual_premium',
+                'status',
+                'note',
+                'updated_at',
+            ])
+            notify(request, "Contract updated successfully!", "success")
+            return redirect('contracts_customer:contract_detail', pk=contract.pk)
+        else:
+            notify(request, "Please correct the errors before updating the contract.", "error")
+    else:
+        form = ContractUpdateForm(instance=contract)
+
+    context = {
+        'segment': 'contracts',
+        'contract': contract,
+        'form': form,
+    }
+    return render(request, 'contracts/customer/update.html', context)
+
+def goto_payment_choice(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
+    context = {
+            'segment': 'contracts',
+            'contract': contract
+            }
+    return render(request, "contracts/customer/payment_choices.html", context)
+ 
+
+def payment_detail(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related('vehicle__customer'),
+        pk=pk
+    )
+
+    context = {
+        "segment": "contracts",
+        "contract": contract,
+    }
+    return render(request, "contracts/customer/payment_detail.html", context)
+ 
+
+def pay_with_card(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
+
+    if request.method == "POST":
+        contract.payment_type = "card"
+        contract.payment_amount = contract.actual_premium or 0
+        contract.payment_at = timezone.now()
+        contract.status = ContractStatus.ACTIVED
+        contract.save(update_fields=["payment_type", "payment_amount", "payment_at", "status"])
+        print(f"contract.status = {contract.status}")
+        return redirect("contracts_customer:contract_detail", pk=contract.pk)
+
+    context = {
+        "segment": "contracts",
+        "contract": contract,
+    }
+    return render(request, "contracts/customer/payment_card.html", context)
+
+
+def pay_direct(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
+    context = {
+            'segment': 'contracts',
+            'contract': contract
+            }
+    return render(request, "contracts/customer/payment_direct.html", context)
+
+# @employee_login_required
+def pay_with_qr(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
+
+    bank_code = "techcombank"
+    bank_name = "Techcombank"
+    account_number = "19038555085018"
+    receiver_name = "NGUYEN DUC MANH"
+
+    amount = contract.actual_premium
+    message = f"Payment for Contract {contract.contract_no}"
+
+    # qr_url = (
+    #     f"https://img.vietqr.io/image/{bank_code}-{account_number}-compact.png"
+    #     f"?amount={amount}&addInfo={message}"
+    # )
+
+    # print(f"qr_url: {qr_url}")
+    qr_url = ""
+
+    context = {
+        "contract": contract,
+        "segment": "contracts",
+        "sub_segment": "payment",
+        "bank_code": bank_code.upper(),
+        "bank_name": bank_name,
+        "account_number": account_number,
+        "receiver_name": receiver_name,
+        "amount": f"{amount:,} VND",
+        "message": message,
+        "qr_url": qr_url,
+    }
+    return render(request, "contracts/customer/payment_qr.html", context)
 
 
 @customer_login_required
 def list_insurance_categories(request):
     # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
     #     messages.error(request, "You do not have permission to create contract.")
-    #     return redirect("contracts:contract_list")
+    #     return redirect("contracts_customer:contract_list")
 
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
@@ -28,10 +250,10 @@ def list_insurance_categories(request):
             messages.error(request, "You need to register your vehicle on the system before purchasing insurance.")
             return render(request, 'categories/list.html', {'categories': InsuranceCategories.objects.all()})
         if category_id == '1':
-            return redirect('contracts:create_contract_civil', category_id=category_id)
-        return redirect('contracts:create_contract_other', category_id=category_id)
+            return redirect('contracts_customer:create_contract_civil', category_id=category_id)
+        return redirect('contracts_customer:create_contract_other', category_id=category_id)
 
-    return render(request, 'list_categories/list.html', {
+    return render(request, 'contracts/customer/list_category.html', {
         'categories': InsuranceCategories.objects.all()
     })
 
@@ -40,7 +262,7 @@ def list_insurance_categories(request):
 def create_contract_civil(request, category_id):
     # if not has_permission(group_id=2, function_id=4, action_id=2):
     #     messages.error(request, "You do not have permission to create contract.")
-    #     return redirect("contracts:contract_list")
+    #     return redirect("contracts_customer:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)
@@ -62,7 +284,7 @@ def create_contract_civil(request, category_id):
             ).first()
             if not price_list:
                 messages.error(request, "No insurance available for this vehicle age and duration.")
-                return render(request, 'contracts/create_civil.html', {
+                return render(request, 'contracts/customer/create_civil.html', {
                     'form': form,
                     'durations': durations,
                     'category': InsuranceCategories.objects.get(id=category_id)
@@ -91,11 +313,11 @@ def create_contract_civil(request, category_id):
                 created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts:contract_list_customer')
+            return redirect('contracts_customer:contract_list_customer')
         else:
             print("Form errors:", form.errors)
 
-    return render(request, 'contracts/create_civil.html', {
+    return render(request, 'contracts/customer/create_civil.html', {
         'form': form,
         'durations': durations,
         'category': InsuranceCategories.objects.get(id=category_id)
@@ -106,7 +328,7 @@ def create_contract_civil(request, category_id):
 def create_contract_other(request, category_id):
     # if not has_permission(group_id=2, function_id=4, action_id=2):
     #     messages.error(request, "You do not have permission to create contract.")
-    #     return redirect("contracts:contract_list")
+    #     return redirect("contracts_customer:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)
@@ -149,7 +371,7 @@ def create_contract_other(request, category_id):
             ).first()
             if not price_list:
                 messages.error(request, "No insurance available for this vehicle age and duration.")
-                return render(request, 'contracts/create_other.html', {
+                return render(request, 'contracts/customer/create_other.html', {
                     'form': form,
                     'durations': durations,
                     'category': InsuranceCategories.objects.get(id=category_id)
@@ -182,9 +404,9 @@ def create_contract_other(request, category_id):
                 created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts:contract_list_customer')
+            return redirect('contracts_customer:contract_list_customer')
 
-    return render(request, 'contracts/create_other.html', {
+    return render(request, 'contracts/customer/create_other.html', {
         'form': form,
         'durations': durations,
         'category': InsuranceCategories.objects.get(id=category_id)
@@ -274,7 +496,7 @@ def contract_list_customer(request):
         'created_by'
     ).filter(created_by_id=customer_id)
 
-    return render(request, 'contracts/list_customer.html', {
+    return render(request, 'contracts/customer/list_customer.html', {
         'segment': 'contracts',
         'contracts': contracts
     })

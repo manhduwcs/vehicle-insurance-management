@@ -25,3 +25,8 @@ drop database vehicleinsurancedb;
 # paste this to password field in customer db
 pbkdf2_sha256$1000000$aGtCTQVV6pQoxMHd0Xfqj8$BNHuewL4KTiNIowiWu9cMKjUZsHXPfCh/70ZeZ8FW9s=
 
+# to alter table Contracts
+ALTER TABLE Contracts
+ADD COLUMN PaymentType VARCHAR(20) NULL AFTER Status,
+ADD COLUMN PaymentAt DATETIME NULL AFTER PaymentType,
+ADD COLUMN PaymentAmount DECIMAL(15,2) NULL AFTER PaymentAt;

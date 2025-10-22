@@ -5,7 +5,7 @@ from expenses.models import Expenses
 from contracts.models import Contracts
 from django.db.models import Sum,Count,F
 from customer.models import Customer
-from vehicle.models import Claim
+from claims.models import Claim
 from django.db.models.functions import ExtractMonth, ExtractYear
 import calendar
 from django.utils import timezone
