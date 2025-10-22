@@ -1,0 +1,49 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>My Profile</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <tbody>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Username</td>
+                  <td>{{ employee.username }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Full Name</td>
+                  <td>{{ employee.fullname }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Email</td>
+                  <td>{{ employee.email }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Phone</td>
+                  <td>{{ employee.phone }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Group</td>
+                  <td>{{ employee.group.group_name|default:"No group" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-left mt-3">
+            <a href="{% url 'employee:change_password' %}" class="btn btn-primary">
+              Change Password
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

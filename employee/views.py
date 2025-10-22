@@ -3,11 +3,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .models import Employees
-from .forms import EmployeeForm, LoginForm
+from .forms import EmployeeForm, LoginForm, ChangePasswordForm
 from django.db.models import Q
 from permissions.views import has_permission
 from permissions.constants import FunctionIds, ActionIds
-
+from django.http import JsonResponse
+from django.urls import reverse
+from django.template.loader import render_to_string
 
 # @login_required
 def employee_list(request):
@@ -74,6 +76,8 @@ def employee_update(request, pk):
                 and not form.cleaned_data["re_password"]
             ):
                 form.instance.password = employee.password
+            else:
+                form.instance.password = form.cleaned_data["password"]
             form.save()
             messages.success(request, "Employee updated successfully!")
             return redirect("employee:employee_list")
@@ -82,7 +86,6 @@ def employee_update(request, pk):
     return render(
         request, "employee/update.html", {"form": form, "segment": "employee"}
     )
-
 
 # @login_required
 def employee_delete(request, pk):
@@ -115,30 +118,52 @@ def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            login_input = form.cleaned_data["login"]
-            password = form.cleaned_data["password"]
-            employee = Employees.objects.filter(
-                (Q(username=login_input) | Q(email=login_input)) & Q(password=password)
-            ).first()
-            if employee:
-                request.session["username"] = employee.username
-                request.session["fullname"] = employee.fullname
-                request.session["email"] = employee.email
-                request.session["phone"] = employee.phone
-                request.session["group_id"] = (
-                    employee.group.id if employee.group else None
-                )
-                # messages.success(request, 'Login successful!')
-                return redirect(
-                    "employee:employee_list"
-                )  # Redirect to employee list or home
-            else:
-                messages.error(request, "Invalid username/email or password.")
+            employee = form.cleaned_data["employee"]
+            request.session["username"] = employee.username
+            request.session["fullname"] = employee.fullname
+            request.session["email"] = employee.email
+            request.session["phone"] = employee.phone
+            request.session["group_id"] = employee.group.id if employee.group else None
+            return redirect("employee:employee_list")
+        # else:
+        #     messages.error(request, "Invalid username/email or password.")
     else:
         form = LoginForm()
     return render(request, "employee/login.html", {"form": form})
 
+def employee_profile(request):
+    if "username" not in request.session:
+        return redirect("employee:login")
+    group_id = request.session.get("group_id", None)
+    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
+        messages.error(request, "You do not have permission to view your profile.")
+        return redirect("employee:employee_list")
 
-from django.shortcuts import render
+    employee = get_object_or_404(Employees, username=request.session["username"])
+    return render(request, "employee/profile.html", {"employee": employee, "segment": "employee"})
 
-# Create your views here.
+def change_password(request):
+    if "username" not in request.session:
+        return redirect("employee:login")
+    group_id = request.session.get("group_id", None)
+    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
+        return redirect("employee:employee_list")
+
+    employee = get_object_or_404(Employees, username=request.session["username"])
+    if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        form = ChangePasswordForm(employee, request.POST)
+        if form.is_valid():
+            employee.password = form.cleaned_data["new_password"]
+            employee.save()
+            return JsonResponse({
+                'success': True,
+                'message': "Password changed successfully. Please login again!"
+            })
+        else:
+            return JsonResponse({
+                'success': False,
+                'form_html': render_to_string('employee/change_password_form.html', {'form': form})
+            })
+    else:
+        form = ChangePasswordForm(employee)
+    return render(request, "employee/change_password.html", {"employee": employee, "form": form, "segment": "employee"})
