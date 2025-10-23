@@ -16,7 +16,7 @@ from contracts.models import ContractStatus, Contracts, Depreciations
 from permissions.views import has_permission
 from vehicle.models import Vehicle, VehicleType
 from app_helper.views import notify
-
+from customer.models import Customer
 
 from pathlib import Path
 
@@ -237,18 +237,29 @@ def pay_with_qr(request, pk):
     return render(request, "contracts/customer/payment_qr.html", context)
 
 
-@customer_login_required
+# @customer_login_required
 def list_insurance_categories(request):
-    # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
-    #     messages.error(request, "You do not have permission to create contract.")
-    #     return redirect("contracts_customer:contract_list")
-
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
         vehicles = Vehicle.objects.filter(customer_id=request.session['user_id'])
         if not vehicles.exists():
             messages.error(request, "You need to register your vehicle on the system before purchasing insurance.")
             return render(request, 'categories/list.html', {'categories': InsuranceCategories.objects.all()})
+
+        # Validate personal information
+        customer = Customer.objects.get(id=request.session['user_id'])
+        required_fields = [
+            customer.identify_number,
+            customer.identify_address,
+            customer.identify_date,
+            customer.issuing_authority
+        ]
+        if any(field is None or field == '' for field in required_fields):
+            return JsonResponse({
+                'success': False,
+                'message': 'You need to provide personal information before purchasing insurance.'
+            })
+
         if category_id == '1':
             return redirect('contracts_customer:create_contract_civil', category_id=category_id)
         return redirect('contracts_customer:create_contract_other', category_id=category_id)
@@ -258,7 +269,7 @@ def list_insurance_categories(request):
     })
 
 
-@customer_login_required
+# @customer_login_required
 def create_contract_civil(request, category_id):
     # if not has_permission(group_id=2, function_id=4, action_id=2):
     #     messages.error(request, "You do not have permission to create contract.")
@@ -324,7 +335,7 @@ def create_contract_civil(request, category_id):
     })
 
 
-@customer_login_required
+# @customer_login_required
 def create_contract_other(request, category_id):
     # if not has_permission(group_id=2, function_id=4, action_id=2):
     #     messages.error(request, "You do not have permission to create contract.")
@@ -413,7 +424,7 @@ def create_contract_other(request, category_id):
     })
 
 
-@customer_login_required
+# @customer_login_required
 @require_POST
 def calculate_insurance(request):
     vehicle_id = request.POST.get('vehicle_id')

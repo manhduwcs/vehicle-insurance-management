@@ -383,9 +383,9 @@ VALUES
 
 INSERT INTO Employees(Username, Fullname, Email, Phone, Password, GroupID)
 VALUES 
-    ('admin', 'Administrator', 'admin@gmail.com', '0999999999', '123456', 1),
-    ('customer1', 'Nguyen Van A', 'nva@gmail.com', '0888888888', '123456', 2),
-    ('employee1', 'Hoang Anh B', 'hab@gmail.com', '0777777777', '123456', 3);
+    ('admin', 'Administrator', 'admin@gmail.com', '0999999999', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 1),
+    ('customer1', 'Nguyen Van A', 'nva@gmail.com', '0888888888', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 2),
+    ('employee1', 'Hoang Anh B', 'hab@gmail.com', '0777777777', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 3);
 
 INSERT INTO Functions (FunctionName, Description) VALUES
     ('Manage Customers', 'Manage Customers'),

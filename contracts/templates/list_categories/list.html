@@ -1,15 +1,75 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Insurance Categories</title>
-    </head>
-    <body>
-        {% for category in categories %}
-            <form method="post" action="{% url 'contracts_customer:list' %}">
-                {% csrf_token %}
-                <input type="hidden" name="category_id" value="{{ category.id }}" />
-                <button type="submit">{{ category.name }}</button>
-            </form>
-        {% endfor %}
-    </body>
+<head>
+    <title>Insurance Categories</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .modal {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    {% for category in categories %}
+        <form id="categoryForm_{{ category.id }}" method="post" action="{% url 'contracts_customer:list' %}">
+            {% csrf_token %}
+            <input type="hidden" name="category_id" value="{{ category.id }}" />
+            <button type="button" class="category-btn" data-category-id="{{ category.id }}">{{ category.name }}</button>
+        </form>
+    {% endfor %}
+
+    <!-- Modal for validation error -->
+    <div class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="validationModalLabel">Validation Error</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="validationMessage"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="okButton">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var buttons = document.querySelectorAll('.category-btn');
+            buttons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var categoryId = this.getAttribute('data-category-id');
+                    var form = document.getElementById('categoryForm_' + categoryId);
+
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            form.submit(); // Submit form if validation is successful
+                        } else {
+                            var modal = new bootstrap.Modal(document.getElementById('validationModal'));
+                            document.getElementById('validationMessage').textContent = data.message;
+                            modal.show();
+
+                            document.getElementById('okButton').addEventListener('click', function() {
+                                modal.hide();
+                                window.location.href = '{% url "customer_profile" %}'; // Replace with the URL name of the customers/profile
+                            });
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+        });
+    </script>
+</body>
 </html>
