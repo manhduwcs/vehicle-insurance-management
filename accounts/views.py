@@ -30,13 +30,12 @@ def login_view(request):
             request.session['user_type'] = 'customer'
             request.session['username'] = customer.username
             remember_me = request.POST.get('remember_me')
-            print(remember_me)
             if remember_me == 'on':
                 request.session.set_expiry(7 * 24 * 60 * 60)  # 7 days
             else:
                 request.session.set_expiry(86400)  # 24 hours instead of 0  
-            messages.success(request, f"Welcome, {customer.fullname}!")
-            return redirect('home')
+            notify(request, f"Welcome, {customer.fullname}!", 'success')
+            return redirect('home-customer')
         else:
             messages.error(request, "Invalid username or password.")
     else:
@@ -49,5 +48,5 @@ def login_view(request):
 # -------------------
 def logout_view(request):
     request.session.flush()
-    messages.success(request, "You have logged out successfully.")
-    return redirect('accounts:login')
+    notify(request, "You have logged out successfully.", 'success')
+    return redirect('home-customer')

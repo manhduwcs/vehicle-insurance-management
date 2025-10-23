@@ -1,0 +1,229 @@
+{% load static %}
+<header class="main-header header-style-two">
+  <!-- Header Upper -->
+  <div class="header-upper">
+    <div class="auto-container">
+      <div class="inner-container clearfix">
+        <div class="logo-box">
+          <div class="logo">
+            <a href="{% url 'home-customer' %}">
+              <img src="{% static 'images/logo.png' %}" alt="Carsore Logo" title="Carsore" />
+            </a>
+          </div>
+        </div>
+
+        <div class="nav-outer clearfix">
+          <!--Mobile Navigation Toggler-->
+          <div class="mobile-nav-toggler">
+            <span class="icon flaticon-menu-2"></span>
+          </div>
+
+          <!-- Main Menu -->
+          <nav class="main-menu navbar-expand-md">
+            <div class="navbar-header">
+              <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+            </div>
+
+            <div class="navbar-collapse collapse clearfix" id="navbarSupportedContent">
+              <ul class="navigation clearfix">
+                <li class="{% if request.resolver_match.url_name == 'home-customer' %}current{% endif %}">
+                  <a href="{% url 'home-customer' %}">Home</a>
+                </li>
+                <li class="{% if request.resolver_match.url_name == 'about' %}current{% endif %}">
+                  <a href="{% url 'about' %}">About Us</a>
+                </li>
+                <li class="{% if request.resolver_match.url_name == 'services' %}current{% endif %}">
+                  <a href="{% url 'services' %}">Services</a>
+                </li>
+                <li class="{% if request.resolver_match.url_name == 'contact' %}current{% endif %}">
+                  <a href="{% url 'contact' %}">Contact us</a>
+                </li>
+              </ul>
+            </div>
+          </nav>
+
+          <!-- User Section -->
+          <div class="outer-box clearfix">
+            <div class="user-box">
+              {% if customer %}
+                <!-- Customer Dropdown -->
+                <div class="user-dropdown">
+                  <button class="user-btn" onclick="toggleUserDropdown('userDropdownMenu')">
+                    {% if customer.profile_picture %}
+                      <img src="{{ customer.profile_picture.url }}" alt="{{ customer.fullname }}" class="user-avatar" />
+                    {% else %}
+                      <span class="user-avatar-placeholder">
+                        {{ customer.fullname|first|upper }}
+                      </span>
+                    {% endif %}
+                    <span class="user-name">{{ customer.fullname|default:customer.username }}</span>
+                    <span class="icon flaticon-down-arrow"></span>
+                  </button>
+                  
+                  <div class="dropdown-menu-info" id="userDropdownMenu">
+                    <div class="dropdown-header">
+                      <div class="user-info">
+                        {% if customer.profile_picture %}
+                          <img src="{{ customer.profile_picture.url }}" alt="{{ customer.fullname }}" class="dropdown-avatar" />
+                        {% else %}
+                          <span class="dropdown-avatar-placeholder">
+                            {{ customer.fullname|first|upper }}
+                          </span>
+                        {% endif %}
+                        <div class="user-details">
+                          <strong>{{ customer.fullname|default:customer.username }}</strong>
+                          <span>{{ customer.email }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'customer_info' %}" class="dropdown-item">
+                      <span class="icon flaticon-user"></span>
+                      Profile
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
+                      <span class="icon flaticon-logout"></span>
+                      Logout
+                    </a>
+                  </div>
+                </div>
+              {% else %}
+                <!-- Login Button when not logged in -->
+                <a href="{% url 'accounts:login' %}" class="theme-btn btn-style-one login-btn">
+                  <span class="txt">Login</span>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Header -->
+  <div class="sticky-header">
+    <div class="auto-container clearfix">
+      <div class="logo pull-left">
+        <a href="{% url 'home-customer' %}" title="">
+          <img src="{% static 'images/logo-small.png' %}" alt="Carsore Logo" title="Carsore" />
+        </a>
+      </div>
+
+      <div class="pull-right">
+        <div class="mobile-nav-toggler">
+          <span class="icon flaticon-menu-2"></span>
+        </div>
+
+        <nav class="main-menu">
+          {% comment %} Menu is dynamically inserted {% endcomment %}
+        </nav>
+
+        <div class="outer-box clearfix">
+          <div class="user-box">
+            {% if customer %}
+              <div class="user-dropdown">
+                <button class="user-btn" onclick="toggleUserDropdown('userDropdownMenuSticky')">
+                  {% if customer.profile_picture %}
+                    <img src="{{ customer.profile_picture.url }}" alt="{{ customer.fullname }}" class="user-avatar" />
+                  {% else %}
+                    <span class="user-avatar-placeholder">
+                      {{ customer.fullname|first|upper }}
+                    </span>
+                  {% endif %}
+                  <span class="icon flaticon-down-arrow"></span>
+                </button>
+                <div class="dropdown-menu-info" id="userDropdownMenuSticky">
+                  <div class="dropdown-header">
+                    <div class="user-info">
+                      {% if customer.profile_picture %}
+                        <img src="{{ customer.profile_picture.url }}" alt="{{ customer.fullname }}" class="dropdown-avatar" />
+                      {% else %}
+                        <span class="dropdown-avatar-placeholder">
+                          {{ customer.fullname|first|upper }}
+                        </span>
+                      {% endif %}
+                      <div class="user-details">
+                        <strong>{{ customer.fullname|default:customer.username }}</strong>
+                        <span>{{ customer.email }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  <a href="{% url 'customer_info' %}" class="dropdown-item">
+                    <span class="icon flaticon-user"></span>
+                    Profile
+                  </a>
+                  <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
+                    <span class="icon flaticon-logout"></span>
+                    Logout
+                  </a>
+                </div>
+              </div>
+            {% else %}
+              <a href="{% url 'accounts:login' %}" class="theme-btn btn-style-one login-btn">
+                <span class="txt">Login</span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu">
+    <div class="menu-backdrop"></div>
+    <div class="close-btn">
+      <span class="icon flaticon-multiply"></span>
+    </div>
+
+    <nav class="menu-box">
+      <div class="nav-logo">
+        <a href="{% url 'home-customer' %}">
+          <img src="{% static 'images/logo.png' %}" alt="Carsore Logo" title="Carsore" />
+        </a>
+      </div>
+      <div class="menu-outer">
+        <!-- Menu is automatically inserted here via JS -->
+      </div>
+
+      <!-- Mobile Customer Section -->
+      <div class="mobile-user-section">
+        {% if customer %}
+          <div class="mobile-user-info">
+            {% if customer.profile_picture %}
+              <img src="{{ customer.profile_picture.url }}" alt="{{ customer.fullname }}" class="mobile-avatar" />
+            {% else %}
+              <span class="mobile-avatar-placeholder">
+                {{ customer.fullname|first|upper }}
+              </span>
+            {% endif %}
+            <span>{{ customer.fullname|default:customer.username }}</span>
+          </div>
+          <a href="{% url 'customer_info' %}" class="mobile-menu-link">
+            <span class="icon flaticon-user"></span> Profile
+          </a>
+          <a href="{% url 'accounts:logout' %}" class="mobile-menu-link">
+            <span class="icon flaticon-logout"></span> Logout
+          </a>
+        {% else %}
+          <a href="{% url 'accounts:login' %}" class="theme-btn btn-style-one mobile-login-btn">
+            <span class="txt">Login</span>
+          </a>
+        {% endif %}
+      </div>
+    </nav>
+  </div>
+</header>

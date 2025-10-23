@@ -35,7 +35,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = ['fullname', 'phone', 'username', 'password', 'address','email']
+        fields = ['fullname', 'phone', 'username','address','email', 'password']
         widgets = {
             'fullname': forms.TextInput(attrs={
                 'class': 'form-control',

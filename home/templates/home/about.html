@@ -1,0 +1,382 @@
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+{% block content %}
+<section class="page-title">
+  <div class="background-container">
+    <img class="left-image" 
+         src="https://themeim.com/demo/carsore/images/background/header-left-bg.png" 
+         alt="Decorative left background">
+    <img class="right-image" 
+         src="{% static 'images/background/1.jpg' %}" 
+         alt="Car insurance banner background">
+  </div>
+
+  <div class="service-container">
+    <div class="section-icons-outer parallax-scene-1">
+      <div data-depth="0.20" 
+           class="pattern-layer" 
+           style="background-image: url({% static 'images/background/pattern-8.png' %});">
+      </div>
+    </div>
+
+    <div class="auto-container">
+      <h1>About Us</h1>
+      <ul class="page-breadcrumb">
+        <li><a href="{% url 'home-customer' %}">Home</a></li>
+        <li>About Us</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+<section class="about-section style-two">
+  <div class="auto-container">
+    <div class="inner-container">
+      <div class="section-icons-outer parallax-scene-2">
+        <div data-depth="0.20" class="icon-layer-one"
+             style="background-image: url({% static 'images/icons/icon-1.png' %});">
+        </div>
+        <div data-depth="0.20" class="icon-layer-two"
+             style="background-image: url({% static 'images/background/pattern-4.png' %});">
+        </div>
+      </div>
+
+      <div class="row clearfix">
+        <!-- Image Column -->
+        <div class="image-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="image titlt" data-tilt data-tilt-max="2">
+              <img src="{% static 'images/resource/about.jpg' %}" alt="Car insurance expert team">
+              <span class="triangle-one"></span>
+              <span class="triangle-two"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="content-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="sec-title">
+              <div class="title">About Us</div>
+              <h2>We help you protect your vehicle — and your peace of mind</h2>
+            </div>
+
+            <div class="bold-text">
+              At Carsore, we provide transparent, affordable, and fast car insurance solutions
+              designed for your lifestyle and budget.
+            </div>
+
+            <div class="text">
+              Founded with the mission to simplify vehicle protection,
+              Carsore has helped thousands of drivers access reliable insurance coverage
+              with savings up to <strong>25% on annual premiums</strong>.
+              Our expert team ensures that every policy is tailored to meet your needs —
+              whether it’s personal, family, or business use.
+            </div>
+
+            <div class="author-box clearfix">
+              <div class="box-inner">
+                <div class="author-image">
+                  <img src="{% static 'images/resource/author-1.jpg' %}" alt="Luiz Mark - CEO">
+                </div>
+                Luiz Mark<br>
+                <span>CEO of Carsore</span>
+              </div>
+              <div class="signature">
+                <img src="{% static 'images/icons/signature-1.png' %}" alt="CEO Signature">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "includes/award.html" %}
+
+
+<section class="team-section">
+  <div class="auto-container">
+    <!-- Sec Title -->
+    <div class="sec-title centered">
+      <div class="title">Our Team</div>
+      <h2>
+        We ensure the best insurance services <br>
+        for every customer.
+      </h2>
+    </div>
+
+    <div class="inner-container">
+      <div class="team-carousel owl-carousel owl-theme">
+        
+        <!-- Team Block 1 -->
+        <div class="team-block">
+          <div class="inner-box">
+            <span class="triangle-one"></span>
+            <span class="triangle-two"></span>
+            <div class="image">
+              <ul class="social-box">
+                <li><a href="https://www.facebook.com/" class="fab fa-facebook-f"></a></li>
+                <li><a href="https://www.twitter.com/" class="fab fa-twitter"></a></li>
+                <li><a href="https://www.linkedin.com/" class="fab fa-linkedin-in"></a></li>
+              </ul>
+              <img src="{% static 'images/resource/team-1.jpg' %}" alt="John Carter">
+              <div class="overlay-box">
+                <h3>John Carter</h3>
+                <div class="designation">Chief Executive Officer</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Block 2 -->
+        <div class="team-block">
+          <div class="inner-box">
+            <span class="triangle-one"></span>
+            <span class="triangle-two"></span>
+            <div class="image">
+              <ul class="social-box">
+                <li><a href="https://www.facebook.com/" class="fab fa-facebook-f"></a></li>
+                <li><a href="https://www.twitter.com/" class="fab fa-twitter"></a></li>
+                <li><a href="https://www.linkedin.com/" class="fab fa-linkedin-in"></a></li>
+              </ul>
+              <img src="{% static 'images/resource/team-2.jpg' %}" alt="Sarah Nguyen">
+              <div class="overlay-box">
+                <h3>Sarah Nguyen</h3>
+                <div class="designation">Head of Customer Service</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Block 3 -->
+        <div class="team-block">
+          <div class="inner-box">
+            <span class="triangle-one"></span>
+            <span class="triangle-two"></span>
+            <div class="image">
+              <ul class="social-box">
+                <li><a href="https://www.facebook.com/" class="fab fa-facebook-f"></a></li>
+                <li><a href="https://www.twitter.com/" class="fab fa-twitter"></a></li>
+                <li><a href="https://www.linkedin.com/" class="fab fa-linkedin-in"></a></li>
+              </ul>
+              <img src="{% static 'images/resource/team-3.jpg' %}" alt="David Lee">
+              <div class="overlay-box">
+                <h3>David Lee</h3>
+                <div class="designation">Technical Director</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Team Block 4 -->
+        <div class="team-block">
+          <div class="inner-box">
+            <span class="triangle-one"></span>
+            <span class="triangle-two"></span>
+            <div class="image">
+              <ul class="social-box">
+                <li><a href="https://www.facebook.com/" class="fab fa-facebook-f"></a></li>
+                <li><a href="https://www.twitter.com/" class="fab fa-twitter"></a></li>
+                <li><a href="https://www.linkedin.com/" class="fab fa-linkedin-in"></a></li>
+              </ul>
+              <img src="{% static 'images/resource/team-4.jpg' %}" alt="Maria Pham">
+              <div class="overlay-box">
+                <h3>Maria Pham</h3>
+                <div class="designation">Marketing Manager</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End Carousel -->
+    </div>
+  </div>
+</section>
+
+
+{% include "includes/choose-us.html" %}
+
+
+<section class="skill-section">
+  <div class="auto-container">
+    <div class="inner-container">
+      <div class="section-icons-outer parallax-scene-6">
+        <div data-depth="0.30" class="pattern-layer" style="background-image: url('{% static "images/background/pattern-4.png" %}');"></div>
+      </div>
+
+      <div class="row clearfix">
+        <!-- Skill Column -->
+        <div class="skill-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="sec-title">
+              <h2>
+                How Carsore Operates <br>
+                to Deliver the Best Insurance
+              </h2>
+              <div class="text">
+                At Carsore, we combine advanced technology and customer-first strategy 
+                to make car insurance faster, simpler, and more transparent than ever before.
+              </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="skills">
+
+              <div class="skill-item">
+                <div class="skill-header clearfix">
+                  <div class="skill-title">Customer-Centric Strategy</div>
+                  <div class="skill-percentage">
+                    <div class="count-box"><span class="count-text" data-speed="2000" data-stop="95">95</span>%</div>
+                  </div>
+                </div>
+                <div class="skill-bar">
+                  <div class="bar-inner">
+                    <div class="bar progress-line" data-width="95"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="skill-item">
+                <div class="skill-header clearfix">
+                  <div class="skill-title">Claim Processing Efficiency</div>
+                  <div class="skill-percentage">
+                    <div class="count-box"><span class="count-text" data-speed="2000" data-stop="88">88</span>%</div>
+                  </div>
+                </div>
+                <div class="skill-bar">
+                  <div class="bar-inner">
+                    <div class="bar progress-line" data-width="88"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="skill-item">
+                <div class="skill-header clearfix">
+                  <div class="skill-title">Digital Transformation</div>
+                  <div class="skill-percentage">
+                    <div class="count-box"><span class="count-text" data-speed="2000" data-stop="80">80</span>%</div>
+                  </div>
+                </div>
+                <div class="skill-bar">
+                  <div class="bar-inner">
+                    <div class="bar progress-line" data-width="80"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="skill-item">
+                <div class="skill-header clearfix">
+                  <div class="skill-title">Customer Satisfaction</div>
+                  <div class="skill-percentage">
+                    <div class="count-box"><span class="count-text" data-speed="2000" data-stop="92">92</span>%</div>
+                  </div>
+                </div>
+                <div class="skill-bar">
+                  <div class="bar-inner">
+                    <div class="bar progress-line" data-width="92"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Column -->
+        <div class="image-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="image">
+              <div class="triangle-one"></div>
+              <div class="triangle-two"></div>
+              <img src="{% static 'images/resource/skill.jpg' %}" alt="Carsore process">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="insurance-section">
+  <div class="auto-container">
+    <!-- Sec Title -->
+    <div class="sec-title light centered">
+      <h2>How Car Insurance Works?</h2>
+      <div class="text">
+        Our car insurance process is simple, transparent, and designed to protect you every step of the way.  
+        Follow these easy steps to get insured in minutes.
+      </div>
+    </div>
+    <!-- End Sec Title -->
+
+    <div class="inner-container">
+      <div class="section-icons-outer parallax-scene-8">
+        <div data-depth="0.20" class="icon-layer" style="background-image: url('images/icons/icon-1.png');"></div>
+        <div data-depth="0.40" class="pattern-layer" style="background-image: url('images/background/pattern-3.png');"></div>
+        <div data-depth="0.20" class="pattern-layer-two" style="background-image: url('images/background/pattern-4.png');"></div>
+      </div>
+
+      <div class="row clearfix">
+        <!-- Insurance Block 1 -->
+        <div class="insurance-block col-lg-3 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="0ms" data-wow-duration="1500ms">
+            <div class="icon-box">
+              <span class="icon flaticon-car-1"></span>
+            </div>
+            <h5><a href="insurance-form.html">Enter Your Car Number</a></h5>
+            <div class="text">
+              Start by entering your vehicle number so we can verify details and provide the most accurate quote.
+            </div>
+          </div>
+        </div>
+
+        <!-- Insurance Block 2 -->
+        <div class="insurance-block col-lg-3 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="150ms" data-wow-duration="1500ms">
+            <div class="icon-box">
+              <span class="icon flaticon-customer-support"></span>
+            </div>
+            <h5><a href="insurance-form.html">Answer a Few Questions</a></h5>
+            <div class="text">
+              Provide some quick information about your driving habits and coverage preferences.
+            </div>
+          </div>
+        </div>
+
+        <!-- Insurance Block 3 -->
+        <div class="insurance-block col-lg-3 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="300ms" data-wow-duration="1500ms">
+            <div class="icon-box">
+              <span class="icon flaticon-clipboard-1"></span>
+            </div>
+            <h5><a href="insurance-form.html">Compare Plans & Prices</a></h5>
+            <div class="text">
+              Explore tailored insurance plans that fit your budget and needs — all in one place.
+            </div>
+          </div>
+        </div>
+
+        <!-- Insurance Block 4 -->
+        <div class="insurance-block col-lg-3 col-md-6 col-sm-12">
+          <div class="inner-box wow fadeInLeft" data-wow-delay="450ms" data-wow-duration="1500ms">
+            <div class="icon-box">
+              <span class="icon flaticon-tags"></span>
+            </div>
+            <h5><a href="insurance-form.html">Make Payment</a></h5>
+            <div class="text">
+              Complete your secure payment online and receive instant confirmation of your insurance policy.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+{% include "includes/testimonial.html" %}
+
+{% endblock %}
