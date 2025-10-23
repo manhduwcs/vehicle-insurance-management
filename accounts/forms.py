@@ -1,6 +1,6 @@
 from django import forms
 from customer.models import Customer
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password, check_password
 import re
 from django.utils.translation import gettext_lazy as _
 
@@ -115,14 +115,15 @@ class LoginForm(forms.Form):
         if not username or not password:
             raise forms.ValidationError("Please enter both username and password.")
 
-        hashed = hash_password(password)
         try:
             customer = Customer.objects.get(
-                username=username,
-                password=hashed
+                username=username, 
             )
-            cleaned_data["customer"] = customer
         except Customer.DoesNotExist:
             raise forms.ValidationError("Invalid username or password.")
+        
+        if not check_password(password, customer.password):
+            raise forms.ValidationError("Invalid username or password.")
 
+        cleaned_data["customer"] = customer
         return cleaned_data

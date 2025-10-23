@@ -3,6 +3,7 @@ from django.contrib import messages
 from .forms import RegisterForm, LoginForm
 from django.contrib.auth.hashers import check_password
 from app_helper.views import notify
+from permissions.models import GroupsUsers  
 # -------------------
 # REGISTER
 # -------------------
@@ -11,7 +12,8 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             customer = form.save(commit=False)
-            customer.group_id = 2
+            default_group = GroupsUsers.objects.get(id=2)
+            customer.group_id = default_group
             customer.save()
             notify(request,"Registration successful. Please login.",'success')
             return redirect('accounts:login')

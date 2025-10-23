@@ -35,7 +35,7 @@ class CustomerForm(forms.ModelForm):
 class CustomerUpdateForm(forms.ModelForm):
     class Meta:
         model = Customer
-        fields = ['fullname', 'email', 'phone', 'address']
+        fields = ['fullname', 'email', 'phone', 'address','identify_number','identify_address','identify_date','issuing_authority','tax_id']
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
