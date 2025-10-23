@@ -401,7 +401,7 @@
                     <i class="fas fa-lock"></i>
                     Change Password
                 </h5>
-                <form method="POST" action="{% url 'change_password' %}" id="passwordForm">
+                <form method="POST" action="{% url 'customer:change_password' %}" id="passwordForm">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="current_password" class="form-label">

@@ -17,12 +17,20 @@ from permissions.views import has_permission
 from vehicle.models import Vehicle, VehicleType
 from app_helper.views import notify
 from customer.models import Customer
+from permissions.constants import FunctionIds, ActionIds
 
 from pathlib import Path
 
 
 # @customer_login_required
 def contract_list(request):
+    if "username" not in request.session:
+        return redirect("accounts:login")
+    group_id = request.session.get("group_id")
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.View):
+        messages.error(request, "You do not have permission to view the contracts.")
+        return redirect("customer:customer_info")
+
     # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
     #     messages.error(request, "You do not have permission to create contract.")
     #     return redirect("contracts_customer:contract_list")
@@ -243,7 +251,7 @@ def list_insurance_categories(request):
         category_id = request.POST.get('category_id')
         vehicles = Vehicle.objects.filter(customer_id=request.session['user_id'])
         if not vehicles.exists():
-            messages.error(request, "You need to register your vehicle on the system before purchasing insurance.")
+            messages.warning(request, "You need to register your vehicle on the system before purchasing insurance.")
             return render(request, 'categories/list.html', {'categories': InsuranceCategories.objects.all()})
 
         # Validate personal information
@@ -324,7 +332,7 @@ def create_contract_civil(request, category_id):
                 created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts_customer:contract_list_customer')
+            return redirect('contracts_customer:contract_list')
         else:
             print("Form errors:", form.errors)
 
@@ -415,7 +423,7 @@ def create_contract_other(request, category_id):
                 created_at=datetime.now()
             )
             messages.success(request, "You have successfully registered to buy insurance!")
-            return redirect('contracts_customer:contract_list_customer')
+            return redirect('contracts_customer:contract_list')
 
     return render(request, 'contracts/customer/create_other.html', {
         'form': form,
@@ -495,19 +503,25 @@ def calculate_insurance(request):
     except Vehicle.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
-@customer_login_required
-def contract_list_customer(request):
-    # Fetch contracts for the current customer
-    customer_id = request.session['user_id']
-    contracts = Contracts.objects.select_related(
-        'vehicle',
-        'vehicle__customer',
-        'insurance_category',
-        'duration',
-        'created_by'
-    ).filter(created_by_id=customer_id)
-
-    return render(request, 'contracts/customer/list_customer.html', {
-        'segment': 'contracts',
-        'contracts': contracts
-    })
+# @customer_login_required
+# def contract_list_customer(request):
+#     if "username" not in request.session:
+#         return redirect("accounts:login")
+#     group_id = request.session.get("group_id")
+#     if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.View):
+#         messages.error(request, "You do not have permission to view the contracts.")
+#         return redirect("customer:customer_info")
+#
+#     customer_id = request.session['user_id']
+#     contracts = Contracts.objects.select_related(
+#         'vehicle',
+#         'vehicle__customer',
+#         'insurance_category',
+#         'duration',
+#         'created_by'
+#     ).filter(created_by_id=customer_id)
+#
+#     return render(request, 'contracts/customer/list_customer.html', {
+#         'segment': 'contracts',
+#         'contracts': contracts
+#     })

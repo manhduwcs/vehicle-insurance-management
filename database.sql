@@ -184,30 +184,48 @@ ON DELETE SET NULL;
 USE vehicleinsurancedb;
 
 -- Customers
-INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID)
+INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID, GroupID)
 VALUES
-('johnsmith', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123'),
-('emilytran', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '987654321', 'Hanoi', '2021-03-20', 'Police Dept Hanoi', 'TX00456'),
-('michaelle', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789'),
-('hannahpham', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001'),
-('ethannam', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234');
+('johnsmith', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123', 2),
+('emilytran', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '', '', '2021-03-20', '', '', 2),
+('michaelle', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789', 2),
+('hannahpham', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001', 2),
+('ethannam', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234', 2);
 
 -- VehicleTypes
 INSERT INTO VehicleTypes (Name, Fee, Description, MaxPersonalCompensation, MaxPropertyCompensation)
 VALUES
--- Motorcycles
-('Motorcycle under 50cc', 55000, 'Motorcycle with engine capacity under 50cc', 150000000, 100000000),
-('Motorcycle over 50cc', 60000, 'Motorcycle with engine capacity over 50cc', 150000000, 100000000),
+-- I. Motorbikes (2-wheel)
+('Motorcycle - under 50 cc', 55000, 'Two-wheeled motorcycle, engine capacity under 50 cc', 150000000, 50000000),
+('Motorcycle - 50 cc or more', 60000, 'Two-wheeled motorcycle, engine capacity 50 cc or more', 150000000, 50000000),
 
--- Passenger cars
-('Car under 6 seats (non-commercial)', 437000, 'Private passenger car under 6 seats (non-commercial use)', 150000000, 100000000),
-('Car from 6 to 11 seats', 794000, 'Passenger car with 6–11 seats', 150000000, 100000000),
-('Commercial car under 6 seats', 756000, 'Commercial passenger car under 6 seats', 150000000, 100000000),
+-- II. Three-wheeled motorcycle
+('Three-wheeled motorcycle', 290000, 'Three-wheeled motorcycle', 150000000, 50000000),
 
--- Trucks and trailers
-('Truck under 3.5 tons', 853000, 'Truck with payload under 3.5 tons', 150000000, 100000000),
-('Truck from 3.5 to 7 tons', 1660000, 'Truck with payload from 3.5 to 7 tons', 150000000, 100000000),
-('Tractor head', 1826000, 'Semi-trailer tractor head', 150000000, 100000000);
+-- III. Powered bicycles / e-bikes and other similar
+('Electric motorcycle / e-bike', 55000, 'Electric motorcycle / e-bike', 150000000, 50000000),
+('Other similar motorized small vehicles', 290000, 'Other motorized similar vehicles', 150000000, 50000000),
+
+-- IV. Private (non-commercial) cars (by seats)
+('Private car (under 6 seats)', 437000, 'Private passenger car, under 6 seats', 150000000, 100000000),
+('Private car (6 to 11 seats)', 794000, 'Private passenger car, 6–11 seats', 150000000, 100000000),
+('Private car (12 to 24 seats)', 1270000, 'Private passenger car, 12–24 seats', 150000000, 100000000),
+('Private car (over 24 seats)', 1825000, 'Private passenger car, over 24 seats', 150000000, 100000000),
+('Private Pickup / Minivan', 437000, 'Pickup or minivan used for private purposes', 150000000, 100000000),
+
+-- V. Commercial passenger vehicles (by seats, grouped)
+('Commercial passenger vehicle (under 6 seats)', 756000, 'Commercial passenger vehicle, under 6 seats', 150000000, 100000000),
+('Commercial passenger vehicle (6–11 seats)', 1080000, 'Commercial passenger vehicle, 6–11 seats', 150000000, 100000000),
+('Commercial passenger vehicle (12–24 seats)', 2049000, 'Commercial passenger vehicle, 12–24 seats', 150000000, 100000000),
+('Commercial passenger vehicle (over 24 seats)', 4813000, 'Commercial passenger vehicle, over 24 seats', 150000000, 100000000),
+('Commercial Pickup / Minivan', 933000, 'Pickup or minivan used for commercial purposes', 150000000, 100000000),
+('Taxi', 1285200, 'Taxi (170% of commercial vehicle under 6 seats)', 150000000, 100000000),
+('Driver training vehicle', 908400, 'Driver training vehicle (120% of private car under 6 seats)', 150000000, 100000000),
+('Ambulance', 1119600, 'Ambulance or emergency vehicle (120% of commercial pickup fee)', 150000000, 100000000),
+('Cash transport / Security vehicle', 907200, 'Special-purpose security or cash transport vehicle (120% of private car under 6 seats)', 150000000, 100000000),
+('Tractor–Semi-trailer', 4800000, 'Tractor and semi-trailer (150% of truck over 15 tons)', 150000000, 100000000),
+('Agricultural tractor', 1023600, 'Agricultural tractor and trailer (120% of truck under 3 tons)', 150000000, 100000000);
+
 
 -- Vehicles
 INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate)

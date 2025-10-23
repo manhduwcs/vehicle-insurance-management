@@ -29,6 +29,7 @@ def login_view(request):
             request.session['user_id'] = customer.id
             request.session['user_type'] = 'customer'
             request.session['username'] = customer.username
+            request.session['group_id'] = customer.group_id_id
             remember_me = request.POST.get('remember_me')
             print(remember_me)
             if remember_me == 'on':

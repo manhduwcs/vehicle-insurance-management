@@ -17,8 +17,13 @@
             <button type="button" class="category-btn" data-category-id="{{ category.id }}">{{ category.name }}</button>
         </form>
     {% endfor %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
 
-    <!-- Modal for validation error -->
+<!-- Modal for validation error -->
     <div class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -51,22 +56,41 @@
                             'X-Requested-With': 'XMLHttpRequest'
                         }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Response data:', data); // Debug response
                         if (data.success) {
                             form.submit(); // Submit form if validation is successful
                         } else {
                             var modal = new bootstrap.Modal(document.getElementById('validationModal'));
-                            document.getElementById('validationMessage').textContent = data.message;
-                            modal.show();
+                            if (modal) {
+                                document.getElementById('validationMessage').textContent = data.message;
+                                modal.show();
 
-                            document.getElementById('okButton').addEventListener('click', function() {
-                                modal.hide();
-                                window.location.href = '{% url "customer_profile" %}'; // Replace with the URL name of the customers/profile
-                            });
+                                var okButton = document.getElementById('okButton');
+                                if (okButton) {
+                                    okButton.addEventListener('click', function() {
+                                        modal.hide();
+                                        window.location.href = '{% url "customer_profile" %}'; // Replace with the correct URL name
+                                    });
+                                } else {
+                                    console.error('OK button not found');
+                                }
+                            } else {
+                                console.error('Modal not initialized');
+                            }
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Fallback in case of error
+                        alert('An error occurred. Please try again.');
+                    });
                 });
             });
         });
