@@ -9,9 +9,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.decorators import customer_login_required, employee_login_required
+from accounts.decorators import customer_login_required
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
-from contracts.forms import ContractForm, ContractUpdateForm
+from contracts.forms import ContractForm
 from contracts.models import ContractStatus, Contracts, Depreciations
 from permissions.views import has_permission
 from vehicle.models import Vehicle, VehicleType
@@ -21,19 +21,23 @@ from app_helper.views import notify
 from pathlib import Path
 
 
-# @customer_login_required
+@customer_login_required
 def contract_list(request):
     # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
     #     messages.error(request, "You do not have permission to create contract.")
     #     return redirect("contracts_customer:contract_list")
 
-    contracts = Contracts.objects.select_related(
-        'vehicle',
-        'vehicle__customer',
-        'insurance_category',
-        'duration',
-        'created_by'
-    ).order_by('-id')
+    customer_id = request.customer.id
+
+    contracts = list(
+        Contracts.objects.select_related(
+            'vehicle',
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+            'created_by'
+        ).filter(created_by_id=customer_id).order_by('-id')
+    )
 
     return render(request, 'contracts/customer/list.html', {
         'segment': 'contracts',
@@ -63,67 +67,6 @@ def contract_detail(request, pk):
     }
     return render(request, 'contracts/customer/detail.html', context)
 
-# @employee_login_required
-def contract_update(request, pk):
-    contract = get_object_or_404(
-        Contracts.objects.select_related(
-            'vehicle__customer',
-            'insurance_category',
-            'duration',
-        ),
-        pk=pk
-    )
-
-    # This must be set before calling form.is_valid() 
-    current_status = contract.status
-    # if request.method == "GET":
-    #     form = ContractUpdateForm(instance=contract)  # binds current contract
-    #     form.fields['status'].initial = current_status  # enforce default
-    #     return
-
-    if request.method == 'POST':
-        form = ContractUpdateForm(request.POST, instance=contract)
-        if form.is_valid():
-            new_status = form.cleaned_data["status"]
-            if ContractStatus.can_transition(current=current_status, new=new_status):
-                print(f"can transition: {current_status}")
-                contract.status = new_status
-            else:
-                messages.error(request, "This contract status transition is invalid !")
-                return render(request, 'contracts/update.html', {
-                    'form': form,        
-                    'contract': contract,
-                    'segment': 'contracts'
-                })
-
-            contract.deductible_value = form.cleaned_data['deductible_value']
-            contract.deductible_addon = form.cleaned_data['deductible_addon']
-            contract.actual_value = form.cleaned_data['actual_value']
-            contract.actual_premium = form.cleaned_data['actual_premium']
-            contract.note = form.cleaned_data['note']
-                
-            contract.save(update_fields=[
-                'deductible_value',
-                'deductible_addon',
-                'actual_value',
-                'actual_premium',
-                'status',
-                'note',
-                'updated_at',
-            ])
-            notify(request, "Contract updated successfully!", "success")
-            return redirect('contracts_customer:contract_detail', pk=contract.pk)
-        else:
-            notify(request, "Please correct the errors before updating the contract.", "error")
-    else:
-        form = ContractUpdateForm(instance=contract)
-
-    context = {
-        'segment': 'contracts',
-        'contract': contract,
-        'form': form,
-    }
-    return render(request, 'contracts/customer/update.html', context)
 
 def goto_payment_choice(request, pk):
     contract = get_object_or_404(
@@ -139,7 +82,21 @@ def goto_payment_choice(request, pk):
             'contract': contract
             }
     return render(request, "contracts/customer/payment_choices.html", context)
+
+def contract_cancel(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle__customer',
+            'insurance_category',
+            'duration',
+        ),
+        pk=pk
+    )
  
+    contract.status = ContractStatus.CANCELED
+    contract.save();
+    return redirect("contracts_customer:contract_detail", pk=contract.pk)
+    
 
 def payment_detail(request, pk):
     contract = get_object_or_404(
@@ -484,19 +441,19 @@ def calculate_insurance(request):
     except Vehicle.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
-@customer_login_required
-def contract_list_customer(request):
-    # Fetch contracts for the current customer
-    customer_id = request.session['user_id']
-    contracts = Contracts.objects.select_related(
-        'vehicle',
-        'vehicle__customer',
-        'insurance_category',
-        'duration',
-        'created_by'
-    ).filter(created_by_id=customer_id)
+# @customer_login_required
+# def contract_list_customer(request):
+#     # Fetch contracts for the current customer
+#     customer_id = request.session['user_id']
+#     contracts = Contracts.objects.select_related(
+#         'vehicle',
+#         'vehicle__customer',
+#         'insurance_category',
+#         'duration',
+#         'created_by'
+#     ).filter(created_by_id=customer_id)
 
-    return render(request, 'contracts/customer/list_customer.html', {
-        'segment': 'contracts',
-        'contracts': contracts
-    })
+#     return render(request, 'contracts/customer/list_customer.html', {
+#         'segment': 'contracts',
+#         'contracts': contracts
+#     })

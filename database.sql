@@ -124,7 +124,7 @@ CREATE TABLE Contracts ( ID INT PRIMARY KEY AUTO_INCREMENT,
     Note TEXT,
     PaymentType VARCHAR(20),          
     PaymentAt DATETIME,               
-    PaymentAmount DECIMAL(15,2),      
+    PaymentAmount DECIMAL(15,2),      -- ✅ added
     UpdatedBy INT,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

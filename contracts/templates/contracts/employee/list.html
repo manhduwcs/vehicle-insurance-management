@@ -35,13 +35,12 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contract No</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Insurance Type</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Duration (Months)</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estimate Premium (VND)</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actual Premium</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Created At</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start Date</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,30 +53,27 @@
                                             </a>
                                         </td>
                                         <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.customer.fullname }}</p>
+                                        </td>
+                                        <td class="align-middle">
                                             <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
                                         </td>
                                         <td class="align-middle">
                                             <p class="text-xs text-secondary mb-0">{{ contract.vehicle.number }}</p>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.insurance_category.name }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ contract.actual_premium }}</p>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.duration.months }}</p>
-                                        </td>
-                                        <td class="align-middle text-center">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.estimate_premium|intcomma }}</p>
-                                        </td>
-                                        <td class="align-middle text-center">
+                                        <td class="align-middle">
                                             <p class="text-xs text-secondary mb-0">{{ contract.status }}</p>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.created_at }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ contract.start_date }}</p>
                                         </td>
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="9" class="text-center text-secondary">No contracts yet.</td>
+                                        <td colspan="8" class="text-center text-secondary">No contracts yet.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
