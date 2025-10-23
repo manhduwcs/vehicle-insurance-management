@@ -11,6 +11,9 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
+            customer = form.save(commit=False)
+            customer.group_id = 2
+            customer.save()
             notify(request,"Registration successful. Please login.",'success')
             return redirect('accounts:login')
     else:

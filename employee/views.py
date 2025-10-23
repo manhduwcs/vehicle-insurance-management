@@ -2,23 +2,26 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+
+from accounts.forms import hash_password
 from .models import Employees
-from .forms import EmployeeForm, LoginForm, ChangePasswordForm
+from .forms import EmployeeForm, LoginForm, ChangePasswordForm, EmployeeUpdateForm
 from django.db.models import Q
 from permissions.views import has_permission
 from permissions.constants import FunctionIds, ActionIds
 from django.http import JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.contrib.auth.hashers import check_password, make_password
 
 # @login_required
 def employee_list(request):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
-        messages.error(request, "You do not have permission to view the employee list.")
-        return redirect("employee:employee_list")
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.View):
+        messages.error(request, "You do not have permission to view the employees list.")
+        return redirect("home")
     employees = Employees.objects.all()
     return render(
         request,
@@ -27,13 +30,13 @@ def employee_list(request):
             "segment": "employee",
             "employees": employees,
             "can_add": has_permission(
-                group_id, FunctionIds.ManageEmployees, ActionIds.Create
+                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Create
             ),
             "can_edit": has_permission(
-                group_id, FunctionIds.ManageEmployees, ActionIds.Edit
+                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Edit
             ),
             "can_delete": has_permission(
-                group_id, FunctionIds.ManageEmployees, ActionIds.Delete
+                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Delete
             ),
         },
     )
@@ -43,7 +46,7 @@ def employee_create(request):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.Create):
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Create):
         messages.error(request, "You do not have permission to add new employee.")
         return redirect("employee:employee_list")
     if request.method == "POST":
@@ -64,7 +67,7 @@ def employee_update(request, pk):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.Edit):
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Edit):
         messages.error(request, "You do not have permission to update employee.")
         return redirect("employee:employee_list")
     employee = get_object_or_404(Employees, pk=pk)
@@ -92,7 +95,7 @@ def employee_delete(request, pk):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.Delete):
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Delete):
         messages.error(request, "You do not have permission to delete employee.")
         return redirect("employee:employee_list")
     employee = get_object_or_404(Employees, pk=pk)
@@ -105,12 +108,16 @@ def employee_detail(request, pk):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.View):
         messages.error(request, "You do not have permission to view employee details.")
         return redirect("employee:employee_list")
     employee = get_object_or_404(Employees, pk=pk)
     return render(
-        request, "employee/detail.html", {"employee": employee, "segment": "employee"}
+        request, "employee/detail.html",
+        {"employee": employee,
+                "segment": "employee",
+                'can_edit': has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Edit),
+                'can_delete': has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Delete),}
     )
 
 
@@ -124,7 +131,7 @@ def login_view(request):
             request.session["email"] = employee.email
             request.session["phone"] = employee.phone
             request.session["group_id"] = employee.group.id if employee.group else None
-            return redirect("employee:employee_list")
+            return redirect("home")
         # else:
         #     messages.error(request, "Invalid username/email or password.")
     else:
@@ -135,19 +142,23 @@ def employee_profile(request):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
-        messages.error(request, "You do not have permission to view your profile.")
-        return redirect("employee:employee_list")
+    print("groupID of employee: ", group_id)
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByEmployees, ActionIds.View):
+        messages.error(request, "You do not have permission to view profile.")
+        return redirect("home")
 
     employee = get_object_or_404(Employees, username=request.session["username"])
-    return render(request, "employee/profile.html", {"employee": employee, "segment": "employee"})
+    return render(request, "employee/profile.html",
+                  {"employee": employee,
+                   "segment": "employee",
+                   'can_edit': has_permission(group_id, FunctionIds.ManageEmployeesByEmployees, ActionIds.Edit)})
 
 def change_password(request):
     if "username" not in request.session:
         return redirect("employee:login")
     group_id = request.session.get("group_id", None)
-    if not has_permission(group_id, FunctionIds.ManageEmployees, ActionIds.View):
-        return redirect("employee:employee_list")
+    if not has_permission(group_id, FunctionIds.ManageEmployeesByEmployees, ActionIds.Edit):
+        return redirect("employee:profile")
 
     employee = get_object_or_404(Employees, username=request.session["username"])
     if request.method == "POST" and request.headers.get('X-Requested-With') == 'XMLHttpRequest':

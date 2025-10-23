@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from accounts.decorators import customer_login_required
 import json
 from expenses.models import Expenses
@@ -10,6 +10,9 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 import calendar
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from permissions.views import has_permission
+from permissions.constants import FunctionIds, ActionIds
+from django.contrib import messages
 
 from django.core.paginator import Paginator
 icon_map_expense = {
@@ -29,6 +32,12 @@ icon_map_expense = {
 
 # @customer_login_required
 def index(request):
+    # if "username" not in request.session:
+    #     return redirect("employee:login")
+    # group_id = request.session.get("group_id", None)
+    # if not has_permission(group_id, FunctionIds.ManageHome, ActionIds.View):
+    #     messages.error(request, "You do not have permission to view the home page.")
+    #     return redirect("employee:login")
     context = {
         "segment": "home",
         "title": "Welcome to My Site",
@@ -154,7 +163,7 @@ def index(request):
     context['vehicle_data_json'] = json.dumps(vehicle_data)
     context['contract_list'] = json.dumps(contract_list)
     context['claims_data_json'] = claims_data_json
-   
+
     return render(request, "home/index.html", context)
 
 

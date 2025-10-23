@@ -137,3 +137,22 @@ class ChangePasswordForm(forms.Form):
         # Hash new password
         cleaned_data['new_password'] = hash_password(new_password)
         return cleaned_data
+
+class EmployeeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Employees
+        fields = ['fullname', 'email', 'phone']
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        qs = Employees.objects.filter(email=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Email already exists.")
+        return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        qs = Employees.objects.filter(phone=phone).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Phone number already exists.")
+        return phone

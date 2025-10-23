@@ -4,6 +4,8 @@ from customer.models import Customer
 import hashlib
 import re
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import make_password
+
 
 
 
@@ -90,7 +92,7 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match.")
 
         if password:
-            cleaned_data["password"] = hash_password(password)
+            cleaned_data["password"] = make_password(password)
 
         return cleaned_data
 

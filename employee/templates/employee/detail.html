@@ -55,15 +55,19 @@
               </div>
               <div class="ms-auto text-end">
                 {% csrf_token %}
-                <button type="button" class="btn btn-link text-danger text-gradient px-3 mb-0" id="deleteBtn">
-                  <i class="far fa-trash-alt me-2"></i>Delete
-                </button>
-                <form action="{% url 'employee:employee_update' employee.id %}" method="GET" style="display: inline">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-link text-dark px-3 mb-0">
-                    <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
-                  </button>
-                </form>
+                {% if can_delete %}
+                    <button type="button" class="btn btn-link text-danger text-gradient px-3 mb-0" id="deleteBtn">
+                      <i class="far fa-trash-alt me-2"></i>Delete
+                    </button>
+                {% endif %}
+                {% if can_edit %}
+                    <form action="{% url 'employee:employee_update' employee.id %}" method="GET" style="display: inline">
+                      {% csrf_token %}
+                      <button type="submit" class="btn btn-link text-dark px-3 mb-0">
+                        <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
+                      </button>
+                    </form>
+                {% endif %}
               </div>
             </li>
           </ul>
@@ -76,6 +80,25 @@
       <a href="{% url 'employee:employee_list' %}" class="btn btn-secondary">Back to List</a>
     </div>
   </div>
+
+
+    <!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Permission Error Modal -->
   {% if messages %}

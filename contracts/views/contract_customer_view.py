@@ -27,9 +27,9 @@ def contract_list(request):
     if "username" not in request.session:
         return redirect("accounts:login")
     group_id = request.session.get("group_id")
-    if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.View):
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.View):
         messages.error(request, "You do not have permission to view the contracts.")
-        return redirect("home")
+        return redirect("contracts_customer:contract_list")
 
     contracts = Contracts.objects.select_related(
         'vehicle',
@@ -49,9 +49,9 @@ def contract_detail(request, pk):
     if "username" not in request.session:
         return redirect("accounts:login")
     group_id = request.session.get("group_id")
-    if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.View):
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.View):
         messages.error(request, "You do not have permission to view the contracts.")
-        return redirect("home")
+        return redirect("contracts_customer:contract_list")
     contract = get_object_or_404(
         Contracts.objects.select_related(
             'vehicle',
@@ -63,7 +63,7 @@ def contract_detail(request, pk):
         pk=pk
     )
 
-    can_edit = group_id and has_permission(group_id, FunctionIds.ManageContracts, ActionIds.Edit)
+    can_edit = group_id and has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.Edit)
 
     context = {
         'segment': 'contracts',
@@ -78,6 +78,12 @@ def contract_detail(request, pk):
 
 # @employee_login_required
 def contract_update(request, pk):
+    if "username" not in request.session:
+        return redirect("accounts:login")
+    group_id = request.session.get("group_id")
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.Edit):
+        messages.error(request, "You do not have permission to update the contracts.")
+        return redirect("contracts_customer:contract_list")
     contract = get_object_or_404(
         Contracts.objects.select_related(
             'vehicle__customer',
@@ -287,9 +293,9 @@ def create_contract_civil(request, category_id):
     if "username" not in request.session:
         return redirect("accounts:login")
     group_id = request.session.get("group_id")
-    if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.Create):
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.Create):
         messages.error(request, "You do not have permission to create the contracts.")
-        return redirect("home")
+        return redirect("contracts_customer:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)
@@ -356,9 +362,9 @@ def create_contract_other(request, category_id):
     if "username" not in request.session:
         return redirect("accounts:login")
     group_id = request.session.get("group_id")
-    if not group_id or not has_permission(group_id, FunctionIds.ManageContracts, ActionIds.Create):
+    if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.Create):
         messages.error(request, "You do not have permission to create the contracts.")
-        return redirect("home")
+        return redirect("contracts_customer:contract_list")
 
     customer_id = request.session['user_id']
     form = ContractForm(customer_id=customer_id)

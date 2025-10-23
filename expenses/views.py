@@ -12,7 +12,7 @@ def expense_list(request):
     group_id = request.session.get("group_id", None)
     if not has_permission(group_id, FunctionIds.ManageExpenses, ActionIds.View):
         messages.error(request, "You do not have permission to view the expenses list.")
-        return redirect("expenses:expense_list")
+        return redirect("home")
 
     expenses = Expenses.objects.all()
     return render(request, 'expenses/list.html', {
