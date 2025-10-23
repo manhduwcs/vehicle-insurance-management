@@ -14,7 +14,8 @@ from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.forms import ContractForm, ContractUpdateForm
 from contracts.models import ContractStatus, Contracts, Depreciations
 from permissions.views import has_permission
-from vehicle.models import Vehicle, VehicleType
+from vehicles.models import Vehicles
+from vehicle_types.models import VehicleTypes
 from app_helper.views import notify
 from customer.models import Customer
 from permissions.constants import FunctionIds, ActionIds
@@ -33,7 +34,7 @@ def contract_list(request):
 
     contracts = Contracts.objects.select_related(
         'vehicle',
-        'vehicle__customer',
+        'vehicle__customer_id',
         'insurance_category',
         'duration',
         'created_by'
@@ -260,7 +261,7 @@ def pay_with_qr(request, pk):
 def list_insurance_categories(request):
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
-        vehicles = Vehicle.objects.filter(customer_id=request.session['user_id'])
+        vehicles = Vehicles.objects.filter(customer_id=request.session['user_id'])
         if not vehicles.exists():
             messages.warning(request, "You need to register your vehicle on the system before purchasing insurance.")
             return render(request, 'categories/list.html', {'categories': InsuranceCategories.objects.all()})

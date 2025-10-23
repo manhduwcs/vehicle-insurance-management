@@ -14,7 +14,7 @@ def vehicle_type_list(request):
         messages.error(request, "You do not have permission to view the vehicle types list.")
         return redirect("home")
 
-    vehicle_types = VehicleTypes.objects.all()
+    vehicle_types = VehicleTypes.objects.all().order_by('id')
     return render(request, 'vehicle_types/list.html', {
         'vehicle_types': vehicle_types,
         'can_add': has_permission(group_id, FunctionIds.ManageVehicleTypes, ActionIds.Create),

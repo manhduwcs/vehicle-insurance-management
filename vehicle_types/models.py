@@ -2,11 +2,11 @@ from django.db import models
 
 class VehicleTypes(models.Model):
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    fee = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField()
-    max_personal_compensation = models.DecimalField(max_digits=15, decimal_places=2)
-    max_property_compensation = models.DecimalField(max_digits=15, decimal_places=2)
+    name = models.CharField(max_length=255, db_column="Name")
+    fee = models.DecimalField(max_digits=10, decimal_places=2, db_column="Fee")
+    description = models.TextField(blank=True, null=True, db_column="Description")
+    max_personal_compensation = models.DecimalField(max_digits=15, decimal_places=2, db_column="MaxPersonalCompensation")
+    max_property_compensation = models.DecimalField(max_digits=15, decimal_places=2, db_column="MaxPropertyCompensation")
 
     class Meta:
         db_table = 'VehicleTypes'
