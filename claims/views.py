@@ -23,10 +23,24 @@ def claim_create(request):
         form = ClaimForm(request.POST)
         if form.is_valid():
             claim = form.save(commit=False)
-            claim.customer = getattr(request.user, "customer", None)
+            # Get customer from user
+            customer = getattr(request.user, "customer", None)
+            if not customer:
+                # If no customer relation, try to get from the selected contract
+                contract = form.cleaned_data.get('contract')
+                if contract:
+                    customer = contract.created_by
+                else:
+                    form.add_error(None, "No customer found for this claim.")
+                    return render(request, "claims/create.html", {"form": form, "segment": "claim"})
+            
+            claim.customer = customer
             claim.status = 'Pending'
             claim.save()
             return redirect("claim_list")
+        else:
+            # If form is not valid, show errors
+            print("Form errors:", form.errors)
     else:
         form = ClaimForm()
         # Show only contracts of current customer, vehicle will be auto-selected
@@ -34,11 +48,16 @@ def claim_create(request):
             customer = getattr(request.user, "customer", None)
             if customer:
                 # Get all contracts for this customer
-                form.fields['contract'].queryset = Contracts.objects.filter(created_by=customer)
+                contracts = Contracts.objects.filter(created_by=customer).select_related('vehicle')
+                form.fields['contract'].queryset = contracts
                 # Hide vehicle field initially, it will be auto-populated
                 form.fields['vehicle'].widget = forms.HiddenInput()
-        except Exception:
-            pass
+            else:
+                # If no customer, show all contracts (for staff)
+                form.fields['contract'].queryset = Contracts.objects.all().select_related('vehicle')
+        except Exception as e:
+            # Fallback to all contracts if there's an error
+            form.fields['contract'].queryset = Contracts.objects.all().select_related('vehicle')
     return render(request, "claims/create.html", {"form": form, "segment": "claim"})
 
 @customer_login_required
@@ -79,7 +98,7 @@ def vehicle_for_contract(request, contract_id):
     AJAX: return vehicle information for a given contract id
     """
     try:
-        contract = Contracts.objects.select_related('vehicle').get(id=contract_id)
+        contract = Contracts.objects.select_related('vehicle', 'vehicle__vehicle_type').get(id=contract_id)
         vehicle = contract.vehicle
         data = {
             "id": vehicle.id,
@@ -91,3 +110,5 @@ def vehicle_for_contract(request, contract_id):
         return JsonResponse({"vehicle": data})
     except Contracts.DoesNotExist:
         return JsonResponse({"error": "Contract not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

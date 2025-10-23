@@ -20,7 +20,7 @@
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Model</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Type</th>
-                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Rate</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Purchase Price</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Body Number</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Engine Number</th>
                   <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
@@ -47,7 +47,7 @@
                     <p class="text-xs text-secondary mb-0">{{ vehicle.vehicle_type.name }}</p>
                   </td>
                   <td class="align-middle">
-                    <p class="text-xs text-secondary mb-0">{{ vehicle.rate }}</p>
+                    <p class="text-xs text-secondary mb-0">{{ vehicle.purchase_price|floatformat:0 }} VND</p>
                   </td>
                   <td class="align-middle">
                     <p class="text-xs text-secondary mb-0">{{ vehicle.body_number }}</p>
