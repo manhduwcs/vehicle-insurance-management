@@ -3,7 +3,7 @@ from customer.models import Customer
 from django.contrib.auth.hashers import make_password, check_password
 import re
 from django.utils.translation import gettext_lazy as _
-
+from django.contrib.auth.forms import SetPasswordForm
 
 
 
@@ -127,3 +127,38 @@ class LoginForm(forms.Form):
 
         cleaned_data["customer"] = customer
         return cleaned_data
+
+
+
+class UserPasswordResetForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your registered email address'
+        }),
+        label="Email"
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not Customer.objects.filter(email=email).exists():
+            raise forms.ValidationError("No account found with this email.")
+        return email
+    
+class UserSetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'New Password'
+        }),
+        label="New Password"
+    )
+    new_password2 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm New Password'
+        }),
+        label="Confirm New Password"
+    )

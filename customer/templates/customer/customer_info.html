@@ -601,4 +601,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+
+<script>
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    setTimeout(function () {
+      const alerts = document.querySelectorAll(".alert");
+      alerts.forEach((alert) => {
+       
+        alert.classList.remove("show");
+        alert.classList.add("fade");
+        setTimeout(() => alert.remove(), 500); 
+      });
+    }, 3000); // 3 giây
+  });
+</script>
 {% endblock %}
