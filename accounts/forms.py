@@ -1,15 +1,11 @@
 from django import forms
-from customer import models
 from customer.models import Customer
-import hashlib
+from django.contrib.auth.hashers import make_password
 import re
 from django.utils.translation import gettext_lazy as _
 
 
 
-# Hash password
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 
 # -----------------------
 # Register Form
@@ -90,7 +86,7 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match.")
 
         if password:
-            cleaned_data["password"] = hash_password(password)
+            cleaned_data["password"] = make_password(password)
 
         return cleaned_data
 
