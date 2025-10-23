@@ -59,7 +59,6 @@ def customer_delete(request, pk):
 @customer_login_required
 def customer_info(request):
     customer = request.customer
-    
     if request.method == 'POST':
         form = CustomerUpdateForm(request.POST, instance=customer)
         if form.is_valid():
@@ -71,8 +70,7 @@ def customer_info(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = CustomerUpdateForm(instance=customer)
-    print(customer)
-    return render(request, 'customer/customer_info.html', {'form': form})
+    return render(request, 'customer/customer_info.html', {'form': form, 'customer': customer})
 
 @customer_login_required
 def change_password(request):

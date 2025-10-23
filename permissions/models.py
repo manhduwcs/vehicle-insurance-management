@@ -1,8 +1,8 @@
 from django.db import models
 
 class GroupsUsers(models.Model):
-    group_name = models.CharField(max_length=100, unique=True, db_column='GroupName')  # Map với 'GroupName'
-    description = models.TextField(blank=True, null=True, db_column='Description')  # Map với 'Description'
+    group_name = models.CharField(max_length=100, unique=True, db_column='GroupName') 
+    description = models.TextField(blank=True, null=True, db_column='Description')  
 
     class Meta:
         db_table = 'GroupsUsers'
@@ -11,7 +11,7 @@ class GroupsUsers(models.Model):
         return self.group_name
 
 class Functions(models.Model):
-    function_name = models.CharField(max_length=100, unique=True, db_column='FunctionName')  # Map với 'FunctionName'
+    function_name = models.CharField(max_length=100, unique=True, db_column='FunctionName') 
     description = models.TextField(blank=True, null=True, db_column='Description')
 
     class Meta:
@@ -21,7 +21,7 @@ class Functions(models.Model):
         return self.function_name
 
 class Actions(models.Model):
-    action_name = models.CharField(max_length=100, unique=True, db_column='ActionName')  # Map với 'ActionName'
+    action_name = models.CharField(max_length=100, unique=True, db_column='ActionName')  
     description = models.TextField(blank=True, null=True, db_column='Description')
 
     class Meta:
@@ -31,9 +31,9 @@ class Actions(models.Model):
         return self.action_name
 
 class GroupsFunctionsActions(models.Model):
-    group = models.ForeignKey(GroupsUsers, on_delete=models.CASCADE, db_column='GroupID')  # Map với 'GroupID'
-    function = models.ForeignKey(Functions, on_delete=models.CASCADE, db_column='FunctionID')  # Map với 'FunctionID'
-    action = models.ForeignKey(Actions, on_delete=models.CASCADE, db_column='ActionID')  # Map với 'ActionID'
+    group = models.ForeignKey(GroupsUsers, on_delete=models.CASCADE, db_column='GroupID')  
+    function = models.ForeignKey(Functions, on_delete=models.CASCADE, db_column='FunctionID')  
+    action = models.ForeignKey(Actions, on_delete=models.CASCADE, db_column='ActionID')  
 
     class Meta:
         db_table = 'GroupsFunctionsActions'

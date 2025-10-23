@@ -10,6 +10,7 @@ from django.db.models.functions import ExtractMonth, ExtractYear
 import calendar
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
+from categories.models import InsuranceCategories
 
 from django.core.paginator import Paginator
 icon_map_expense = {
@@ -193,3 +194,36 @@ def get_vehicle_revenue_data():
     ]
 
     return result
+
+
+
+def home_page_customer(request):
+    categories = InsuranceCategories.objects.all()
+    context = {
+        "segment": "home",
+        "customer": request.customer
+        ,"categories": categories
+    }
+    return render(request, "home/home-customer.html", context)
+
+def about(request):
+    context = {
+        "segment": "about",
+        "customer": request.customer
+    }
+    return render(request, "home/about.html", context)
+def contact(request):
+    context = {
+        "segment": "contact",
+        "customer": request.customer
+    }
+    return render(request, "home/contact.html", context)
+
+def services(request):
+    categories = InsuranceCategories.objects.all()
+    context = {
+        "segment": "services",
+        "customer": request.customer,
+        "categories": categories
+    }
+    return render(request, "home/services.html", context)

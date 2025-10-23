@@ -3,10 +3,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 class InsuranceCategories(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(blank=True)
-
+    id = models.AutoField(primary_key=True, db_column='ID')
+    name = models.CharField(max_length=255, unique=True, db_column='Name')
+    description = models.TextField(blank=True, db_column='Description')
+    images = models.TextField(blank=True, db_column='Images')
     class Meta:
         db_table = 'InsuranceCategories'
         verbose_name = 'Insurance Category'

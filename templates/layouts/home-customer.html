@@ -1,0 +1,61 @@
+{# templates/base.html #}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}CARSORE{% endblock %}</title>
+
+    <!-- Styles -->
+   
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <link href="{% static 'css/niceselect.css' %}" rel="stylesheet">
+     <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/responsive.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/color-switcher-design.css' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&amp;family=Ubuntu:wght@300;400;500;700&amp;display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.png' %}"  type="image/x-icon">
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="main-homepage">
+      <div class="page-wrapper">
+        {% include "includes/loading.html"%}
+        {% include "includes/header.html" %}
+     
+          {% block content %}
+          <!-- Page content -->
+          {% endblock %}
+      
+          {% include "includes/footer.html" %}
+      </div>
+    </div>
+
+  
+
+    <!-- Core JS -->
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/jquery.fancybox.js' %}"></script>
+    <script src="{% static 'js/appear.js' %}"></script>
+    <script src="{% static 'js/parallax.min.js' %}"></script>
+    <script src="{% static 'js/tilt.jquery.min.js' %}"></script>
+    <script src="{% static 'js/jquery.paroller.min.js' %}"></script>
+    <script src="{% static 'js/owl.js' %}"></script>
+    <script src="{% static 'js/wow.js' %}"></script>
+    <script src="{% static 'js/nav-tool.js' %}"></script>
+    <script src="{% static 'js/jquery-ui.js' %}"></script>
+    <script src="{% static 'js/validate.js' %}"></script>
+    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+    <script src="{% static 'js/color-settings.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

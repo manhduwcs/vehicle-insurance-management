@@ -1,0 +1,196 @@
+{% load static %}
+
+
+<!--CTA Section-->
+<section class="cta-section">
+  <div class="auto-container">
+    <div class="inner-container" style="background-image: url({% static 'images/background/pattern-5.png' %})">
+      <div class="row clearfix">
+        <!-- Title Column -->
+        <div class="title-column col-lg-5 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <h3>Protect your vehicle — we’ve got you covered!</h3>
+            <p>Subscribe to get exclusive insurance updates and special offers.</p>
+          </div>
+        </div>
+
+        <!-- Form Column -->
+        <div class="form-column col-lg-7 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="newsletter-form">
+              <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <span class="icon fa fa-envelope"></span>
+                  <input 
+                    type="email" 
+                    name="email" 
+                    placeholder="Enter your email address" 
+                    required
+                  >
+                  <button type="submit" class="theme-btn flaticon-send"></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="main-footer" style="background-image: url('{% static "images/background/pattern-2.png" %}')">
+
+  <div class="auto-container">
+    <!-- Upper Box -->
+    <div class="upper-box">
+      <div class="row clearfix">
+        <!-- Info Column -->
+        <div class="info-column col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-column">
+            <span class="icon flaticon-call-2"></span>
+            Call Now<br>
+            <a href="tel:+10909876534">+10909876534</a>
+          </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="info-column col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-column">
+            <span class="icon flaticon-email-2"></span>
+            24*7 Online Support<br>
+            <a href="mailto:carsore@mail.com">carsore@mail.com</a>
+          </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="info-column col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-column">
+            <span class="icon flaticon-maps-and-flags"></span>
+            Office Address<br>
+            <strong>4309 Terry Lane, USA</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Upper Box -->
+
+    <!-- Widgets Section -->
+    <div class="widgets-section">
+      <div class="row clearfix">
+        <!-- Footer Column -->
+        <div class="footer-column col-lg-4 col-md-6 col-sm-12">
+          <div class="footer-widget logo-widget">
+            <div class="logo">
+              <a href="{% url 'home' %}">
+                <img src="{% static 'images/footer-logo.png' %}" alt="Carsore Logo" />
+              </a>
+            </div>
+            <div class="text">
+              Lorem Ipsum is simply dummy text of the printing and
+              typesetting industry. Lorem Ipsum has been the industry's
+              standard dummy text.
+            </div>
+            <!-- Social Box -->
+            <ul class="social-box">
+              <li><a href="https://www.facebook.com/" class="fab fa-facebook-f"></a></li>
+              <li><a href="https://www.twitter.com/" class="fab fa-twitter"></a></li>
+              <li><a href="https://google.com/" class="fab fa-google"></a></li>
+              <li><a href="https://www.linkedin.com/" class="fab fa-linkedin-in"></a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Footer Column -->
+        <div class="footer-column col-lg-5 col-md-6 col-sm-12">
+          <div class="footer-widget links-widget">
+            <div class="row clearfix">
+              <!-- Column -->
+              <div class="column col-lg-6 col-md-6 col-sm-12">
+                <h3>Company</h3>
+                <ul class="list-links">
+                  <li><a href="#">About Us</a></li>
+                  <li><a href="#">Our Team</a></li>
+                  <li><a href="#">Services</a></li>
+                  <li><a href="#">Insurance</a></li>
+                  <li><a href="#">Blog</a></li>
+                  <li><a href="#">Contact Us</a></li>
+                </ul>
+              </div>
+
+              <!-- Column -->
+              <div class="column col-lg-6 col-md-6 col-sm-12">
+                <h3>Insurance</h3>
+                <ul class="list-links">
+                  <li><a href="#">Car Insurance</a></li>
+                  <li><a href="#">Bike Insurance</a></li>
+                  <li><a href="#">Bus Insurance</a></li>
+                  <li><a href="#">Mini Truck Insurance</a></li>
+                  <li><a href="#">Jeep Insurance</a></li>
+                  <li><a href="#">Lorry Insurance</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Column -->
+        <div class="footer-column col-lg-3 col-md-6 col-sm-12">
+          <div class="footer-widget quote-widget">
+            <h3>Request a Quote</h3>
+
+            <!-- Quote Form -->
+            <div class="quote-form">
+              <form method="post" action="#">
+                {% csrf_token %}
+                <div class="clearfix">
+                  <div class="form-group">
+                    <input type="text" name="username" placeholder="Your Name *" required />
+                  </div>
+
+                  <div class="form-group">
+                    <input type="email" name="email" placeholder="Your Email" required />
+                  </div>
+
+                  <div class="form-group">
+                    <select class="custom-select-box nice-select">
+                      <option>Your Subject</option>
+                      <option>Subject 01</option>
+                      <option>Subject 02</option>
+                      <option>Subject 03</option>
+                      <option>Subject 04</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <button class="theme-btn submit-btn" type="submit" name="submit-form">
+                      Submit Now
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="clearfix">
+        <div class="pull-left">
+          <div class="copyright">
+            Copyright © 2025. All rights reserved by <br />
+            <span>Carsore Company.</span>
+          </div>
+        </div>
+        <div class="pull-right">
+          <ul class="footer-nav">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms &amp; Condition</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
