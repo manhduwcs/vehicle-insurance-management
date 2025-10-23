@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from accounts.forms import hash_password
+# from accounts.forms import hash_password
 from .models import Employees
 from .forms import EmployeeForm, LoginForm, ChangePasswordForm, EmployeeUpdateForm
 from django.db.models import Q

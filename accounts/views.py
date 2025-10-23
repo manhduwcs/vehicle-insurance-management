@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import RegisterForm, LoginForm, UserPasswordResetForm,UserSetPasswordForm
+from .forms import RegisterForm, LoginForm, UserPasswordResetForm, UserSetPasswordForm
 from django.contrib.auth.hashers import make_password
 from app_helper.views import notify
 from permissions.models import GroupsUsers 
