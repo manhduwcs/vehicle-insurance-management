@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordChangeView, PasswordResetConfirmView
 from admin_soft.forms import RegistrationForm, LoginForm, UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
 from django.contrib.auth import logout
+from permissions.views import has_permission
+from permissions.constants import FunctionIds, ActionIds
+from django.contrib import messages
 
-# Create your views here.
-
-# Pages
 def index(request):
-  return render(request, 'pages/index.html', { 'segment': 'dashboard' })
+    context = {'segment': 'dashboard'}
+    return render(request, 'pages/index.html', context)
+
 
 def billing(request):
   return render(request, 'pages/billing.html', { 'segment': 'billing' })

@@ -2,6 +2,8 @@
 from django import forms
 from .models import Employees
 from django.core.exceptions import ValidationError
+from accounts.forms import hash_password
+from django.db.models import Q
 
 class EmployeeForm(forms.ModelForm):
     re_password = forms.CharField(
@@ -72,3 +74,85 @@ class EmployeeForm(forms.ModelForm):
 class LoginForm(forms.Form):
     login = forms.CharField(label='Username or Email', max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+    def clean(self):
+        cleaned_data = super().clean()
+        login_input = cleaned_data.get("login")
+        password = cleaned_data.get("password")
+
+        if not login_input or not password:
+            raise ValidationError("Please enter both username/email and password.")
+
+        hashed_password = hash_password(password)
+        try:
+            employee = Employees.objects.filter(
+                (Q(username=login_input) | Q(email=login_input)) & Q(password=hashed_password)
+            ).first()
+            if not employee:
+                raise ValidationError("Invalid username/email or password.")
+            cleaned_data["employee"] = employee
+        except Exception as e:
+            raise ValidationError("Invalid username/email or password.")
+
+        return cleaned_data
+
+class ChangePasswordForm(forms.Form):
+    old_password = forms.CharField(
+        label='Old Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=True
+    )
+    new_password = forms.CharField(
+        label='New Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=True
+    )
+    re_type_password = forms.CharField(
+        label='Re-type New Password',
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        required=True
+    )
+
+    def __init__(self, employee, *args, **kwargs):
+        self.employee = employee
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        old_password = cleaned_data.get('old_password')
+        new_password = cleaned_data.get('new_password')
+        re_type_password = cleaned_data.get('re_type_password')
+
+        if not old_password or not new_password or not re_type_password:
+            raise ValidationError("All fields are required.")
+
+        # Check old password
+        if old_password and hash_password(old_password) != self.employee.password:
+            raise ValidationError("Incorrect old password.")
+
+        # Check new password match
+        if new_password != re_type_password:
+            raise ValidationError("New password and re-typed password do not match.")
+
+        # Hash new password
+        cleaned_data['new_password'] = hash_password(new_password)
+        return cleaned_data
+
+class EmployeeUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Employees
+        fields = ['fullname', 'email', 'phone']
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        qs = Employees.objects.filter(email=email).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Email already exists.")
+        return email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get("phone")
+        qs = Employees.objects.filter(phone=phone).exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError("Phone number already exists.")
+        return phone

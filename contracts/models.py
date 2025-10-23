@@ -1,6 +1,7 @@
 from django.db import models
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
-from vehicle.models import VehicleType, Vehicle
+from vehicles.models import Vehicles
+from vehicle_types.models import VehicleTypes
 
 # class VehicleTypes(models.Model):
 #     Name = models.CharField(max_length=255)
@@ -92,7 +93,7 @@ class PaymentType(models.TextChoices):
 class Contracts(models.Model):
     contract_no = models.CharField(max_length=255, unique=True, db_column='ContractNo')
     created_by = models.ForeignKey('customer.Customer', on_delete=models.CASCADE, db_column='CreatedBy', related_name='created_contracts')
-    vehicle = models.ForeignKey('vehicle.Vehicle', on_delete=models.CASCADE, db_column='VehicleID')
+    vehicle = models.ForeignKey('vehicles.Vehicles', on_delete=models.CASCADE, db_column='VehicleID')
     insurance_category = models.ForeignKey('categories.InsuranceCategories', on_delete=models.CASCADE, db_column='InsuranceCategoryID')
     estimate_value = models.DecimalField(max_digits=15, decimal_places=2, null=True, db_column='EstimateValue')
     estimate_premium = models.DecimalField(max_digits=15, decimal_places=2, db_column='EstimatePremium')

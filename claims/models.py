@@ -1,7 +1,9 @@
 from django.db import models
-from vehicle.models import Vehicle
+# from vehicle.models import Vehicle
 from customer.models import Customer
 from contracts.models import Contracts
+from vehicles.models import Vehicles
+
 
 class Claim(models.Model):
     """
@@ -17,8 +19,8 @@ class Claim(models.Model):
         related_name="claims",
     )
 
-    vehicle = models.ForeignKey(
-        Vehicle,
+    vehicles = models.ForeignKey(
+        Vehicles,
         on_delete=models.CASCADE,
         db_column="VehicleID",
         related_name="claims",

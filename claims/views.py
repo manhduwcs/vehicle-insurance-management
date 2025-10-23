@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django import forms
 from .models import Claim
 from accounts.decorators import customer_login_required
-from vehicle.models import Vehicle
+from vehicles.models import Vehicles
 from contracts.models import Contracts
 from .forms import ClaimForm
 

@@ -28,7 +28,7 @@ def groups_list(request):
     group_id = request.session.get('group_id', None)
     if not has_permission(group_id, FunctionIds.ManageGroupsUsers, ActionIds.View):
         messages.error(request, "You do not have permission to view the group list.")
-        return redirect('/home/')
+        return redirect('home')
     groups = GroupsUsers.objects.all()
     return render(request, 'permissions/groups.html', {
         'groups': groups,
