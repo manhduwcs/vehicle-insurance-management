@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/home-customer.html" %}
 {% load humanize %}
 {% load static %}
 {% block content %}
@@ -7,7 +7,6 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Contracts</h6>
                     {% if messages %}
                         {% for message in messages %}
                             {% if message.tags != 'error' %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endif %}
@@ -15,12 +14,7 @@
                     {% endif %}
                     <div class="d-flex justify-content-between mb-2">
                         <div>
-                            {% if can_add %}
-                                <a href="{% url 'contracts_customer:contract_create' %}"
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-plus"></i> Add Contract
-                                </a>
-                            {% endif %}
+
                             <a href="{% url 'contracts_customer:contract_list' %}"
                                class="btn btn-secondary btn-sm">
                                 <i class="fas fa-sync-alt"></i> Refresh
@@ -54,16 +48,22 @@
                                             </a>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
+                                            <a href="{% url 'contracts_customer:contract_detail' contract.id %}">
+                                                <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
+                                            </a>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.number }}</p>
+                                            <a href="{% url 'contracts_customer:contract_detail' contract.id %}">
+                                                <p class="text-xs text-secondary mb-0">{{ contract.vehicle.number }}</p>
+                                            </a>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.insurance_category.name }}</p>
+                                            <a href="{% url 'contracts_customer:contract_detail' contract.id %}">
+                                                <p class="text-xs text-secondary mb-0">{{ contract.insurance_category.name }}</p>
+                                            </a>
                                         </td>
-                                        <td class="align-middle text-center">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.duration.months }}</p>
+                                        <td class="text-left">
+                                            <p class="mb-0 text-center w-100">{{ contract.duration.months }}</p>
                                         </td>
                                         <td class="align-middle text-center">
                                             <p class="text-xs text-secondary mb-0">{{ contract.estimate_premium|intcomma }}</p>

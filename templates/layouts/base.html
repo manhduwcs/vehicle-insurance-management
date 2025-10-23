@@ -5,26 +5,25 @@
 {% get_direction as direction %}
 {% get_admin_setting as admin_setting %}
 <html lang="en">
-
-<head>
-  {% include "includes/head.html" %}
-  {% block extrastyle %}{% endblock extrastyle %}
-  {% block extrahead %}{% endblock extrahead %}
-  <link href="{% static 'css/nucleo-icons.css' %}" rel="stylesheet">
-  <link href="{% static 'css/nucleo-svg.css' %}" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <script src="{% static 'js/showConfirmDelete.js' %}"></script>
-</head>
-<!-- <style> -->
-<!--   body, p, h1, h2, h3, h4, h5, h6, .text-dark, .font-weight-bold, .card, .navbar, .btn { -->
-<!--     font-family: 'Poppins', sans-serif !important; -->
-<!--   } -->
-<!-- </style> -->
-
-<!-- Notification will show here -->
-<div id="toast-container" class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999;"></div>
-
-<style>
+    <head>
+        {% include "includes/head.html" %}
+        {% block extrastyle %}{% endblock extrastyle %}
+        {% block extrahead %}{% endblock extrahead %}
+        <link href="{% static 'css/nucleo-icons.css' %}" rel="stylesheet">
+        <link href="{% static 'css/nucleo-svg.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <script src="{% static 'js/showConfirmDelete.js' %}"></script>
+    </head>
+    <!-- <style> -->
+    <!--   body, p, h1, h2, h3, h4, h5, h6, .text-dark, .font-weight-bold, .card, .navbar, .btn { -->
+    <!--     font-family: 'Poppins', sans-serif !important; -->
+    <!--   } -->
+    <!-- </style> -->
+    <!-- Notification will show here -->
+    <div id="toast-container"
+         class="position-fixed bottom-0 end-0 p-3"
+         style="z-index: 9999"></div>
+    <style>
 #sidenav-main {
       height: 100vh !important;       /* force full viewport height */
       min-height: 100vh !important;
@@ -34,9 +33,8 @@
       padding-top: 1rem !important;   /* adjust padding if needed */
       padding-bottom: 1rem !important;
     }
-</style>
-
-<script>
+    </style>
+    <script>
 const statusColors = {
     success: 'bg-success',
     error: 'bg-danger',
@@ -69,38 +67,26 @@ function showToast(message, type='info', duration=4000) {
                   "{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}");
     {% endfor %}
 {% endif %}
-</script>
-
-
-<style>
+    </script>
+    <style>
   body, p, h1, h2, h3, h4, h5, h6, .text-dark, .font-weight-bold, .card, .navbar, .btn {
     font-family: 'Arial', sans-serif !important;
   }
-</style>
-
-
-<body class="g-sidenav-show  bg-gray-100">
-  {% block sidebar %}
-    {% include "includes/sidebar.html" %}
-  {% endblock sidebar %}
-  <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-    {% block navigation %}
+    </style>
+    <body class="g-sidenav-show  bg-gray-100">
+        {% block sidebar %}
+        {% include "includes/sidebar.html" %}
+    {% endblock sidebar %}
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+        {% block navigation %}
         {% include "includes/navigation.html" %}
     {% endblock navigation %}
-    
     {% block content %}{% endblock content %}
-  </main>
-
-  {% block configurator %}
-    {% include "includes/configurator.html" %}
-  {% endblock configurator %}
-  
-  <!-- Overlay and modal -->
-  <div id="overlay" class="overlay" style="display:none"></div>
-  <div id="deleteConfirm" class="delete-modal" style="display:none"></div>
-
-  {% include "includes/scripts.html" %}
-  {% block extra_js %}{% endblock extra_js %}
+</main>
+<!-- Overlay and modal -->
+<div id="overlay" class="overlay" style="display:none"></div>
+<div id="deleteConfirm" class="delete-modal" style="display:none"></div>
+{% include "includes/scripts.html" %}
+{% block extra_js %}{% endblock extra_js %}
 </body>
-
 </html>

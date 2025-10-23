@@ -1,15 +1,22 @@
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
 <div class="container my-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="card border-light p-4">
-                <h2 class="text-center mb-4">Pay with Money</h2>
+                <h2 class="text-center mb-4">Payment for Contract {{ contract.contract_no }}</h2>
                 <div class="card-body">
-                    <p class="text-center lead mb-4">
-                        To complete your payment, please visit our nearest store to make a
-                        direct cash payment. Our staff will assist you with the transaction
-                        process. Ensure you bring your contract details or reference number
-                        for a smooth payment experience.
-                    </p>
+                    <!-- Contract Info Header -->
+                    <div class="mb-4">
+                        <p class="lead">
+                            Please follow the instructions below to complete your payment for
+                            this contract.
+                        </p>
+                    </div>
+                    <!-- Payment Instructions -->
                     <div class="text-center">
                         <h4>Visit Us At:</h4>
                         <p class="mb-0">Creative Tim Payment Center</p>
@@ -17,6 +24,7 @@
                         <p class="mb-0">Downtown District, Cityville, CV 90210</p>
                         <p>Operating Hours: Monday - Friday, 9:00 AM - 5:00 PM</p>
                     </div>
+                    <!-- Back Button -->
                     <div class="text-center mt-4">
                         <a href="{% url 'contracts_customer:contract_payment' contract.id %}"
                            class="btn btn-primary">Back to Payment Options</a>
@@ -26,3 +34,4 @@
         </div>
     </div>
 </div>
+{% endblock %}

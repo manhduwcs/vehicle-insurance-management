@@ -30,3 +30,7 @@ ALTER TABLE Contracts
 ADD COLUMN PaymentType VARCHAR(20) NULL AFTER Status,
 ADD COLUMN PaymentAt DATETIME NULL AFTER PaymentType,
 ADD COLUMN PaymentAmount DECIMAL(15,2) NULL AFTER PaymentAt;
+
+# additional notes
+civil = bh tnds
+other = bh vat chat
