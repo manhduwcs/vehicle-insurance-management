@@ -1,13 +1,13 @@
 from django import forms
 from .models import Claim
-from vehicle.models import Vehicle
+from vehicles.models import Vehicles
 from contracts.models import Contracts
 
 class ClaimForm(forms.ModelForm):
     class Meta:
         model = Claim
         fields = [
-            'vehicle', 'contract', 'place', 'date',
+            'vehicles', 'contract', 'place', 'date',
             'human_damage', 'property_damage', 'deduction',
             'personal_compensation', 'property_compensation', 'note'
         ]

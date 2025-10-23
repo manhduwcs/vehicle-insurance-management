@@ -214,7 +214,14 @@
 {% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4 mb-5">
+<div class="container-fluid py-4">
+<!--          {% if messages %}-->
+<!--            {% for message in messages %}-->
+<!--              {% if message.tags != 'error' %}-->
+<!--                <div class="alert alert-{{ message.tags }}">{{ message }}</div>-->
+<!--              {% endif %}-->
+<!--            {% endfor %}-->
+<!--          {% endif %}-->
     <!-- Profile Header -->
     <div class="row">
         <div class="col-12">
@@ -493,7 +500,7 @@
                     <i class="fas fa-lock"></i>
                     Change Password
                 </h5>
-                <form method="POST" action="{% url 'change_password' %}" id="passwordForm">
+                <form method="POST" action="{% url 'customer:change_password' %}" id="passwordForm">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="current_password" class="form-label">
@@ -602,19 +609,61 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
+<!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
+
+<!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- JavaScript to show modal if error exists -->
 <script>
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    setTimeout(function () {
-      const alerts = document.querySelectorAll(".alert");
-      alerts.forEach((alert) => {
-       
-        alert.classList.remove("show");
-        alert.classList.add("fade");
-        setTimeout(() => alert.remove(), 500); 
-      });
-    }, 3000); // 3 giây
-  });
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
 </script>
 {% endblock %}

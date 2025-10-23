@@ -7,19 +7,19 @@ from permissions.constants import FunctionIds, ActionIds
 
 
 def expense_list(request):
-    if 'username' not in request.session:
-        return redirect('employee:login')
-    user_group_id = request.session.get('group_id', None)
-    if not has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.View):
-        messages.error(request, "You do not have permission to view expenses.")
-        return redirect('employee:employee_list')
+    if "username" not in request.session:
+        return redirect("employee:login")
+    group_id = request.session.get("group_id", None)
+    if not has_permission(group_id, FunctionIds.ManageExpenses, ActionIds.View):
+        messages.error(request, "You do not have permission to view the expenses list.")
+        return redirect("home")
 
     expenses = Expenses.objects.all()
     return render(request, 'expenses/list.html', {
         'expenses': expenses,
-        'can_add': has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.Create),
-        'can_edit': has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.Edit),
-        'can_delete': has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.Delete),
+        'can_add': has_permission(group_id, FunctionIds.ManageExpenses, ActionIds.Create),
+        'can_edit': has_permission(group_id, FunctionIds.ManageExpenses, ActionIds.Edit),
+        'can_delete': has_permission(group_id, FunctionIds.ManageExpenses, ActionIds.Delete),
     })
 
 
@@ -98,6 +98,5 @@ def expense_delete(request, pk):
     return redirect('expenses:expense_list')
 
 
-from django.shortcuts import render
 
 # Create your views here.

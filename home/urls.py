@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.urls import path
 from . import views
 
+
+
 urlpatterns = [
     path("", views.index, name="home"),
     path('', lambda r: HttpResponse("Index placeholder"), name="index"),

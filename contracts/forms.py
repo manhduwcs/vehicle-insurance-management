@@ -1,11 +1,11 @@
 from django import forms
-from vehicle.models import Vehicle
+from vehicles.models import Vehicles
 from categories.models import Duration
 from .models import ContractStatus, Contracts
 
 class ContractForm(forms.Form):
     vehicle_id = forms.ModelChoiceField(
-        queryset=Vehicle.objects.none(),
+        queryset=Vehicles.objects.none(),
         empty_label="Select the vehicle you want to insure",
         widget=forms.Select(attrs={'class': 'form-control', 'id': 'vehicle-select'}),
         required=True
@@ -25,7 +25,7 @@ class ContractForm(forms.Form):
         super().__init__(*args, **kwargs)
         if customer_id:
             # self.fields['vehicle_id'].queryset = Vehicle.objects.filter(customer_id=customer_id)
-            queryset = Vehicle.objects.filter(customer_id=customer_id)
+            queryset = Vehicles.objects.filter(customer_id=customer_id)
             self.fields['vehicle_id'].queryset = queryset
             self.fields['vehicle_id'].label_from_instance = lambda obj: f"{obj.name} - {obj.number}"
 
