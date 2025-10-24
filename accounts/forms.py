@@ -1,15 +1,14 @@
 from django import forms
-from customer import models
+from django.contrib.auth.forms import SetPasswordForm
 from customer.models import Customer
-import hashlib
+from django.contrib.auth.hashers import make_password, check_password
 import re
+import hashlib
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.hashers import make_password
 
 
 
-# Hash password
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
 
 # -----------------------
 # Register Form
@@ -35,7 +34,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = ['fullname', 'phone', 'username', 'password', 'address','email']
+        fields = ['fullname', 'phone', 'username','address','email', 'password']
         widgets = {
             'fullname': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -90,7 +89,7 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError("Passwords do not match.")
 
         if password:
-            cleaned_data["password"] = hash_password(password)
+            cleaned_data["password"] = make_password(password)
 
         return cleaned_data
 
@@ -119,14 +118,53 @@ class LoginForm(forms.Form):
         if not username or not password:
             raise forms.ValidationError("Please enter both username and password.")
 
-        hashed = hash_password(password)
         try:
             customer = Customer.objects.get(
-                username=username,
-                password=hashed
+                username=username, 
             )
-            cleaned_data["customer"] = customer
         except Customer.DoesNotExist:
             raise forms.ValidationError("Invalid username or password.")
+        
+        if not check_password(password, customer.password):
+            raise forms.ValidationError("Invalid username or password.")
 
+        cleaned_data["customer"] = customer
         return cleaned_data
+
+
+
+class UserPasswordResetForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your registered email address'
+        }),
+        label="Email"
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not Customer.objects.filter(email=email).exists():
+            raise forms.ValidationError("No account found with this email.")
+        return email
+    
+class UserSetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'New Password'
+        }),
+        label="New Password"
+    )
+    new_password2 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm New Password'
+        }),
+        label="Confirm New Password"
+    )
+
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()

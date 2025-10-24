@@ -4,7 +4,7 @@ from .views import views, contract_employee_views
 app_name = 'contracts'
 
 urlpatterns = [
-    path('list_categories/', views.list_insurance_categories, name='list'),
+    path('list_categories/', contract_employee_views.list_insurance_categories, name='list'),
 
 
     # path('/payment/', contract_employee_views.go_to_payment, name='contract_payment'),
@@ -22,7 +22,8 @@ urlpatterns = [
 
     # ---- customer only
     # show customer's contracts
-    path('my_contracts/', views.contract_list_customer, name='contract_list_customer'),  
+    # path('my_contracts/', views.contract_list_customer, name='contract_list_customer'),
+    path('my_contracts/', views.contract_list, name='contract_list'),
     path('contracts/create_civil/<int:category_id>/', views.create_contract_civil, name='create_contract_civil'),
     path('contracts/create_other/<int:category_id>/', views.create_contract_other, name='create_contract_other'),
     path('calculate/', views.calculate_insurance, name='calculate_insurance'),

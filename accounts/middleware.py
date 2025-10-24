@@ -41,7 +41,7 @@ class RedirectAuthenticatedUserMiddleware:
 
         # If the user is logged in and tries to access login/register => redirect
         if user_id and any(path.startswith(p) for p in protected_paths):
-            return redirect('home')
+            return redirect('home-customer')
 
         # Allow normal request processing
         response = self.get_response(request)

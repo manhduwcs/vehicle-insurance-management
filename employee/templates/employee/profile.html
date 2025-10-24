@@ -1,0 +1,109 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>My Profile</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <tbody>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Username</td>
+                  <td>{{ employee.username }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Full Name</td>
+                  <td>{{ employee.fullname }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Email</td>
+                  <td>{{ employee.email }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Phone</td>
+                  <td>{{ employee.phone }}</td>
+                </tr>
+                <tr>
+                  <td class="text-secondary font-weight-bold">Group</td>
+                  <td>{{ employee.group.group_name|default:"No group" }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="text-left mt-3">
+            {% if can_edit %}
+                <a href="{% url 'employee:change_password' %}" class="btn btn-primary">
+                  Change Password
+                </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<!-- JavaScript to show modal if error exists -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

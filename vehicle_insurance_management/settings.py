@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+import ssl
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'employee',
-    'vehicle',
+    'vehicles',
+    'vehicle_types',
     'insurance_category',
     'categories',
     'discount',
@@ -96,21 +98,21 @@ WSGI_APPLICATION = 'vehicle_insurance_management.wsgi.application'
 DATABASES = {
     'default': {
         # Hieu
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'vehicleinsurancedb',
-        # 'USER': 'root',
-        # 'PASSWORD': 'Hieu@02090711',
-        # 'HOST': '127.0.0.1',
-        # 'PORT': '3306',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'vehicleinsurancedb',
+        'USER': 'root',
+        'PASSWORD': 'Hieu@02090711',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         # --------------- 
         # --------------- 
         # Manh 
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'vehicleinsurancedb',
-        'USER': 'admin',
-        'PASSWORD': 'A_123456',
-        'HOST': '127.0.0.1',
-        'PORT': '3307',
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'vehicleinsurancedb',
+        # 'USER': 'admin',
+        # 'PASSWORD': 'A_123456',
+        # 'HOST': '127.0.0.1',
+        # 'PORT': '3307',
         # --------------- 
         # --------------- 
         # user ?
@@ -200,3 +202,14 @@ MIGRATION_MODULES = {
 # INTERNAL_IPS = [
 #     "127.0.0.1",
 # ]
+
+
+EMAIL_BACKEND = 'custom_email_backend.CustomEmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'hiiamgamer2000@gmail.com'
+EMAIL_HOST_PASSWORD = 'cfjischowxezhfmn'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
+PASSWORD_RESET_TIMEOUT = 300  # 5 minutes in seconds

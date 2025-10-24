@@ -1,0 +1,256 @@
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+{% block content %}
+  {% load static %}
+
+<section class="page-title">
+  <div class="background-container">
+    <img class="left-image" src="https://themeim.com/demo/carsore/images/background/header-left-bg.png" alt="">
+    <img class="right-image" src="{% static 'images/background/5.jpg' %}" alt="">
+  </div>
+
+  <div class="service-container">
+    <div class="section-icons-outer parallax-scene-1"
+      style="transform: translate3d(0px, 0px, 0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;">
+      <div data-depth="0.20" class="pattern-layer"
+        style="background-image: url('{% static 'images/background/pattern-8.png' %}'); transform: translate3d(-12.3px, -2.1px, 0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block; left: 0px; top: 0px;">
+      </div>
+    </div>
+
+    <div class="auto-container">
+      <h1>Services</h1>
+      <ul class="page-breadcrumb">
+        <li><a href="{% url 'home-customer' %}">Home</a></li>
+        <li>Services</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+{% include "includes/services.html" %}
+
+
+<section class="experiance-section">
+  <div class="auto-container">
+    <div class="inner-container">
+
+      <!-- Parallax icons -->
+      <div class="section-icons-outer parallax-scene-3"
+        style="transform: translate3d(0px,0px,0px) rotate(0.0001deg); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;">
+        <div data-depth="0.20" class="icon-layer"
+          style="background-image: url('{% static 'images/icons/icon-1.png' %}'); transform: translate3d(3.1px,-11.7px,0px); transform-style: preserve-3d; backface-visibility: hidden; position: relative; display: block;">
+        </div>
+        <div data-depth="0.20" class="pattern-layer"
+          style="background-image: url('{% static 'images/background/pattern-3.png' %}'); transform: translate3d(3.1px,-11.7px,0px); transform-style: preserve-3d; backface-visibility: hidden; position: absolute; display: block;">
+        </div>
+      </div>
+
+      <div class="row clearfix">
+        <!-- Image Column -->
+        <div class="image-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="image titlt" data-tilt data-tilt-max="2"
+              style="will-change: transform; transform: perspective(300px) rotateX(0deg) rotateY(0deg);">
+              <img src="{% static 'images/resource/experiance.jpg' %}" alt="">
+              <span class="triangle-one"></span>
+              <span class="triangle-two"></span>
+            </div>
+
+            <!-- Fact Counter / Style Two -->
+            <div class="fact-counter style-two">
+              <div class="row clearfix">
+                <!-- Column 1 -->
+                <div class="column counter-column col-lg-6 col-md-6 col-sm-12">
+                  <div class="inner">
+                    <div class="content">
+                      <div class="count-outer count-box ">
+                        <span class="count-text" data-speed="3000" data-stop="10">0</span>K+
+                      </div>
+                      <div class="counter-title">Happy Customers</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="column counter-column col-lg-6 col-md-6 col-sm-12">
+                  <div class="inner">
+                    <div class="content">
+                      <div class="count-outer count-box ">
+                        <span class="count-text" data-speed="4000" data-stop="4.9">4.9</span>+
+                      </div>
+                      <div class="rating">
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        <span class="fa fa-star"></span>
+                        &nbsp; (2,894)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content Column -->
+        <div class="content-column col-lg-6 col-md-12 col-sm-12">
+          <div class="inner-column">
+            <div class="sec-title light">
+              <h2>More than 10 years of Experience</h2>
+              <div class="text">
+                With over a decade in the insurance industry, we take pride in offering
+                reliable, transparent, and personalized vehicle insurance solutions
+                for every customer.
+              </div>
+            </div>
+
+            <div class="list-outer">
+              <ul class="experiance-list">
+                <li>
+                  <span class="icon flaticon-horse"></span>
+                  <strong>Strategy</strong>
+                  We develop customized insurance strategies that meet your needs and
+                  protect your vehicle from unexpected risks.
+                </li>
+                <li>
+                  <span class="icon flaticon-shopping-cart-4"></span>
+                  <strong>Market Value</strong>
+                  Our policies are designed to provide maximum coverage at competitive
+                  prices, ensuring true value for your investment.
+                </li>
+                <li>
+                  <span class="icon flaticon-megaphone-1"></span>
+                  <strong>Marketing</strong>
+                  We promote responsible driving and educate our clients about the
+                  benefits of comprehensive insurance protection.
+                </li>
+                <li>
+                  <span class="icon flaticon-relations"></span>
+                  <strong>Customer Relations</strong>
+                  We build long-term trust through clear communication,
+                  fast claims processing, and dedicated customer care.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="insurance-section-two">
+  <div class="auto-container">
+    <!-- Sec Title -->
+    <div class="sec-title centered">
+      <h2>
+        Factors Affecting Insurance <br>
+        Costs
+      </h2>
+      <div class="text">
+        Discover the main factors that influence how your vehicle insurance premium is calculated.
+      </div>
+    </div>
+    <!-- End Sec Title -->
+
+    <div class="inner-container">
+      <div class="section-icons-outer parallax-scene-4" 
+        style="transform: translate3d(0,0,0); transform-style: preserve-3d; backface-visibility: hidden; pointer-events: none;">
+        <div data-depth="0.20" class="icon-layer" 
+          style="background-image: url('{% static "images/icons/icon-1.png" %}');"></div>
+        <div data-depth="0.40" class="pattern-layer" 
+          style="background-image: url('{% static "images/background/pattern-4.png" %}');"></div>
+      </div>
+
+      <div class="clearfix">
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-heart-2"></div>
+            <h4><a href="#">Value of Your Car</a></h4>
+            <div class="text">
+              Higher car value means higher insurance cost because repairs and parts are more expensive.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-touch"></div>
+            <h4><a href="#">Insurance Type</a></h4>
+            <div class="text">
+              Comprehensive coverage provides wider protection but comes with a higher premium rate.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-person"></div>
+            <h4><a href="#">Coverage</a></h4>
+            <div class="text">
+              The broader your coverage options, the more you’ll need to pay for insurance protection.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-car-2"></div>
+            <h4><a href="#">Car’s Age</a></h4>
+            <div class="text">
+              Older vehicles often cost less to insure since their repair or replacement value is lower.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-share-1"></div>
+            <h4><a href="#">Bonus Features</a></h4>
+            <div class="text">
+              Cars equipped with airbags and anti-theft systems usually qualify for lower premium rates.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+        <!-- Insurance Block Two -->
+        <div class="insurance-block-two col-lg-4 col-md-6 col-sm-12">
+          <div class="inner-box">
+            <div class="color-layer"></div>
+            <div class="icon flaticon-scroll"></div>
+            <h4><a href="#">Claim History</a></h4>
+            <div class="text">
+              Drivers with fewer past claims are considered safer and receive better insurance discounts.
+            </div>
+            <a class="arrow fa fa-angle-right" href="#"></a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+{% endblock %}

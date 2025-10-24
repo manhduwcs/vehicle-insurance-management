@@ -14,7 +14,7 @@ def category_list(request):
     user_group_id = request.session.get('group_id', None)
     if not has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.View):
         messages.error(request, "You do not have permission to view insurance categories.")
-        return redirect('employee:login')
+        return redirect('home')
 
     categories = InsuranceCategories.objects.all()
     durations = Duration.objects.all()
@@ -144,11 +144,10 @@ def update_max_coverage(request):
     user_group_id = request.session.get('group_id', None)
     if not has_permission(user_group_id, FunctionIds.ManageInsurancePriceList, ActionIds.Edit):
         messages.error(request, "You do not have permission to update max coverage rate.")
-        return redirect('employee:login')
+        return redirect('home')
 
     categories = InsuranceCategories.objects.all()
 
-    # Tính category_max_coverage giống category_list
     category_max_coverage = {}
     for category in categories:
         first_price = InsurancePriceList.objects.filter(insurance_category=category).first()

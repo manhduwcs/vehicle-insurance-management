@@ -70,9 +70,6 @@
                     </p>
                   </td>
                   <td class="align-middle">
-                    <a href="{% url 'employee:employee_detail' employee.id %}" class="btn btn-sm btn-info">
-                      <i class="fa-solid fa-circle-info"></i>
-                    </a>
                     {% if can_edit %}
                       <a href="{% url 'employee:employee_update' employee.id %}" class="btn btn-sm btn-warning">
                         <i class="fas fa-edit"></i>
@@ -101,6 +98,25 @@
     </div>
   </div>
   {% include "includes/footer.html" %}
+
+
+    <!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Permission Error Modal -->
   {% if messages %}

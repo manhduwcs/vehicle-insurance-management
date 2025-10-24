@@ -30,10 +30,22 @@
 
                   {% for field in form %}
                   <div class="mb-3">
-                    {{ field }}
+                    {% if 'password' in field.name %}
+                      <div class="position-relative">
+                        {{ field }}
+                        <span class="position-absolute top-50 end-0 translate-middle-y pe-3" 
+                              style="cursor: pointer; z-index: 10;"
+                              onclick="togglePassword('{{ field.id_for_label }}', this)">
+                          <i class="fas fa-eye" id="icon-{{ field.id_for_label }}"></i>
+                        </span>
+                      </div>
+                    {% else %}
+                      {{ field }}
+                    {% endif %}
                     <span class="d-block mt-1 text-danger">{{ field.errors }}</span>
                   </div>
                   {% endfor %}
+
                   <div class="form-check form-check-info text-left">
                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
                     <label class="form-check-label" for="flexCheckDefault">
@@ -52,5 +64,22 @@
       </div>
     </section>
   </main>
+
+  <script>
+    function togglePassword(fieldId, iconElement) {
+      const passwordField = document.getElementById(fieldId);
+      const icon = iconElement.querySelector('i');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  </script>
 
 {% endblock content %}

@@ -8,10 +8,10 @@ from permissions.views import has_permission
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from django.db.models import Q
-from vehicle.models import Vehicle, VehicleType
+from vehicles.models import Vehicles
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.models import Contracts, Depreciations
-from vehicle.models import Vehicle
+from vehicle_types.models import VehicleTypes
 from decimal import Decimal
 
 

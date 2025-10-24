@@ -1,0 +1,153 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>Vehicle List</h6>
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex justify-content-between mb-2">
+            <div>
+              {% if can_add %}
+                <a href="{% url 'vehicles:vehicle_create' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add Vehicle
+                </a>
+              {% endif %}
+              <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Model</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle Type</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Purchase Price</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for vehicle in vehicles %}
+                <tr>
+                  <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
+                  <td class="align-middle">
+                    <a href="{% url 'vehicles:vehicle_detail_emp' vehicle.id %}">
+                      <p class="text-xs font-weight-bold mb-0">{{ vehicle.name|truncatechars:50 }}</p>
+                    </a>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vehicle.model }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vehicle.number }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vehicle.vehicle_type.name }}</p>
+                  </td>
+                  <td class="align-middle">
+                    <p class="text-xs text-secondary mb-0">{{ vehicle.purchase_price }}</p>
+                  </td>
+                  <td class="align-middle">
+                    {% if can_edit %}
+                      <a href="{% url 'vehicles:vehicle_update' vehicle.id %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                    {% endif %}
+                    {% if can_delete %}
+                      <form method="post" action="{% url 'vehicles:vehicle_delete' vehicle.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the vehicle: {{ vehicle.name|truncatechars:30 }}?');">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                      </form>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="6" class="text-center text-secondary">No vehicles found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "includes/footer.html" %}
+
+    <!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

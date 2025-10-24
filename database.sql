@@ -183,55 +183,39 @@ ON DELETE SET NULL;
 -- sample data 
 USE vehicleinsurancedb;
 
--- Customers
-INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID)
-VALUES
-('johnsmith', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123'),
-('emilytran', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '987654321', 'Hanoi', '2021-03-20', 'Police Dept Hanoi', 'TX00456'),
-('michaelle', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789'),
-('hannahpham', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001'),
-('ethannam', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234');
-
 -- VehicleTypes
 INSERT INTO VehicleTypes (Name, Fee, Description, MaxPersonalCompensation, MaxPropertyCompensation)
 VALUES
--- Motorcycles
-('Motorcycle under 50cc', 55000, 'Motorcycle with engine capacity under 50cc', 150000000, 100000000),
-('Motorcycle over 50cc', 60000, 'Motorcycle with engine capacity over 50cc', 150000000, 100000000),
+-- I. Motorbikes (2-wheel)
+('Motorcycle - under 50 cc', 55000, 'Two-wheeled motorcycle, engine capacity under 50 cc', 150000000, 50000000),
+('Motorcycle - 50 cc or more', 60000, 'Two-wheeled motorcycle, engine capacity 50 cc or more', 150000000, 50000000),
 
--- Passenger cars
-('Car under 6 seats (non-commercial)', 437000, 'Private passenger car under 6 seats (non-commercial use)', 150000000, 100000000),
-('Car from 6 to 11 seats', 794000, 'Passenger car with 6–11 seats', 150000000, 100000000),
-('Commercial car under 6 seats', 756000, 'Commercial passenger car under 6 seats', 150000000, 100000000),
+-- II. Three-wheeled motorcycle
+('Three-wheeled motorcycle', 290000, 'Three-wheeled motorcycle', 150000000, 50000000),
 
--- Trucks and trailers
-('Truck under 3.5 tons', 853000, 'Truck with payload under 3.5 tons', 150000000, 100000000),
-('Truck from 3.5 to 7 tons', 1660000, 'Truck with payload from 3.5 to 7 tons', 150000000, 100000000),
-('Tractor head', 1826000, 'Semi-trailer tractor head', 150000000, 100000000);
+-- III. Powered bicycles / e-bikes and other similar
+('Electric motorcycle / e-bike', 55000, 'Electric motorcycle / e-bike', 150000000, 50000000),
+('Other similar motorized small vehicles', 290000, 'Other motorized similar vehicles', 150000000, 50000000),
 
--- Vehicles
-INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate)
-VALUES
--- Customer 1
-('Toyota Vios', 1, 'Vios G 2021', 3, 560000000, 'TH12345', 'EN98765', '30A-45678', '2022-05-12'),
-('Yamaha Janus', 1, 'Janus 125cc 2022', 2, 41000000, 'THA001', 'ENA001', '29H1-22345', '2023-03-15'),
+-- IV. Private (non-commercial) cars (by seats)
+('Private car (under 6 seats)', 437000, 'Private passenger car, under 6 seats', 150000000, 100000000),
+('Private car (6 to 11 seats)', 794000, 'Private passenger car, 6–11 seats', 150000000, 100000000),
+('Private car (12 to 24 seats)', 1270000, 'Private passenger car, 12–24 seats', 150000000, 100000000),
+('Private car (over 24 seats)', 1825000, 'Private passenger car, over 24 seats', 150000000, 100000000),
+('Private Pickup / Minivan', 437000, 'Pickup or minivan used for private purposes', 150000000, 100000000),
 
--- Customer 2
-('Honda City', 2, 'City RS 2022', 3, 620000000, 'TH54321', 'EN12345', '30B-56789', '2023-02-10'),
-('Hyundai Staria', 2, 'Staria 9-Seater 2023', 4, 1380000000, 'THB002', 'ENB002', '30D-77788', '2023-11-02'),
-
--- Customer 3
-('Yamaha Exciter', 3, 'Exciter 155', 2, 48000000, 'TH88888', 'EN77777', '29E1-12345', '2023-06-20'),
-('Ford Transit', 3, 'Transit 2020', 4, 1120000000, 'THC003', 'ENC003', '30E-99234', '2020-09-09'),
-
--- Customer 4
-('Kia K200', 4, 'K200 1.9 Ton', 6, 465000000, 'TH99999', 'EN66666', '29C-88888', '2021-11-05'),
-('Isuzu NQR75', 4, 'NQR75 5-Ton Truck', 7, 780000000, 'THD004', 'END004', '30C-55555', '2022-08-20'),
-('Hino 700', 4, 'Hino 700 Tractor Head', 8, 1650000000, 'THE004', 'ENE004', '30H-11111', '2023-01-15'),
-
--- Customer 5
-('Mazda CX-5', 5, 'CX-5 Premium 2023', 3, 850000000, 'TH11223', 'EN33445', '30F-99999', '2023-09-01'),
-('Suzuki Carry', 5, 'Carry Truck 2022', 6, 365000000, 'THF005', 'ENF005', '30G-66666', '2022-06-30');
+-- V. Commercial passenger vehicles (by seats, grouped)
+('Commercial passenger vehicle (under 6 seats)', 756000, 'Commercial passenger vehicle, under 6 seats', 150000000, 100000000),
+('Commercial passenger vehicle (6–11 seats)', 1080000, 'Commercial passenger vehicle, 6–11 seats', 150000000, 100000000),
+('Commercial passenger vehicle (12–24 seats)', 2049000, 'Commercial passenger vehicle, 12–24 seats', 150000000, 100000000),
+('Commercial passenger vehicle (over 24 seats)', 4813000, 'Commercial passenger vehicle, over 24 seats', 150000000, 100000000),
+('Commercial Pickup / Minivan', 933000, 'Pickup or minivan used for commercial purposes', 150000000, 100000000),
+('Taxi', 1285200, 'Taxi (170% of commercial vehicle under 6 seats)', 150000000, 100000000),
+('Driver training vehicle', 908400, 'Driver training vehicle (120% of private car under 6 seats)', 150000000, 100000000),
+('Ambulance', 1119600, 'Ambulance or emergency vehicle (120% of commercial pickup fee)', 150000000, 100000000),
+('Cash transport / Security vehicle', 907200, 'Special-purpose security or cash transport vehicle (120% of private car under 6 seats)', 150000000, 100000000),
+('Tractor–Semi-trailer', 4800000, 'Tractor and semi-trailer (150% of truck over 15 tons)', 150000000, 100000000),
+('Agricultural tractor', 1023600, 'Agricultural tractor and trailer (120% of truck under 3 tons)', 150000000, 100000000);
 
 
 -- InsuranceCategories 
@@ -381,57 +365,92 @@ VALUES
     ('Customer', 'Customers'),
     ('Employee', 'Employees');
 
-INSERT INTO Employees(Username, Fullname, Email, Phone, Password, GroupID)
-VALUES 
-    ('admin', 'Administrator', 'admin@gmail.com', '0999999999', '123456', 1),
-    ('customer1', 'Nguyen Van A', 'nva@gmail.com', '0888888888', '123456', 2),
-    ('employee1', 'Hoang Anh B', 'hab@gmail.com', '0777777777', '123456', 3);
-
 INSERT INTO Functions (FunctionName, Description) VALUES
-    ('Manage Customers', 'Manage Customers'),
+    ('Manage Customers by Customers', 'Manage Customers by Customers'),
+    ('Manage Customers by Employees', 'Manage Customers by Employees'),
     ('Manage Vehicles', 'Manage Vehicles'),
     ('Manage Vehicle Types', 'Manage Vehicle Types'),
-    ('Manage Contracts', 'Manage Contracts'),
-    ('Manage Claims', 'Manage Claims'),
+    ('Manage Contracts by Customers', 'Manage Contracts by Customers'),
+    ('Manage Contracts by Employees', 'Manage Contracts by Employees'),
+    ('Manage Claims by Customers', 'Manage Claims by Customers'),
+    ('Manage Claims by Employees', 'Manage Claims by Employees'),
     ('Manage Expenses', 'Manage Expenses'),
-    ('Manage Employees', 'Manage Employees'),
+    ('Manage Employees by Admin', 'Manage Employees by Admin'),
+    ('Manage Employees by Employees', 'Manage Employees by Employees'),
     ('Manage Groups users', 'Manage Groups Users'),
     ('Manage Insurance Categories', 'Manage Insurance Categories'),
-    ('Manage Insurance Price List', 'Manage Insurance Price List');
+    ('Manage Insurance Price List', 'Manage Insurance Price List'),
+    ('Manage Home', 'Manage Home Page');
 
 INSERT INTO Actions (ActionName, Description)
 VALUES 
     ('View', 'View Info'),
     ('Create', 'Add new data'),
     ('Edit', 'Update data'),
-    ('Delete', 'Delete data'),
-    ('Download', 'Download data'),
-    ('Print', 'Print data'),
-    ('Export', 'Export data');
+    ('Delete', 'Delete data');
 
 INSERT INTO GroupsFunctionsActions (GroupID, FunctionID, ActionID)
 VALUES 
     -- Administrator
-    (1, 1, 1), (1, 1, 2), (1, 1, 3), (1, 1, 4),
-    (1, 3, 1), (1, 3, 2), (1, 3, 3), (1, 3, 4),
-    (1, 4, 1), (1, 4, 2), (1, 4, 3), (1, 4, 4), (1, 4, 5), (1, 4, 6), (1, 4, 7),
-    (1, 5, 1), (1, 5, 2), (1, 5, 3), (1, 5, 4), (1, 5, 5), (1, 5, 6), (1, 5, 7),
-    (1, 6, 1), (1, 6, 2), (1, 6, 3), (1, 6, 4),
-    (1, 7, 1), (1, 7, 2), (1, 7, 3), (1, 7, 4),
-    (1, 8, 1), (1, 8, 2), (1, 8, 3), (1, 8, 4),
-    (1, 9, 1), (1, 9, 2), (1, 9, 3), (1, 9, 4),
     (1, 10, 1), (1, 10, 2), (1, 10, 3), (1, 10, 4),
+    (1, 12, 1), (1, 12, 2), (1, 12, 3), (1, 12, 4),
+    (1, 15, 1), 
 
     -- Customers
     (2, 1, 1), (2, 1, 2), (2, 1, 3), 
-    (2, 2, 1), (2, 2, 2), (2, 2, 3), (2, 2, 4), 
-    (2, 4, 1), (2, 4, 2), (2, 4, 3), (2, 4, 5), (2, 4, 6), 
-    (2, 5, 1), (2, 5, 2), (2, 5, 3), (2, 5, 5), (2, 5, 6), 
+    (2, 3, 1), (2, 3, 2), (2, 3, 3), (2, 3, 4), 
+    (2, 5, 1), (2, 5, 2), (2, 5, 3), 
+    (2, 7, 1), (2, 7, 2), (2, 7, 3), 
     
     -- Employees
-    (3, 3, 1), (3, 3, 2), (3, 3, 3), (3, 3, 4), 
-    (3, 4, 1), (3, 4, 2), (3, 4, 3), (3, 4, 4), (3, 4, 5), (3, 4, 6), 
-    (3, 5, 1), (3, 5, 2), (3, 5, 3), (3, 5, 4), (3, 5, 5), (3, 5, 6), 
-    (3, 6, 1), (3, 6, 2), (3, 6, 3), (3, 6, 4), 
-    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4), 
-    (3, 10, 1), (3, 10, 2), (3, 10, 3), (3, 10, 4);
+    (3, 2, 1),
+    (3, 3, 1),
+    (3, 4, 1), (3, 4, 2), (3, 4, 3), (3, 4, 4),
+    (3, 6, 1), (3, 3, 3), 
+    (3, 8, 1), (3, 3, 3),
+    (3, 9, 1), (3, 9, 2), (3, 9, 3), (3, 9, 4),
+    (3, 11, 1), (3, 11, 3), 
+    (3, 13, 1), (3, 13, 2), (3, 13, 3), (3, 13, 4),
+    (3, 14, 1), (3, 14, 3),
+    (3, 15, 1);
+
+-- Employees
+INSERT INTO Employees(Username, Fullname, Email, Phone, Password, GroupID)
+VALUES 
+    ('admin', 'Administrator', 'admin@gmail.com', '0999999999', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 1),
+    ('employee1', 'Hoang Anh B', 'hab@gmail.com', '0777777777', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 3);
+
+-- Customers
+INSERT INTO Customers (Username, Password, Fullname, Address, Email, Phone, IdentifyNumber, IdentifyAddress, IdentifyDate, IssuingAuthority, TaxID, GroupID)
+VALUES
+('johnsmith', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'John Smith', '12 Nguyen Trai, District 1, Ho Chi Minh City', 'john.smith@example.com', '0903123456', '123456789', 'Ho Chi Minh City', '2020-05-12', 'Police Dept HCM', 'TX00123', 2),
+('emilytran', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Emily Tran', '45 Cau Giay, Hanoi', 'emily.tran@example.com', '0987234567', '987654321', 'Hanoi', '2021-03-20', 'Police Dept Hanoi', 'TX00456', 2),
+('michaelle', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Michael Le', '89 Le Loi, Da Nang', 'michael.le@example.com', '0934567890', '223344556', 'Da Nang', '2021-08-09', 'Police Dept Da Nang', 'TX00789', 2),
+('hannahpham', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Hannah Pham', '21 Nguyen Hue, Hue City', 'hannah.pham@example.com', '0976543210', '112233445', 'Hue', '2022-01-12', 'Police Dept Hue', 'TX01001', 2),
+('ethannam', '8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92', 'Ethan Nam', '5 Ly Thuong Kiet, Hai Phong', 'ethan.nam@example.com', '0912789345', '334455667', 'Hai Phong', '2020-09-30', 'Police Dept Hai Phong', 'TX01234', 2);
+
+
+-- Vehicles
+INSERT INTO Vehicles (Name, CustomerID, Model, VehicleTypeID, PurchasePrice, BodyNumber, EngineNumber, Number, RegistrationDate)
+VALUES
+-- Customer 1
+('Toyota Vios', 1, 'Vios G 2021', 3, 560000000, 'TH12345', 'EN98765', '30A-45678', '2022-05-12'),
+('Yamaha Janus', 1, 'Janus 125cc 2022', 2, 41000000, 'THA001', 'ENA001', '29H1-22345', '2023-03-15'),
+
+-- Customer 2
+('Honda City', 2, 'City RS 2022', 3, 620000000, 'TH54321', 'EN12345', '30B-56789', '2023-02-10'),
+('Hyundai Staria', 2, 'Staria 9-Seater 2023', 4, 1380000000, 'THB002', 'ENB002', '30D-77788', '2023-11-02'),
+
+-- Customer 3
+('Yamaha Exciter', 3, 'Exciter 155', 2, 48000000, 'TH88888', 'EN77777', '29E1-12345', '2023-06-20'),
+('Ford Transit', 3, 'Transit 2020', 4, 1120000000, 'THC003', 'ENC003', '30E-99234', '2020-09-09'),
+
+-- Customer 4
+('Kia K200', 4, 'K200 1.9 Ton', 6, 465000000, 'TH99999', 'EN66666', '29C-88888', '2021-11-05'),
+('Isuzu NQR75', 4, 'NQR75 5-Ton Truck', 7, 780000000, 'THD004', 'END004', '30C-55555', '2022-08-20'),
+('Hino 700', 4, 'Hino 700 Tractor Head', 8, 1650000000, 'THE004', 'ENE004', '30H-11111', '2023-01-15'),
+
+-- Customer 5
+('Mazda CX-5', 5, 'CX-5 Premium 2023', 3, 850000000, 'TH11223', 'EN33445', '30F-99999', '2023-09-01'),
+('Suzuki Carry', 5, 'Carry Truck 2022', 6, 365000000, 'THF005', 'ENF005', '30G-66666', '2022-06-30');
+
