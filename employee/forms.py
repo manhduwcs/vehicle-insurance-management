@@ -1,5 +1,7 @@
 # employee/forms.py
 from django import forms
+from django.contrib.auth.forms import SetPasswordForm
+
 from .models import Employees
 from django.core.exceptions import ValidationError
 from accounts.forms import hash_password
@@ -156,3 +158,38 @@ class EmployeeUpdateForm(forms.ModelForm):
         if qs.exists():
             raise forms.ValidationError("Phone number already exists.")
         return phone
+
+
+class EmployeePasswordResetForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter your email address'
+        }),
+        label="Email"
+    )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not Employees.objects.filter(email=email).exists():
+            raise forms.ValidationError("No account found with this email.")
+        return email
+
+
+class EmployeeSetPasswordForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'New Password'
+        }),
+        label="New Password"
+    )
+    new_password2 = forms.CharField(
+        max_length=50,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm New Password'
+        }),
+        label="Confirm New Password"
+    )
