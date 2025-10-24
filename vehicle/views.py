@@ -4,6 +4,7 @@ from .forms import VehicleTypeForm, VehicleForm
 from django.contrib.auth.decorators import login_required
 from contracts.models import Contracts
 from app_helper.views import notify
+from accounts.decorators import customer_login_required, employee_login_required
 
 # VehicleType CRUD
 
@@ -61,44 +62,51 @@ def vehicle_type_delete(request, pk):
 
 # Vehicle CRUD
 
+@customer_login_required
 def vehicle_list(request):
-    vehicles = Vehicle.objects.all().order_by('-id')
+    # Chỉ hiển thị vehicle của customer đang đăng nhập
+    vehicles = Vehicle.objects.filter(customer=request.customer).order_by('-id')
     context = {
         "vehicles": vehicles,
         "segment": "vehicle",
     }
     return render(request, "vehicle/list.html", context)
 
+@customer_login_required
 def vehicle_detail(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk)
+    # Chỉ cho phép xem vehicle của chính customer đó
+    vehicle = get_object_or_404(Vehicle, pk=pk, customer=request.customer)
     context = {
         "vehicle": vehicle,
         "segment": "vehicle",
     }
     return render(request, "vehicle/detail.html", context)
 
+@customer_login_required
 def vehicle_create(request):
     if request.method == "POST":
         form = VehicleForm(request.POST)
         if form.is_valid():
-            form.save()
+            # Tự động gán customer từ session
+            vehicle = form.save(commit=False)
+            vehicle.customer = request.customer
+            vehicle.save()
             return redirect("vehicle_list")
     else:
         form = VehicleForm()
-    from customer.models import Customer
     from .models import VehicleType
-    customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
     context = {
         "form": form,
         "segment": "vehicle",
-        "customers": customers,
         "vehicle_types": vehicle_types
     }
     return render(request, "vehicle/create.html", context)
 
+@customer_login_required
 def vehicle_update(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk)
+    # Chỉ cho phép sửa vehicle của chính customer đó
+    vehicle = get_object_or_404(Vehicle, pk=pk, customer=request.customer)
     if request.method == "POST":
         form = VehicleForm(request.POST, instance=vehicle)
         if form.is_valid():
@@ -106,21 +114,20 @@ def vehicle_update(request, pk):
             return redirect("vehicle_detail", pk=vehicle.pk)
     else:
         form = VehicleForm(instance=vehicle)
-    from customer.models import Customer
     from .models import VehicleType
-    customers = Customer.objects.all()
     vehicle_types = VehicleType.objects.all()
     context = {
         "vehicle": vehicle,
         "segment": "vehicle",
         "form": form,
-        "customers": customers,
         "vehicle_types": vehicle_types
     }
     return render(request, "vehicle/update.html", context)
 
+@customer_login_required
 def vehicle_delete(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk)
+    # Chỉ cho phép xóa vehicle của chính customer đó
+    vehicle = get_object_or_404(Vehicle, pk=pk, customer=request.customer)
     if request.method == "POST":
         vehicle.delete()
         return redirect("vehicle_list")

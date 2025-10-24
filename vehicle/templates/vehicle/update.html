@@ -5,7 +5,11 @@
   {% csrf_token %}
   {{ form.non_field_errors }}
   <div class="mb-3">{{ form.name.label_tag }} {{ form.name }}</div>
-  <div class="mb-3">{{ form.customer.label_tag }} {{ form.customer }}</div>
+  <div class="mb-3">
+    <label class="form-label">Owner</label>
+    <input type="text" class="form-control" value="{{ request.customer.fullname }}" readonly>
+    <small class="form-text text-muted">Vehicle owner cannot be changed</small>
+  </div>
   <div class="mb-3">{{ form.model.label_tag }} {{ form.model }}</div>
   <div class="mb-3">{{ form.vehicle_type.label_tag }} {{ form.vehicle_type }}</div>
   <div class="mb-3">{{ form.purchase_price.label_tag }} {{ form.purchase_price }}</div>

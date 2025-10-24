@@ -1,7 +1,9 @@
 {% extends "layouts/base.html" %}
 {% block content %}
 <h2>Vehicle List</h2>
-<a href="{% url 'vehicle_create' %}" class="btn btn-primary mb-2">Add Vehicle</a>
+{% if request.session.user_type == 'customer' %}
+    <a href="{% url 'vehicle_create' %}" class="btn btn-primary mb-2">Add Vehicle</a>
+{% endif %}
 <table class="table table-striped">
     <thead>
         <tr>
@@ -21,14 +23,16 @@
                 <td>{{ v.customer.fullname }}</td>
                 <td>
                     <a href="{% url 'vehicle_detail' v.pk %}" class="btn btn-sm btn-info">View</a>
-                    <a href="{% url 'vehicle_update' v.pk %}" class="btn btn-sm btn-warning">Edit</a>
-                    <form action="{% url 'vehicle_delete' v.pk %}"
-                          method="post"
-                          style="display:inline">
-                        {% csrf_token %}
-                        <button class="btn btn-sm btn-danger"
-                                onclick="return confirm('Delete vehicle?')">Delete</button>
-                    </form>
+                    {% if request.session.user_type == 'customer' %}
+                        <a href="{% url 'vehicle_update' v.pk %}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{% url 'vehicle_delete' v.pk %}"
+                              method="post"
+                              style="display:inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Delete vehicle?')">Delete</button>
+                        </form>
+                    {% endif %}
                 </td>
             </tr>
         {% empty %}

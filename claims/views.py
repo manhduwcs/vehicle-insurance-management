@@ -10,11 +10,8 @@ from .forms import ClaimForm
 
 @customer_login_required
 def claim_list(request):
-    if request.user.is_staff:
-        claims = Claim.objects.all().order_by('-id')
-    else:
-        # assume User -> Customer relation exists as request.user.customer
-        claims = Claim.objects.filter(customer=getattr(request.user, "customer", None)).order_by('-id')
+    # Chỉ hiển thị claims của customer đang đăng nhập
+    claims = Claim.objects.filter(customer=request.customer).order_by('-id')
     return render(request, "claims/list.html", {"claims": claims, "segment": "claim"})
 
 @customer_login_required
@@ -23,18 +20,8 @@ def claim_create(request):
         form = ClaimForm(request.POST)
         if form.is_valid():
             claim = form.save(commit=False)
-            # Get customer from user
-            customer = getattr(request.user, "customer", None)
-            if not customer:
-                # If no customer relation, try to get from the selected contract
-                contract = form.cleaned_data.get('contract')
-                if contract:
-                    customer = contract.created_by
-                else:
-                    form.add_error(None, "No customer found for this claim.")
-                    return render(request, "claims/create.html", {"form": form, "segment": "claim"})
-            
-            claim.customer = customer
+            # Tự động gán customer từ session
+            claim.customer = request.customer
             claim.status = 'Pending'
             claim.save()
             return redirect("claim_list")
@@ -43,37 +30,23 @@ def claim_create(request):
             print("Form errors:", form.errors)
     else:
         form = ClaimForm()
-        # Show only contracts of current customer, vehicle will be auto-selected
-        try:
-            customer = getattr(request.user, "customer", None)
-            if customer:
-                # Get all contracts for this customer
-                contracts = Contracts.objects.filter(created_by=customer).select_related('vehicle')
-                form.fields['contract'].queryset = contracts
-                # Hide vehicle field initially, it will be auto-populated
-                form.fields['vehicle'].widget = forms.HiddenInput()
-            else:
-                # If no customer, show all contracts (for staff)
-                form.fields['contract'].queryset = Contracts.objects.all().select_related('vehicle')
-        except Exception as e:
-            # Fallback to all contracts if there's an error
-            form.fields['contract'].queryset = Contracts.objects.all().select_related('vehicle')
+        # Chỉ hiển thị contracts của customer đang đăng nhập
+        contracts = Contracts.objects.filter(created_by=request.customer).select_related('vehicle')
+        form.fields['contract'].queryset = contracts
+        # Hide vehicle field initially, it will be auto-populated
+        form.fields['vehicle'].widget = forms.HiddenInput()
     return render(request, "claims/create.html", {"form": form, "segment": "claim"})
 
 @customer_login_required
 def claim_detail(request, pk):
-    claim = get_object_or_404(Claim, pk=pk)
-    # permission: staff can view all; customers only their own
-    if not request.user.is_staff and claim.customer != getattr(request.user, "customer", None):
-        return redirect("claim_list")
+    # Chỉ cho phép xem claim của chính customer đó
+    claim = get_object_or_404(Claim, pk=pk, customer=request.customer)
     return render(request, "claims/detail.html", {"claim": claim, "segment": "claim"})
 
 @customer_login_required
 def claim_update(request, pk):
-    claim = get_object_or_404(Claim, pk=pk)
-    # only staff can update / assess
-    if not request.user.is_staff:
-        return redirect("claim_list")
+    # Chỉ cho phép sửa claim của chính customer đó
+    claim = get_object_or_404(Claim, pk=pk, customer=request.customer)
     if request.method == "POST":
         form = ClaimForm(request.POST, instance=claim)
         if form.is_valid():
@@ -86,19 +59,19 @@ def claim_update(request, pk):
 @customer_login_required
 def contracts_for_vehicle(request, vehicle_id):
     """
-    AJAX: return list of contracts for a given vehicle id
+    AJAX: return list of contracts for a given vehicle id (chỉ của customer đang đăng nhập)
     """
-    qs = Contracts.objects.filter(vehicle_id=vehicle_id)
+    qs = Contracts.objects.filter(vehicle_id=vehicle_id, created_by=request.customer)
     data = [{"id": c.id, "contract_no": getattr(c, "contract_no", str(c.id))} for c in qs]
     return JsonResponse({"contracts": data})
 
 @customer_login_required
 def vehicle_for_contract(request, contract_id):
     """
-    AJAX: return vehicle information for a given contract id
+    AJAX: return vehicle information for a given contract id (chỉ của customer đang đăng nhập)
     """
     try:
-        contract = Contracts.objects.select_related('vehicle', 'vehicle__vehicle_type').get(id=contract_id)
+        contract = Contracts.objects.select_related('vehicle', 'vehicle__vehicle_type').filter(created_by=request.customer).get(id=contract_id)
         vehicle = contract.vehicle
         data = {
             "id": vehicle.id,
