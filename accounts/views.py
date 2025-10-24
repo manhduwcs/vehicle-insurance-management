@@ -39,9 +39,8 @@ def login_view(request):
             
             customer = form.cleaned_data['customer']
             request.session['user_id'] = customer.id
-            request.session['user_type'] = 'customer'
             request.session['username'] = customer.username
-            request.session['group_id'] = customer.group_id_id
+            request.session['group_id'] = customer.group_id
             remember_me = request.POST.get('remember_me')
             if remember_me == 'on':
                 request.session.set_expiry(7 * 24 * 60 * 60)  # 7 days

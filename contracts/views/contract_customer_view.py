@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.decorators import customer_login_required, employee_login_required
+
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.forms import ContractForm, ContractUpdateForm
 from contracts.models import ContractStatus, Contracts, Depreciations

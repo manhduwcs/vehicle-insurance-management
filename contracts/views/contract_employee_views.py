@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
-from accounts.decorators import customer_login_required
+
 from contracts.forms import ContractForm
 from permissions.views import has_permission
 from dateutil.relativedelta import relativedelta
