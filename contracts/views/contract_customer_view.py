@@ -459,7 +459,7 @@ def calculate_insurance(request):
         return JsonResponse({'error': 'Invalid vehicle or category'}, status=400)
 
     try:
-        vehicle = Vehicle.objects.select_related('vehicle_type').get(id=vehicle_id, customer_id=request.session['user_id'])
+        vehicle = Vehicles.objects.select_related('vehicle_type').get(id=vehicle_id, customer_id=request.session['user_id'])
         category = InsuranceCategories.objects.get(id=category_id)
         durations = Duration.objects.all()
         current_date = datetime.now().date()
@@ -518,7 +518,7 @@ def calculate_insurance(request):
             data.append(item)
 
         return JsonResponse({'data': data})
-    except Vehicle.DoesNotExist:
+    except Vehicles.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
 # @customer_login_required
