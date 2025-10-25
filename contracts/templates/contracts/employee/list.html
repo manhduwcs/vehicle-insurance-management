@@ -1,0 +1,88 @@
+{% extends "layouts/base.html" %}
+{% load humanize %}
+{% load static %}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Contracts</h6>
+                    {% if messages %}
+                        {% for message in messages %}
+                            {% if message.tags != 'error' %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="d-flex justify-content-between mb-2">
+                        <div>
+                            {% if can_add %}
+                                <a href="{% url 'contracts_employee:contract_create' %}"
+                                   class="btn btn-primary btn-sm">
+                                    <i class="fa-solid fa-plus"></i> Add Contract
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'contracts_employee:contract_list' %}"
+                               class="btn btn-secondary btn-sm">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contract No</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actual Premium</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for contract in contracts %}
+                                    <tr>
+                                        <td class="align-middle text-center text-sm">{{ forloop.counter }}</td>
+                                        <td class="align-middle">
+                                            <a href="{% url 'contracts_employee:contract_detail' contract.id %}">
+                                                <p class="text-xs font-weight-bold mb-0">{{ contract.contract_no }}</p>
+                                            </a>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.customer.fullname }}</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.number }}</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.actual_premium }}</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.status }}</p>
+                                        </td>
+                                        <td class="align-middle">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.start_date }}</p>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center text-secondary">No contracts yet.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include "includes/footer.html" %}
+</div>
+{% endblock content %}

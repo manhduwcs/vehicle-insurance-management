@@ -1,0 +1,211 @@
+{% extends "layouts/base.html" %}
+{% load humanize %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+<style>
+    .contract-detail span.text-xs {
+        font-size: 0.95rem; /* slightly larger text */
+        line-height: 1.8; /* more spacing between lines */
+        display: block; /* ensure each field sits on its own line */
+    }
+    .contract-detail .text-dark {
+        font-weight: 600; /* make value text bolder */
+    }
+    .contract-field {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    .contract-value {
+        font-weight: 600;
+        margin-left: 0.3rem;
+    }
+</style>
+<script src="{% static 'js/showConfirmDelete.js' %}"></script>
+<!-- Overlay -->
+<div id="overlay" class="overlay" style="display: none"></div>
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-header pb-0 px-3 d-flex justify-content-between align-items-center w-100 flex-wrap">
+                    <div class="d-flex flex-column gap-3 w-100 px-3">
+                        <!-- Row: Contract No + Contract Status -->
+                        <div class="d-flex gap-3 w-100">
+                            <!-- Contract No -->
+                            <div class="px-4 py-3 border rounded-3 flex-grow-1 d-flex flex-column justify-content-center">
+                                <h5 class="fw-bold mb-1">Contract No</h5>
+                                <p class="mb-0 fs-5">{{ contract.contract_no }}</p>
+                            </div>
+                            <!-- Contract Status -->
+                            <div class="px-4 py-3 border rounded-3 flex-grow-1 d-flex flex-column justify-content-center">
+                                <h5 class="fw-bold mb-1">Contract Status</h5>
+                                <p class="mb-0 fs-5">{{ cotract.get_status_display|default:contract.status }}</p>
+                            </div>
+                        </div>
+                        <!-- Status Message & Action -->
+                        <div class="px-4 py-3 border rounded-3 d-flex justify-content-between align-items-center bg-white">
+                            {% if contract.status == "Awaiting" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">Contract under assessment.</span>
+                                <div class="d-flex gap-2 mt-3">
+                                    <a href="{% url 'contracts_employee:contract_list' %}"
+                                       class="btn btn-secondary flex-fill fs-6">Back to Contracts</a>
+                                    <button type="button"
+                                            class="btn btn-danger flex-fill fs-6"
+                                            onclick="document.getElementById('rejectConfirm').style.display='block'">
+                                        Reject Contract
+                                    </button>
+                                </div>
+                            {% elif contract.status == "Pending" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">
+                                    Assessment done. Customer should purchase to activate.
+                                </span>
+                                <a href="{% url 'contracts_employee:contract_list' %}"
+                                   class="btn btn-secondary px-4 py-2 fs-6 mt-3">Back to Contracts</a>
+                            {% elif contract.status == "Actived" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">Contract is now active.</span>
+                                <div class="d-flex gap-2 align-items-center mt-3">
+                                    <a href="{% url 'contracts_employee:contract_payment_detail' contract.id %}"
+                                       class="btn btn-primary flex-fill fs-6">View Payment</a>
+                                    <a href="{% url 'contracts_employee:contract_list' %}"
+                                       class="btn btn-secondary flex-fill fs-6">Back to Contracts</a>
+                                </div>
+                            {% elif contract.status == "Rejected" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">Customer information invalid. Contract rejected.</span>
+                                <a href="{% url 'contracts_employee:contract_list' %}"
+                                   class="btn btn-secondary px-4 py-2 fs-6 mt-3">Back to Contracts</a>
+                            {% elif contract.status == "Canceled" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">Customer canceled the contract.</span>
+                                <a href="{% url 'contracts_employee:contract_list' %}"
+                                   class="btn btn-secondary px-4 py-2 fs-6 mt-3">Back to Contracts</a>
+                            {% elif contract.status == "Inactivate" %}
+                                <span class="text-dark mb-0"
+                                      style="line-height: 1.5;
+                                             max-width: 70%;
+                                             font-size: 1.2rem">Contract has ended.</span>
+                                <div class="d-flex gap-2 align-items-center mt-3">
+                                    <a href="{% url 'contracts_employee:contract_payment_detail' contract.id %}"
+                                       class="btn btn-primary flex-fill fs-6">View Payment</a>
+                                    <a href="{% url 'contracts_employee:contract_list' %}"
+                                       class="btn btn-secondary flex-fill fs-6">Back to Contracts</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body pt-4 p-3 contract-detail">
+                        <ul class="list-group">
+                            <li class="list-group-item border-0 d-flex p-4 mb-2 bg-gray-100 border-radius-lg">
+                                <div class="row w-100">
+                                    <!-- Left column -->
+                                    <div class="col-md-6 d-flex flex-column">
+                                        <span class="contract-field"><strong>Vehicle:</strong>
+                                            <span class="contract-value">{{ contract.vehicle.name|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Insurance Category:</strong>
+                                            <span class="contract-value">{{ contract.insurance_category.name|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Duration:</strong>
+                                            <span class="contract-value">{{ contract.duration.months|default:"N/A" }} months</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Estimate Value:</strong>
+                                            <span class="contract-value">{{ contract.estimate_value|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Estimate Premium:</strong>
+                                            <span class="contract-value">{{ contract.estimate_premium|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Deductible Value:</strong>
+                                            <span class="contract-value">{{ contract.deductible_value|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Deductible Addon:</strong>
+                                            <span class="contract-value">{{ contract.deductible_addon|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Actual Value:</strong>
+                                            <span class="contract-value">{{ contract.actual_value|default:"N/A" }}</span>
+                                        </span>
+                                    </div>
+                                    <!-- Right column -->
+                                    <div class="col-md-6 d-flex flex-column">
+                                        <span class="contract-field"><strong>Actual Premium:</strong>
+                                            <span class="contract-value">{{ contract.actual_premium|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Fixed Deduction:</strong>
+                                            <span class="contract-value">{{ contract.fixed_deduction|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Max Person Compensation:</strong>
+                                            <span class="contract-value">{{ contract.max_person_compensation|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Max Property Compensation:</strong>
+                                            <span class="contract-value">{{ contract.max_property_compensation|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Available Person Compensation:</strong>
+                                            <span class="contract-value">{{ contract.available_person_compensation|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Available Property Compensation:</strong>
+                                            <span class="contract-value">{{ contract.available_property_compensation|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Start Date:</strong>
+                                            <span class="contract-value">{{ contract.start_date|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Note:</strong>
+                                            <span class="contract-value">{{ contract.note|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Created By:</strong>
+                                            <span class="contract-value">{{ contract.vehicle.customer.fullname|default:"N/A" }}</span>
+                                        </span>
+                                        <span class="contract-field"><strong>Created At:</strong>
+                                            <span class="contract-value">{{ contract.created_at|default:"N/A" }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <!-- Edit button -->
+                                <div class="ms-auto text-end">
+                                    {% if contract.status == "Awaiting" %}
+                                        <form action="{% url 'contracts_employee:contract_update' contract.id %}"
+                                              method="GET"
+                                              style="display: inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link text-dark px-3 mb-0">
+                                                <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>
+                                                Edit
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Reject Contract Modal -->
+<div id="rejectConfirm" class="delete-modal" style="display: none">
+    <h6 class="mb-3 mt-2">Are you sure you want to reject this contract ?</h6>
+    <form action="{% url 'contracts_employee:contract_reject' contract.id %}"
+          method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Reject</button>
+        <button type="button"
+                class="btn btn-secondary"
+                id="cancelReject"
+                onclick="document.getElementById('rejectConfirm').style.display='none'">Cancel</button>
+    </form>
+</div>
+{% endblock content %}

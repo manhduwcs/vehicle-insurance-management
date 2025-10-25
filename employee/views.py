@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
+from app_helper.views import notify
 from accounts.forms import hash_password
 from .tokens import employee_token_generator as default_token_generator
 
@@ -142,7 +143,7 @@ def login_view(request):
             request.session["group_id"] = employee.group.id if employee.group else None
             return redirect("home")
         # else:
-        #     messages.error(request, "Invalid username/email or password.")
+        #     notify(request, "Invalid username/email or password.", "error")
     else:
         form = LoginForm()
     return render(request, "employee/login.html", {"form": form})

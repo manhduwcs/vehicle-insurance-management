@@ -35,7 +35,7 @@ from vehicle_types.models import VehicleTypes
 #     class Meta:
 #         db_table = 'InsuranceCategories'
 
-# class Duration(models.Model):
+#class Duration(models.Model):
 #     Months = models.DecimalField(max_digits=5, decimal_places=2)
 
 #     class Meta:

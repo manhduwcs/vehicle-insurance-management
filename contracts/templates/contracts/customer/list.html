@@ -1,4 +1,4 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/home-customer.html" %}
 {% load humanize %}
 {% load static %}
 {% block content %}
@@ -7,23 +7,26 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Contracts</h6>
                     {% if messages %}
                         {% for message in messages %}
                             {% if message.tags != 'error' %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endif %}
                         {% endfor %}
                     {% endif %}
                     <div class="d-flex justify-content-between mb-2">
-                        <div>
-                            {% if can_add %}
-                                <a href="{% url 'contracts_customer:contract_create' %}"
-                                   class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-plus"></i> Add Contract
-                                </a>
-                            {% endif %}
-                            <a href="{% url 'contracts_customer:contract_list' %}"
-                               class="btn btn-secondary btn-sm">
-                                <i class="fas fa-sync-alt"></i> Refresh
+                        <div class="d-flex gap-2">
+                            <!-- <!-- Refresh Button -->
+                            <!-- <a href="{% url 'contracts_customer:contract_list' %}" -->
+                            <!--    class="btn btn-light border text-dark shadow-sm px-3" -->
+                            <!--    style="border-radius: 8px; -->
+                            <!--           font-weight: 500"> -->
+                            <!--     <i class="fas fa-sync-alt me-1"></i> Refresh -->
+                            <!-- </a> -->
+                            <!-- Book Insurance Category Button -->
+                            <a href="{% url 'contracts_customer:list_category' %}"
+                               class="btn btn-primary shadow-sm px-3"
+                               style="border-radius: 8px;
+                                      font-weight: 500">
+                                <i class="fas fa-book me-1"></i> Book An Insurance
                             </a>
                         </div>
                     </div>
@@ -35,12 +38,13 @@
                                 <tr>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Contract No</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actual Premium</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Insurance Type</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Duration (Months)</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Estimate Premium (VND)</th>
                                     <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Start Date</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Created At</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,27 +57,32 @@
                                             </a>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicles.customer_id.fullname }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicle.name }}</p>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicles.name }}</p>
+                                            <a href="{% url 'contracts_customer:contract_detail' contract.id %}">
+                                                <p class="text-xs text-secondary mb-0">{{ contract.insurance_category.name }}</p>
+                                            </a>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.vehicles.number }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ contract.insurance_category.name }}</p>
                                         </td>
-                                        <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.actual_premium }}</p>
+                                        <td class="align-middle text-center">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.duration.months }}</p>
                                         </td>
-                                        <td class="align-middle">
+                                        <td class="align-middle text-center">
+                                            <p class="text-xs text-secondary mb-0">{{ contract.estimate_premium|intcomma }}</p>
+                                        </td>
+                                        <td class="align-middle text-center">
                                             <p class="text-xs text-secondary mb-0">{{ contract.status }}</p>
                                         </td>
                                         <td class="align-middle">
-                                            <p class="text-xs text-secondary mb-0">{{ contract.start_date }}</p>
+                                            <p class="text-xs text-secondary mb-0">{{ contract.created_at }}</p>
                                         </td>
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="8" class="text-center text-secondary">No contracts yet.</td>
+                                        <td colspan="9" class="text-center text-secondary">No contracts yet.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -85,15 +94,20 @@
     </div>
     {% include "includes/footer.html" %}
 </div>
-
-
 <!-- Modal for successful notification -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1"
+     aria-labelledby="successModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="successModalLabel">Success</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p id="successMessage"></p>
@@ -104,32 +118,35 @@
         </div>
     </div>
 </div>
-
 <!-- Permission Error Modal -->
-  {% if messages %}
+{% if messages %}
     {% for message in messages %}
-      {% if message.tags == 'error' %}
-        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                {{ message }}
-              </div>
-              <div class="modal-footer">
-                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
-              </div>
+        {% if message.tags == 'error' %}
+            <div class="modal fade"
+                 id="permissionErrorModal"
+                 tabindex="-1"
+                 aria-labelledby="permissionErrorModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">{{ message }}</div>
+                        <div class="modal-footer">
+                            <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      {% endif %}
+        {% endif %}
     {% endfor %}
-  {% endif %}
+{% endif %}
 </div>
-
 <!-- JavaScript to show modal if error exists -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -143,5 +160,4 @@ document.addEventListener('DOMContentLoaded', function () {
   {% endif %}
 });
 </script>
-
 {% endblock content %}

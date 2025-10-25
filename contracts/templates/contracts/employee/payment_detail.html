@@ -1,4 +1,4 @@
-{% extends "layouts/home-customer.html" %}
+{% extends "layouts/base.html" %}
 {% load static %}
 {% block content %}
 {% load humanize %}
@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-4">
-                    <a href="{% url 'contracts_customer:contract_list' %}"
+                    <a href="{% url 'contracts_employee:contract_list' %}"
                        class="btn btn-outline-primary">Back to Contracts</a>
                 </div>
             </div>

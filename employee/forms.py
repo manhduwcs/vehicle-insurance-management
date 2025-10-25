@@ -86,7 +86,7 @@ class LoginForm(forms.Form):
             raise ValidationError("Please enter both username/email and password.")
 
         hashed_password = hash_password(password)
-        print("Hashed Password:", hashed_password)
+        print(f"hash_password: {hash_password}")
         try:
             employee = Employees.objects.filter(
                 (Q(username=login_input) | Q(email=login_input)) & Q(password=hashed_password)

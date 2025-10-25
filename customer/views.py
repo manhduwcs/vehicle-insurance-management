@@ -88,7 +88,7 @@ def customer_info(request):
     group_id = request.session.get("group_id")
     if not group_id or not has_permission(group_id, FunctionIds.ManageCustomersByCustomers, ActionIds.View):
         messages.error(request, "You do not have permission to view the customer information.")
-        return redirect("customer:customer_info")
+        return redirect("accounts:login")
 
     customer = request.user
     if request.method == 'POST':
