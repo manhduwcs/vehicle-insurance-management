@@ -1,0 +1,35 @@
+{% for expense in expenses %}
+  <tr>
+    <td class="align-middle text-center text-sm">{{ forloop.counter0|add:expenses.start_index }}</td>
+    <td class="align-middle">
+      <a href="{% url 'expenses:expense_detail' expense.id %}">
+        <p class="text-xs font-weight-bold mb-0">{{ expense.content|truncatechars:50 }}</p>
+      </a>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ expense.amount }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ expense.date }}</p>
+    </td>
+    <td class="align-middle">
+      {% if can_edit %}
+        <a href="{% url 'expenses:expense_update' expense.id %}" class="btn btn-sm btn-warning">
+          <i class="fas fa-edit"></i>
+        </a>
+      {% endif %}
+      {% if can_delete %}
+        <form method="post" action="{% url 'expenses:expense_delete' expense.id %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the expense: {{ expense.content|truncatechars:30 }}?');">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
+      {% endif %}
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="5" class="text-center text-secondary">No expenses found.</td>
+  </tr>
+{% endfor %}

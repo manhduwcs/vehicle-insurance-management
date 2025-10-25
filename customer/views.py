@@ -6,6 +6,9 @@ from app_helper.views import notify
 from django.contrib.auth.hashers import check_password, make_password
 from permissions.constants import FunctionIds, ActionIds
 from permissions.views import has_permission
+from django.http import JsonResponse
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 def customer_list(request):
@@ -15,8 +18,46 @@ def customer_list(request):
     if not has_permission(group_id, FunctionIds.ManageCustomersByEmployees, ActionIds.View):
         messages.error(request, "You do not have permission to view the customers list.")
         return redirect("home")
+
+    # Get params
+    search = request.GET.get('search', '')
+    page = request.GET.get('page', 1)
+
+    # Query customers
     customers = Customer.objects.all()
-    return render(request, 'customer/customer_list.html', {'customers': customers})
+
+    # search
+    if search:
+        customers = customers.filter(
+            Q(username__icontains=search) |
+            Q(fullname__icontains=search) |
+            Q(email__icontains=search) |
+            Q(phone__icontains=search)
+        )
+
+    # add order_by to fix UnorderedObjectListWarning (order by ID decrease)
+    customers = customers.order_by('-id')
+
+    # Pagination
+    paginator = Paginator(customers, 10)  # 10 items/page
+    page_obj = paginator.get_page(page)
+
+    # AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        table_body = render(request, 'customer/_table_body.html', {
+            'customers': page_obj,  # Pass page_obj to handle the sequence number
+        }).content.decode('utf-8')
+        pagination = render(request, 'customer/_pagination.html', {'page_obj': page_obj}).content.decode('utf-8')
+        return JsonResponse({
+            'table_body': table_body,
+            'pagination': pagination,
+        })
+
+    # Render full page
+    return render(request, 'customer/customer_list.html', {
+        'customers': page_obj,  # Pass page_obj
+        'search': search,
+    })
 
 def customer_detail(request, pk):
     if "username" not in request.session:

@@ -1,0 +1,47 @@
+{% for employee in employees %}
+  <tr>
+    <td class="align-middle text-center text-sm">{{ forloop.counter0|add:employees.start_index }}</td>
+    <td class="align-middle">
+      <a href="{% url 'employee:employee_detail' employee.id %}">
+        <p class="text-xs font-weight-bold mb-0">{{ employee.username|default:"N/A" }}</p>
+      </a>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ employee.fullname|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ employee.email|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ employee.phone|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">
+        {% if employee.group %}
+          {{ employee.group.group_name|default:"N/A" }}
+        {% else %}
+          No Group
+        {% endif %}
+      </p>
+    </td>
+    <td class="align-middle">
+      {% if can_edit %}
+        <a href="{% url 'employee:employee_update' employee.id %}" class="btn btn-sm btn-warning">
+          <i class="fas fa-edit"></i>
+        </a>
+      {% endif %}
+      {% if can_delete %}
+        <form method="post" action="{% url 'employee:employee_delete' employee.id %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the employee: {{ employee.fullname|truncatechars:30 }}?');">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
+      {% endif %}
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="7" class="text-center text-secondary">No employees found.</td>
+  </tr>
+{% endfor %}
