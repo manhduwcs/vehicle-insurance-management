@@ -168,23 +168,23 @@
                                         </div>
                                     </div>
                                     <div class="dropdown-divider"></div>
-                                     <a href="{% url 'customer:customer_info' %}" class="dropdown-item">
-                                            <img src="{% static 'images/icons/user.png' %}" alt="">
-                                            Profile
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <img src="{% static 'images/icons/contract.png' %}" alt="">
-                                            My Contracts
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <img src="{% static 'images/icons/claim.png' %}" alt="">
-                                            My Claims
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
-                                            <img src="{% static 'images/icons/logout.png' %}" alt="">
-                                            Logout
-                                        </a>
+                                    <a href="{% url 'customer:customer_info' %}" class="dropdown-item">
+                                        <img src="{% static 'images/icons/user.png' %}" alt="">
+                                        Profile
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <img src="{% static 'images/icons/contract.png' %}" alt="">
+                                        My Contracts
+                                    </a>
+                                    <a href="#" class="dropdown-item">
+                                        <img src="{% static 'images/icons/claim.png' %}" alt="">
+                                        My Claims
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
+                                        <img src="{% static 'images/icons/logout.png' %}" alt="">
+                                        Logout
+                                    </a>
                                 </div>
                             </div>
                         {% else %}
@@ -228,23 +228,23 @@
                         {% endif %}
                         <span>{{ customer.fullname|default:customer.username }}</span>
                     </div>
-                     <a href="{% url 'customer:customer_info' %}" class="dropdown-item">
-                                            <img src="{% static 'images/icons/user.png' %}" alt="">
-                                            Profile
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <img src="{% static 'images/icons/contract.png' %}" alt="">
-                                            My Contracts
-                                        </a>
-                                        <a href="#" class="dropdown-item">
-                                            <img src="{% static 'images/icons/claim.png' %}" alt="">
-                                            My Claims
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
-                                            <img src="{% static 'images/icons/logout.png' %}" alt="">
-                                            Logout
-                                        </a>
+                    <a href="{% url 'customer:customer_info' %}" class="dropdown-item">
+                        <img src="{% static 'images/icons/user.png' %}" alt="">
+                        Profile
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <img src="{% static 'images/icons/contract.png' %}" alt="">
+                        My Contracts
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <img src="{% static 'images/icons/claim.png' %}" alt="">
+                        My Claims
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'accounts:logout' %}" class="dropdown-item logout">
+                        <img src="{% static 'images/icons/logout.png' %}" alt="">
+                        Logout
+                    </a>
                 {% else %}
                     <a href="{% url 'accounts:login' %}"
                        class="theme-btn btn-style-one mobile-login-btn">

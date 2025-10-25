@@ -8,16 +8,14 @@
             <div class="card">
                 <div class="card-header pb-0 px-3">
                     <h4 class="mb-0">Update Contract #{{ contract.contract_no }}</h4>
-                      {% if messages %}
+                    {% if messages %}
                         {% for message in messages %}
-                          {% if message.tags != 'error' %}
-                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-                          {% endif %}
+                            {% if message.tags != 'error' %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endif %}
                         {% endfor %}
-                      {% endif %}
+                    {% endif %}
                 </div>
                 <div class="card-body pt-4 p-3">
-                    <form action="{% url 'contracts_customer:contract_update' contract.id %}"
+                    <form action="{% url 'contracts_employee:contract_update' contract.id %}"
                           method="post">
                         {% csrf_token %}
                         <!-- Status -->
@@ -105,14 +103,20 @@
         </div>
     </div>
 </div>
-
 <!-- Modal for successful notification -->
-<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+<div class="modal fade"
+     id="successModal"
+     tabindex="-1"
+     aria-labelledby="successModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="successModalLabel">Success</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p id="successMessage"></p>
@@ -123,33 +127,35 @@
         </div>
     </div>
 </div>
-
-
 <!-- Permission Error Modal -->
-  {% if messages %}
+{% if messages %}
     {% for message in messages %}
-      {% if message.tags == 'error' %}
-        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                {{ message }}
-              </div>
-              <div class="modal-footer">
-                <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
-              </div>
+        {% if message.tags == 'error' %}
+            <div class="modal fade"
+                 id="permissionErrorModal"
+                 tabindex="-1"
+                 aria-labelledby="permissionErrorModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">{{ message }}</div>
+                        <div class="modal-footer">
+                            <a href="{% url 'employee:employee_list' %}" class="btn btn-primary">OK</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      {% endif %}
+        {% endif %}
     {% endfor %}
-  {% endif %}
+{% endif %}
 </div>
-
 <!-- JavaScript to show modal if error exists -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {

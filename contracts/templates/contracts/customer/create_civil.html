@@ -9,7 +9,7 @@
         <div class="col-12">
             <div class="card mb-4">
                 <div class="card-header pb-0 px-3">
-                    <h4 class="mb-0">Purchase {{ category.Name }}</h4>
+                    <h4 class="mb-0">Purchase for {{ category.name }}</h4>
                     {% if messages %}
                         {% for message in messages %}
                             {% if message.tags != 'error' %}<div class="alert alert-{{ message.tags }}">{{ message }}</div>{% endif %}

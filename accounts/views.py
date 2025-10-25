@@ -12,6 +12,8 @@ from .tokens import customer_token_generator as default_token_generator
 from django.urls import reverse
 from django.core.mail import send_mail
 
+from django.contrib.auth.hashers import make_password
+
 # -------------------
 # REGISTER
 # -------------------
@@ -33,10 +35,23 @@ def register_view(request):
 # LOGIN
 # -------------------
 def login_view(request):
+    print(f"goto accounts login")
+    try:
+        user = Customer.objects.get(username="johnsmith")
+        print("User exists:", user.username)
+    except Customer.DoesNotExist:
+        print("User does not exist")
+
+    hashed = make_password("123456")
+    print(hashed)  # produces pbkdf2_sha256$... or bcrypt$...
     if request.method == "POST":
+        print(f"login post request")
         form = LoginForm(request.POST)
+
+        print("POST data:", request.POST)
+        print("Form errors before is_valid:", form.errors)  # shows any validation errors
         if form.is_valid():
-            
+            print(f"form is valid")
             customer = form.cleaned_data['customer']
             request.session['user_id'] = customer.id
             request.session['username'] = customer.username

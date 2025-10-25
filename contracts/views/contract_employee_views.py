@@ -1,18 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from contracts.forms import ContractUpdateForm
+from contracts.models import ContractStatus
+from app_helper.views import notify
 
-from contracts.forms import ContractForm
-from permissions.views import has_permission
-from dateutil.relativedelta import relativedelta
-from datetime import datetime
-from django.db.models import Q
-from vehicles.models import Vehicles
-from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.models import Contracts, Depreciations
 from vehicle_types.models import VehicleTypes
 from decimal import Decimal
+from django.shortcuts import get_object_or_404, redirect, render
 # from accounts.decorators import employee_login_required
 
 # @employee_login_required
@@ -23,13 +18,13 @@ def contract_list(request):
 
     contracts = Contracts.objects.select_related(
         'vehicle',
-        'vehicle__customer',
+        'vehicle__customer_id',
         'insurance_category',
         'duration',
         'created_by'
     ).order_by('-id')
 
-    return render(request, 'contracts/customer/list.html', {
+    return render(request, 'contracts/employee/list.html', {
         'segment': 'contracts',
         'contracts': contracts
     })
@@ -39,7 +34,7 @@ def contract_detail(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
             'vehicle',
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
             'created_by'
@@ -51,17 +46,17 @@ def contract_detail(request, pk):
         'segment': 'contracts',
         'contract': contract,
         'vehicle': contract.vehicle,
-        'customer': contract.vehicle.customer,
+        'customer': contract.vehicle.customer_id,
         'insurance_category': contract.insurance_category,
         'duration': contract.duration,
     }
-    return render(request, 'contracts/customer/detail.html', context)
+    return render(request, 'contracts/employee/detail.html', context)
 
 # @employee_login_required
 def contract_update(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
         ),
@@ -70,10 +65,6 @@ def contract_update(request, pk):
 
     # This must be set before calling form.is_valid() 
     current_status = contract.status
-    # if request.method == "GET":
-    #     form = ContractUpdateForm(instance=contract)  # binds current contract
-    #     form.fields['status'].initial = current_status  # enforce default
-    #     return
 
     if request.method == 'POST':
         form = ContractUpdateForm(request.POST, instance=contract)
@@ -106,9 +97,13 @@ def contract_update(request, pk):
                 'updated_at',
             ])
             notify(request, "Contract updated successfully!", "success")
-            return redirect('contracts_customer:contract_detail', pk=contract.pk)
+            return render(request, 'contracts/employee/detail.html', { 'contract': contract, 'segment': 'contracts' })
         else:
             notify(request, "Please correct the errors before updating the contract.", "error")
+            return render(request, 'contracts_employee/contract_update.html', {
+                'form': form,
+                'contract': contract
+            })
     else:
         form = ContractUpdateForm(instance=contract)
 
@@ -117,5 +112,40 @@ def contract_update(request, pk):
         'contract': contract,
         'form': form,
     }
-    return render(request, 'contracts/customer/update.html', context)
+    return render(request, 'contracts/employee/update.html', context)
 
+def contract_reject(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related(
+            'vehicle',
+            'vehicle__customer_id',
+            'insurance_category',
+            'duration',
+            'created_by'
+        ),
+        pk=pk
+    )
+
+    if request.method == 'POST':
+        contract.status = ContractStatus.REJECTED
+        contract.save()
+        notify(request, f"Contract {contract.contract_no} has been rejected successfully.")
+        context = {
+            "segment": "contracts",
+            "contract": contract,
+        }
+        return render(request, "contracts/employee/detail.html", context)
+
+    return redirect('contracts_employee:contracts_detail', pk=contract.pk)
+
+def payment_detail(request, pk):
+    contract = get_object_or_404(
+        Contracts.objects.select_related('vehicle__customer_id'),
+        pk=pk
+    )
+
+    context = {
+        "segment": "contracts",
+        "contract": contract,
+    }
+    return render(request, "contracts/employee/payment_detail.html", context)
