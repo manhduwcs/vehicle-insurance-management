@@ -13,9 +13,9 @@ from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.models import Contracts, Depreciations
 from vehicle_types.models import VehicleTypes
 from decimal import Decimal
-from accounts.decorators import customer_login_required, employee_login_required
+# from accounts.decorators import employee_login_required
 
-@employee_login_required
+# @employee_login_required
 def contract_list(request):
     # if not has_permission(group_id=2, function_id=4, action_id=2):  # ManageContracts, Create
     #     messages.error(request, "You do not have permission to create contract.")

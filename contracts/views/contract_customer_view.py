@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from accounts.decorators import customer_login_required
+# from accounts.decorators import customer_login_required
 from categories.models import Duration, InsuranceCategories, InsurancePriceList
 from contracts.forms import ContractForm
 from contracts.models import ContractStatus, Contracts, Depreciations
@@ -23,7 +23,7 @@ from permissions.constants import FunctionIds, ActionIds
 from pathlib import Path
 
 
-@customer_login_required
+# @customer_login_required
 def contract_list(request):
     if "username" not in request.session:
         return redirect("accounts:login")
@@ -31,8 +31,8 @@ def contract_list(request):
     if not group_id or not has_permission(group_id, FunctionIds.ManageContractsByCustomers, ActionIds.View):
         messages.error(request, "You do not have permission to view the contracts.")
         return redirect("contracts_customer:contract_list")
-
-    customer_id = request.customer.id
+    
+    customer_id = request.user.id
 
     contracts = list(
         Contracts.objects.select_related(
