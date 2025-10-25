@@ -30,3 +30,22 @@ ALTER TABLE Contracts
 ADD COLUMN PaymentType VARCHAR(20) NULL AFTER Status,
 ADD COLUMN PaymentAt DATETIME NULL AFTER PaymentType,
 ADD COLUMN PaymentAmount DECIMAL(15,2) NULL AFTER PaymentAt;
+
+# additional notes
+civil = bh tnds
+other = bh vat chat
+
+
+                                <!-- <!-- Vehicle selection carousel --> -->
+                                <!-- <div class="vehicle-carousel d-flex gap-3 overflow-auto py-2 mb-4"> -->
+                                <!--     {% for vehicle in vehicles %} -->
+                                <!--         <div class="vehicle-card card flex-shrink-0 text-center p-3" -->
+                                <!--              style="width: 180px; -->
+                                <!--                     cursor: pointer" -->
+                                <!--              data-vehicle-id="{{ vehicle.id }}"> -->
+                                <!--             <h6 class="mb-1 fw-bold">{{ vehicle.body_number }}</h6> -->
+                                <!--             <p class="mb-1 text-muted">{{ vehicle.vehicle_type }}</p> -->
+                                <!--             <p class="mb-0 text-muted small">Registered: {{ vehicle.registration_date }}</p> -->
+                                <!--         </div> -->
+                                <!--     {% endfor %} -->
+                                <!-- </div> -->

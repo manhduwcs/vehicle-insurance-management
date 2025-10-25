@@ -1,15 +1,98 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Insurance Categories</title>
-    </head>
-    <body>
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+{% block content %}
+<style>
+  /* Carsore style adjustments */
+  .card {
+    border-radius: 12px;
+    font-family: "Roboto", sans-serif;
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 1rem;
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-text {
+    flex-grow: 1; /* ensures button stays at bottom */
+    font-size: 0.95rem;
+    color: #6c757d;
+  }
+
+  .btn-primary {
+    font-family: "Roboto", sans-serif;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .img-fluid {
+    border-radius: 8px;
+  }
+
+  /* Equal height for all cards in row */
+  .row.g-3 > .col-md-4 {
+    display: flex;
+  }
+
+  .row.g-3 > .col-md-4 > .card {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Responsive adjustment for smaller screens */
+  @media (max-width: 768px) {
+    .row.g-3 > .col-md-4 {
+      margin-bottom: 1rem;
+    }
+  }
+</style>
+<div class="container py-4">
+    <!-- Header -->
+    <div class="text-center mb-4">
+        <h3 class="fw-bold">Choose Your Insurance Category</h3>
+        <p class="text-muted">
+            Select a category below, and we’ll handle your booking promptly and seamlessly for your convenience.
+        </p>
+    </div>
+    <!-- Category Grid -->
+    <div class="row g-3">
         {% for category in categories %}
-            <form method="post" action="{% url 'contracts_customer:list_category' %}">
-                {% csrf_token %}
-                <input type="hidden" name="category_id" value="{{ category.id }}" />
-                <button type="submit">{{ category.name }}</button>
-            </form>
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm border-light h-100 d-flex flex-column text-center">
+                    <!-- Image -->
+                    <div class="p-2">
+                        <a href="{% if category.id == 1 %}{% url 'contracts_customer:create_contract_civil' category_id=category.id %}{% else %}{% url 'contracts_customer:create_contract_other' category_id=category.id %}{% endif %}">
+                            <img src="{% if category.images %}{{ category.images }}{% else %}{% static 'images/resource/service-1.jpg' %}{% endif %}"
+                                 alt="{{ category.name }}"
+                                 class="img-fluid rounded"
+                                 style="height: 150px;
+                                        object-fit: cover;
+                                        width: 100%" />
+                        </a>
+                    </div>
+                    <!-- Content -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">
+                            <a href="{% if category.id == 1 %}{% url 'contracts_customer:create_contract_civil' category_id=category.id %}{% else %}{% url 'contracts_customer:create_contract_other' category_id=category.id %}{% endif %}"
+                               class="text-decoration-none text-dark">{{ category.name }}</a>
+                        </h5>
+                        <p class="card-text">{{ category.description }}</p>
+                        <a href="{% if category.id == 1 %}{% url 'contracts_customer:create_contract_civil' category_id=category.id %}{% else %}{% url 'contracts_customer:create_contract_other' category_id=category.id %}{% endif %}"
+                           class="btn btn-primary btn-sm mt-auto">Purchase</a>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
-    </body>
-</html>
+    </div>
+</div>
+{% endblock %}

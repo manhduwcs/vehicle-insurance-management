@@ -87,6 +87,7 @@
             {% else %}
 
                 <!-- Home -->
+                {% if 'Manage Home Page' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'home' %}active{% endif %}"
                        href="{% url "home" %}">
@@ -115,8 +116,9 @@
                         <span class="nav-link-text ms-1">Home</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Contracts -->
+                {% if 'Manage Contracts by Employees' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'contracts' %}active{% endif %}"
                        href="{% url "contracts_customer:contract_list" %}">
@@ -145,7 +147,8 @@
                         <span class="nav-link-text ms-1">Contracts</span>
                     </a>
                 </li>
-
+                {% endif %}
+               
                 <!-- My Contracts - Customer -->
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'contracts' %}active{% endif %}"
@@ -177,6 +180,7 @@
                 </li>
 
                 <!-- Claims -->
+                {% if 'Manage Claims by Employees' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'claim' %}active{% endif %}"
                        href="{% url "claim_list" %}">
@@ -207,7 +211,7 @@
                         <span class="nav-link-text ms-1">Claims</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- My Claims - Customers -->
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'claim' %}active{% endif %}"
@@ -241,6 +245,7 @@
                 </li>
 
                 <!-- Insurance categories -->
+                {% if 'Manage Insurance Categories' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'insurance_category' %}active{% endif %}"
                        href="{% url "categories:category_list" %}">
@@ -269,8 +274,9 @@
                         <span class="nav-link-text ms-1">Insurance Category</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Customers List -->
+                {% if 'Manage Customers by Employees' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if '/customers/' in request.path %}active{% endif %}"
                        href="{% url 'customer:customer_list' %}">
@@ -289,8 +295,9 @@
                         <span class="nav-link-text ms-1">Customer</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Vehicles -->
+                {% if 'Manage Vehicles by Employees' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'vehicles' %}active{% endif %}"
                        href="{% url "vehicles:vehicle_list" %}">
@@ -321,7 +328,7 @@
                         <span class="nav-link-text ms-1">Vehicles</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- My Vehicles -->
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'vehicles' %}active{% endif %}"
@@ -353,7 +360,7 @@
                         <span class="nav-link-text ms-1">My Vehicles</span>
                     </a>
                 </li>
-
+                {% if 'Manage Vehicle Types' in accessible_functions %}
                 <!-- Vehicles Types -->
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'vehicle_types' %}active{% endif %}"
@@ -385,8 +392,9 @@
                         <span class="nav-link-text ms-1">Vehicles types</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Employee list -->
+                {% if 'Manage Employees by Admin' in accessible_functions or 'Manage Employees by Employees' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if request.path == '/employees/' %}active{% endif %}"
                        href="{% url 'employee:employee_list' %}">
@@ -405,8 +413,9 @@
                         <span class="nav-link-text ms-1">Employees</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Permission -->
+                {% if 'Manage Groups users' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'permissions' %}active{% endif %}"
                        href="{% url "permissions:groups_list" %}">
@@ -437,8 +446,9 @@
                         <span class="nav-link-text ms-1">Permissions</span>
                     </a>
                 </li>
-
+                {% endif %}
                 <!-- Expenses -->
+                {% if 'Manage Expenses' in accessible_functions %}
                 <li class="nav-item">
                     <a class="nav-link {% if segment == 'expenses' %}active{% endif %}"
                        href="{% url "expenses:expense_list" %}">
@@ -469,6 +479,7 @@
                         <span class="nav-link-text ms-1">Expenses</span>
                     </a>
                 </li>
+                {% endif %}
                 <!-- This is for showing payment only, no sidebar button shown. -->
                 <!-- <li class="nav-item d-none"> -->
                 <!--   <a class="nav-link {% if segment == 'contracts' and sub_segment == 'payment' %}active{% endif %}"

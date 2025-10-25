@@ -174,9 +174,19 @@ document.addEventListener('DOMContentLoaded', function(){
         }
 
         // Fetch vehicle information for selected contract
-        fetch('{% url "ajax_vehicle_for_contract" 0 %}'.replace('/0/', '/' + contractId + '/'))
-            .then(resp => resp.json())
+        const url = '{% url "ajax_vehicle_for_contract" 0 %}'.replace('0', contractId);
+        console.log('Fetching vehicle info from:', url);
+        
+        fetch(url)
+            .then(resp => {
+                console.log('Response status:', resp.status);
+                if (!resp.ok) {
+                    throw new Error(`HTTP error! status: ${resp.status}`);
+                }
+                return resp.json();
+            })
             .then(data => {
+                console.log('Received data:', data);
                 if (data.vehicle) {
                     // Update vehicle information display
                     document.getElementById('vehicle-name').textContent = data.vehicle.name;
@@ -189,10 +199,15 @@ document.addEventListener('DOMContentLoaded', function(){
                     
                     // Show vehicle information
                     vehicleInfo.style.display = 'block';
+                } else if (data.error) {
+                    console.error('Server error:', data.error);
+                    alert('Error loading vehicle information: ' + data.error);
+                    vehicleInfo.style.display = 'none';
                 }
             })
             .catch(err => {
                 console.error('Error fetching vehicle info:', err);
+                alert('Error loading vehicle information: ' + err.message);
                 vehicleInfo.style.display = 'none';
             });
     });
