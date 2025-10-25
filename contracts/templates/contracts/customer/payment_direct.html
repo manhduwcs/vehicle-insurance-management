@@ -2,36 +2,75 @@
 {% load static %}
 {% load humanize %}
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/style.css' %}" />
-<div class="container my-5">
+<style>
+.user-pay-amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #28a745; /* Bootstrap success green */
+}
+</style>
+<div class="container-fluid py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card border-light p-4">
-                <h2 class="text-center mb-4">Payment for Contract {{ contract.contract_no }}</h2>
-                <div class="card-body">
-                    <!-- Contract Info Header -->
-                    <div class="mb-4">
-                        <p class="lead">
-                            Please follow the instructions below to complete your payment for
-                            this contract.
-                        </p>
+        <div class="col-lg-10">
+            <div class="card shadow-soft border-light p-4 font-roboto">
+                <div class="row">
+                    <!-- Left Panel: Contract Details -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-light p-3 mb-3 bg-white h-100">
+                            <div class="card-header bg-primary text-white text-center rounded">
+                                <h5 class="mb-0">Contract Information</h5>
+                            </div>
+                            <div class="card-body mt-3">
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Contract Number:</h6>
+                                    <p class="fw-bold">{{ contract.contract_no }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Premium:</h6>
+                                    <p class="user-pay-amount">{{ contract.actual_premium|intcomma }} ₫</p>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Insurance Category:</h6>
+                                    <p class="fw-bold">{{ contract.insurance_category.name|default:"N/A" }}</p>
+                                </div>
+                                <div class="mb-3">
+                                    <h6 class="text-muted">Duration:</h6>
+                                    <p class="fw-bold">{{ contract.duration.months }} months</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Payment Instructions -->
-                    <div class="text-center">
-                        <h4>Visit Us At:</h4>
-                        <p class="mb-0">Creative Tim Payment Center</p>
-                        <p class="mb-0">1234 Main Street, Suite 567</p>
-                        <p class="mb-0">Downtown District, Cityville, CV 90210</p>
-                        <p>Operating Hours: Monday - Friday, 9:00 AM - 5:00 PM</p>
+                    <!-- Right Panel: Payment Message -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-light p-3 mb-3 bg-light h-100">
+                            <div class="card-header bg-warning text-dark text-center rounded">
+                                <h5 class="mb-0">Next Steps</h5>
+                            </div>
+                            <div class="card-body mt-3">
+                                <p class="mb-3">
+                                    Please complete your payment for contract <span class="fw-bold">{{ contract.contract_no }}</span> by visiting our office. Our staff will assist you quickly and safely.
+                                </p>
+                                <p class="mb-3 fw-bold">Office Address:</p>
+                                <p>123 Pham Ngu Lao Street, District 1, Ho Chi Minh City, Vietnam</p>
+                            </div>
+                        </div>
                     </div>
-                    <!-- Back Button -->
-                    <div class="text-center mt-4">
-                        <a href="{% url 'contracts_customer:contract_payment' contract.id %}"
-                           class="btn btn-primary">Back to Payment Options</a>
-                    </div>
+                </div>
+                <!-- Back Button -->
+                <div class="text-center mt-4">
+                    <a href="{% url 'contracts_customer:contract_list' %}"
+                       class="btn btn-outline-primary px-4">Back to Contracts</a>
                 </div>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
+<style>
+.font-roboto {
+    font-family: 'Roboto', sans-serif;
+}
+.h-100 {
+    height: 100%;
+}
+</style>
+{% endblock content %}

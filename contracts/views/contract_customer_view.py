@@ -37,7 +37,6 @@ def contract_list(request):
     contracts = list(
         Contracts.objects.select_related(
             'vehicle',
-            'vehicle__customer',
             'insurance_category',
             'duration',
             'created_by'
@@ -60,7 +59,7 @@ def contract_detail(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
             'vehicle',
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
             'created_by'
@@ -74,7 +73,7 @@ def contract_detail(request, pk):
         'segment': 'contracts',
         'contract': contract,
         'vehicle': contract.vehicle,
-        'customer': contract.vehicle.customer,
+        'customer': contract.vehicle.customer_id,
         'insurance_category': contract.insurance_category,
         'duration': contract.duration,
         'can_edit': can_edit,
@@ -82,10 +81,21 @@ def contract_detail(request, pk):
     return render(request, 'contracts/customer/detail.html', context)
 
 
+def list_insurance_categories(request):
+    categories = InsuranceCategories.objects.all()
+    context = {
+        # "segment": "contracts",
+        "customer": request.customer,
+        "categories": categories
+    }
+    return render(request, "contracts/customer/list_category.html", context)
+
+
+
 def goto_payment_choice(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
         ),
@@ -100,7 +110,7 @@ def goto_payment_choice(request, pk):
 def contract_cancel(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
         ),
@@ -114,7 +124,7 @@ def contract_cancel(request, pk):
 
 def payment_detail(request, pk):
     contract = get_object_or_404(
-        Contracts.objects.select_related('vehicle__customer'),
+        Contracts.objects.select_related('vehicle__customer_id'),
         pk=pk
     )
 
@@ -128,7 +138,7 @@ def payment_detail(request, pk):
 def pay_with_card(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
         ),
@@ -154,7 +164,7 @@ def pay_with_card(request, pk):
 def pay_direct(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
+            'vehicle__customer_id',
             'insurance_category',
             'duration',
         ),
@@ -170,28 +180,28 @@ def pay_direct(request, pk):
 def pay_with_qr(request, pk):
     contract = get_object_or_404(
         Contracts.objects.select_related(
-            'vehicle__customer',
-            'insurance_category',
-            'duration',
+            'vehicle__customer_id', 'insurance_category', 'duration',
         ),
         pk=pk
     )
+
+    if request.method == "POST":
+        contract.payment_type = "card"
+        contract.payment_amount = contract.actual_premium or 0
+        contract.payment_at = timezone.now()
+        contract.status = ContractStatus.ACTIVED
+        contract.save(update_fields=["payment_type", "payment_amount", "payment_at", "status"])
+
+        notify(request, "Payment successful! Your contract is now active.", 'success')
+        return redirect("contracts_customer:contract_detail", pk=contract.pk)
 
     bank_code = "techcombank"
     bank_name = "Techcombank"
     account_number = "19038555085018"
     receiver_name = "NGUYEN DUC MANH"
-
     amount = contract.actual_premium
     message = f"Payment for Contract {contract.contract_no}"
-
-    # qr_url = (
-    #     f"https://img.vietqr.io/image/{bank_code}-{account_number}-compact.png"
-    #     f"?amount={amount}&addInfo={message}"
-    # )
-
-    # print(f"qr_url: {qr_url}")
-    qr_url = ""
+    qr_url = ""  # or your VietQR URL
 
     context = {
         "contract": contract,
@@ -305,7 +315,8 @@ def create_contract_civil(request, category_id):
     return render(request, 'contracts/customer/create_civil.html', {
         'form': form,
         'durations': durations,
-        'category': InsuranceCategories.objects.get(id=category_id)
+        'category': InsuranceCategories.objects.get(id=category_id),
+        'vehicles': list(Vehicles.objects.filter(customer_id_id=customer_id))
     })
 
 
@@ -410,7 +421,7 @@ def calculate_insurance(request):
         return JsonResponse({'error': 'Invalid vehicle or category'}, status=400)
 
     try:
-        vehicle = Vehicle.objects.select_related('vehicle_type').get(id=vehicle_id, customer_id=request.session['user_id'])
+        vehicle = Vehicles.objects.select_related('vehicle_type').get(id=vehicle_id, customer_id=request.session['user_id'])
         category = InsuranceCategories.objects.get(id=category_id)
         durations = Duration.objects.all()
         current_date = datetime.now().date()
@@ -469,7 +480,7 @@ def calculate_insurance(request):
             data.append(item)
 
         return JsonResponse({'data': data})
-    except Vehicle.DoesNotExist:
+    except Vehicles.DoesNotExist:
         return JsonResponse({'error': 'Vehicle not found'}, status=404)
 
 # @customer_login_required

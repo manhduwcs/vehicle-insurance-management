@@ -2,93 +2,79 @@
 {% load static %}
 {% load humanize %}
 {% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+.payment-choice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem; 
+    height: 100px;
+    width: 100%;
+    font-family: 'Roboto', sans-serif !important;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+</style>
 <div class="container my-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <div class="card shadow-soft border-light p-4">
                 <h2 class="text-center mb-4">Choose Payment Method</h2>
                 <div class="row">
                     <!-- Pay with Money -->
                     <div class="col-md-4 mb-4">
                         <a href="{% url 'contracts_customer:contract_payment_direct' contract.id %}"
-                           class="btn btn-primary btn-block d-flex align-items-center justify-content-center"
-                           style="height: 120px;
-                                  transition: background-color 0.3s ease;
-                                  outline: none !important">
-                            <i class="fas fa-money-bill-wave fa-2x mr-3"></i>
-                            <span class="h4 mb-0">Pay with Money</span>
+                           class="btn btn-primary d-flex align-items-center justify-content-center payment-choice">
+                            <i class="fas fa-money-bill-wave fa-2x me-3"></i>
+                            <span class="h5 mb-0">Pay with Money</span>
                         </a>
                     </div>
                     <!-- Pay with Card -->
                     <div class="col-md-4 mb-4">
                         <a href="{% url 'contracts_customer:contract_payment_card' contract.id %}"
-                           class="btn btn-primary btn-block d-flex align-items-center justify-content-center"
-                           style="height: 120px">
-                            <i class="fas fa-credit-card fa-2x mr-3"></i>
-                            <span class="h4 mb-0">Pay with Card</span>
+                           class="btn btn-primary d-flex align-items-center justify-content-center payment-choice">
+                            <i class="fas fa-credit-card fa-2x me-3"></i>
+                            <span class="h5 mb-0">Pay with Card</span>
                         </a>
                     </div>
                     <!-- Pay with QR -->
                     <div class="col-md-4 mb-4">
                         <a href="{% url 'contracts_customer:contract_payment_qr' contract.id %}"
-                           class="btn btn-primary btn-block d-flex align-items-center justify-content-center"
-                           style="height: 120px;
-                                  transition: background-color 0.3s ease;
-                                  outline: none !important">
-                            <i class="fas fa-qrcode fa-2x mr-3"></i>
-                            <span class="h4 mb-0">Pay with QR</span>
+                           class="btn btn-primary d-flex align-items-center justify-content-center payment-choice">
+                            <i class="fas fa-qrcode fa-2x me-3"></i>
+                            <span class="h5 mb-0">Pay with QR</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Card Payment Modal -->
 </div>
-<!-- JavaScript for Basic Client-Side Validation -->
-<!-- <script> -->
-<!--   document -->
-<!--     .getElementById("cardPaymentForm") -->
-<!--     ?.addEventListener("submit", function (event) { -->
-<!--       const cardNumber = document.getElementById("cardNumber").value; -->
-<!--       const expiryDate = document.getElementById("expiryDate").value; -->
-<!--       const cvv = document.getElementById("cvv").value; -->
-<!--       // Basic Luhn Algorithm for Card Number Validation -->
-<!--       function luhnCheck(cardNumber) { -->
-<!--         let sum = 0; -->
-<!--         let isEven = false; -->
-<!--         for (let i = cardNumber.length - 1; i >= 0; i--) { -->
-<!--           let digit = parseInt(cardNumber[i]); -->
-<!--           if (isEven) { -->
-<!--             digit *= 2; -->
-<!--             if (digit > 9) digit -= 9; -->
-<!--           } -->
-<!--           sum += digit; -->
-<!--           isEven = !isEven; -->
-<!--         } -->
-<!--         return sum % 10 === 0; -->
-<!--       } -->
-<!--       if (!luhnCheck(cardNumber.replace(/\s/g, ""))) { -->
-<!--         event.preventDefault(); -->
-<!--         alert("Invalid card number."); -->
-<!--       } -->
-<!--       // Expiry Date Validation -->
-<!--       const [month, year] = expiryDate.split("/"); -->
-<!--       const currentDate = new Date(); -->
-<!--       const currentYear = currentDate.getFullYear() % 100; -->
-<!--       const currentMonth = currentDate.getMonth() + 1; -->
-<!--       if ( -->
-<!--         parseInt(year) < currentYear || -->
-<!--         (parseInt(year) === currentYear && parseInt(month) < currentMonth) -->
-<!--       ) { -->
-<!--         event.preventDefault(); -->
-<!--         alert("Card has expired."); -->
-<!--       } -->
-<!--     }); -->
-<!-- </script> -->
 <style>
+/* Payment choice buttons - CardSore style */
+.payment-choice {
+    height: 100px; /* slightly lower than before */
+    width: 100%; /* full width of column */
+    font-family: 'Roboto', sans-serif;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.payment-choice i {
+    color: #fff;
+}
+
+.payment-choice:hover {
+    background-color: #005566;
+    transform: translateY(-2px);
+}
+
 .btn-primary:active {
-    background-color: #005566 !important;
+    background-color: #00444d !important;
 }
 </style>
 {% endblock content %}
