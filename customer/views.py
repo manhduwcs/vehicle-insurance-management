@@ -1,6 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from accounts.decorators import customer_login_required
 from .models import Customer
 from .forms import CustomerUpdateForm,CustomerForm
 from app_helper.views import notify
@@ -82,7 +81,7 @@ def customer_delete(request, pk):
     return redirect('customer_list')
 
 
-@customer_login_required
+
 def customer_info(request):
     if "username" not in request.session:
         return redirect("accounts:login")
@@ -91,7 +90,7 @@ def customer_info(request):
         messages.error(request, "You do not have permission to view the customer information.")
         return redirect("customer:customer_info")
 
-    customer = request.customer
+    customer = request.user
     if request.method == 'POST':
         form = CustomerUpdateForm(request.POST, instance=customer)
         if form.is_valid():
@@ -105,7 +104,7 @@ def customer_info(request):
         form = CustomerUpdateForm(instance=customer)
     return render(request, 'customer/customer_info.html', {'form': form, 'customer': customer})
 
-@customer_login_required
+
 def change_password(request):
     if "username" not in request.session:
         return redirect("accounts:login")
@@ -116,7 +115,7 @@ def change_password(request):
 
     if request.method == 'POST':
         try:
-            customer = request.customer
+            customer = request.user
             current_password = request.POST.get('current_password')
             new_password = request.POST.get('new_password')
             confirm_password = request.POST.get('confirm_password')

@@ -1,24 +1,40 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 from customer.models import Customer
+from employee.models import Employees
+from django.utils.deprecation import MiddlewareMixin
 
-class CustomerAuthMiddleware:
+class UserAuthMiddleware(MiddlewareMixin):
     """
-    Attach customer object vào request
+    Attach user object (employee/customer/admin) to request
     """
-    def __init__(self, get_response):
-        self.get_response = get_response
+    def process_request(self, request):
+        request.user = None
+        request.group_id = None
 
-    def __call__(self, request):
-        request.customer = None
         user_id = request.session.get('user_id')
-        user_type = request.session.get('user_type')
-        if user_id and user_type == 'customer':
+        group_id = request.session.get('group_id')
+        if hasattr(group_id, 'group_name'):
+            group_id = group_id.group_name
+        
+        if not user_id:
+            return 
+
+        
+        model_map = {
+            "Employee": Employees,
+            "Customer": Customer,
+        }
+        
+        model = model_map.get(str(group_id))
+
+        if model:
             try:
-                request.customer = Customer.objects.get(id=user_id)
-            except Customer.DoesNotExist:
-                request.customer = None
-        return self.get_response(request)
+                user = model.objects.get(id=user_id)
+                request.user = user
+                request.group_id = group_id
+            except model.DoesNotExist:
+                request.user = None
 
 
 class RedirectAuthenticatedUserMiddleware:

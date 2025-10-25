@@ -2,10 +2,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+
+from accounts.forms import hash_password
+from .tokens import employee_token_generator as default_token_generator
+
 
 # from accounts.forms import hash_password
 from .models import Employees
-from .forms import EmployeeForm, LoginForm, ChangePasswordForm, EmployeeUpdateForm
+from .forms import EmployeeForm, LoginForm, ChangePasswordForm, EmployeeUpdateForm, EmployeePasswordResetForm, EmployeeSetPasswordForm
 from django.db.models import Q
 from permissions.views import has_permission
 from permissions.constants import FunctionIds, ActionIds
@@ -13,6 +19,9 @@ from django.http import JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.contrib.auth.hashers import check_password, make_password
+from django.conf import settings
+from django.core.mail import send_mail
+
 
 # @login_required
 def employee_list(request):
@@ -178,3 +187,72 @@ def change_password(request):
     else:
         form = ChangePasswordForm(employee)
     return render(request, "employee/change_password.html", {"employee": employee, "form": form, "segment": "employee"})
+
+
+def reset_password_view(request):
+    if request.method == "POST":
+        form = EmployeePasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            employee = Employees.objects.get(email=email)
+
+            uid = urlsafe_base64_encode(force_bytes(employee.pk))
+            token = default_token_generator.make_token(employee)
+
+            reset_url = request.build_absolute_uri(
+                reverse('employee:password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            expiry_time_minutes = int(getattr(settings, 'PASSWORD_RESET_TIMEOUT', 300) / 60)
+
+            subject = "Password Reset Request"
+            message = f"""Hi {employee.fullname},
+
+            You requested to reset your password. Click the link below to reset it:
+
+            {reset_url}
+
+            This link will expire in {expiry_time_minutes:.0f} minute(s).
+
+            If you didn't request this, please ignore this email.
+
+            Best regards,
+            Your Team"""
+            from_email = "no-reply@yourapp.com"
+
+            send_mail(subject, message, from_email, [email])
+
+            messages.success(request, "A password reset link has been sent to your email.")
+            return redirect('employee:password_change_done')
+    else:
+        form = EmployeePasswordResetForm()
+
+    return render(request, 'employee/password_reset.html', {'form': form})
+
+
+def password_reset_done_view(request):
+    return render(request, 'employee/password_reset_done.html')
+
+
+def password_reset_confirm_view(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        employee = Employees.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, Employees.DoesNotExist):
+        customer = None
+
+    if employee is not None and default_token_generator.check_token(employee, token):
+        if request.method == "POST":
+            form = EmployeeSetPasswordForm(employee, request.POST)
+            if form.is_valid():
+                new_password = form.cleaned_data["new_password1"]
+                employee.password = hash_password(new_password)
+                employee.save()
+                messages.success(request, "Your password has been reset successfully.")
+                return redirect("employee:login")
+        else:
+            form = EmployeeSetPasswordForm(employee)
+        return render(request, "employee/password_reset_confirm.html", {"form": form, "validlink": True})
+    else:
+        messages.error(request, "The password reset link is invalid or has expired.")
+        return render(request, "employee/password_reset_confirm.html", {"validlink": False})

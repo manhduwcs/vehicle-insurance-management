@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from accounts.decorators import customer_login_required
 import json
 from expenses.models import Expenses
 from contracts.models import Contracts
@@ -32,6 +31,7 @@ icon_map_expense = {
     }
 
 # @customer_login_required
+
 def index(request):
     # if "username" not in request.session:
     #     return redirect("employee:login")
@@ -208,9 +208,10 @@ def get_vehicle_revenue_data():
 
 def home_page_customer(request):
     categories = InsuranceCategories.objects.all()
+    
     context = {
         "segment": "home",
-        "customer": request.customer
+        "customer": request.user
         ,"categories": categories
     }
     return render(request, "home/home-customer.html", context)
@@ -218,13 +219,13 @@ def home_page_customer(request):
 def about(request):
     context = {
         "segment": "about",
-        "customer": request.customer
+        "customer": request.user
     }
     return render(request, "home/about.html", context)
 def contact(request):
     context = {
         "segment": "contact",
-        "customer": request.customer
+        "customer": request.user
     }
     return render(request, "home/contact.html", context)
 
@@ -232,7 +233,7 @@ def services(request):
     categories = InsuranceCategories.objects.all()
     context = {
         "segment": "services",
-        "customer": request.customer,
+        "customer": request.user,
         "categories": categories
     }
     return render(request, "home/services.html", context)
