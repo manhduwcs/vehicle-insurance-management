@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'contracts',
     'accounts',
     'claims',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -214,3 +215,8 @@ EMAIL_HOST_PASSWORD = 'cfjischowxezhfmn'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
 PASSWORD_RESET_TIMEOUT = 300  # 5 minutes in seconds
+
+
+CRONJOBS = [
+    ('0 0 * * *', 'django.core.management.call_command', ['expire_contracts']),
+]
