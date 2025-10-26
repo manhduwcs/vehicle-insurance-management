@@ -33,7 +33,6 @@ def contract_list(request):
         return redirect("contracts_customer:contract_list")
     
     customer_id = request.user.id
-    customer = request.user
     contracts = list(
         Contracts.objects.select_related(
             'vehicle',
@@ -46,7 +45,7 @@ def contract_list(request):
     return render(request, 'contracts/customer/list.html', {
         'segment': 'contracts',
         'contracts': contracts,
-        'customer': customer
+        
     })
 
 # @employee_login_required
