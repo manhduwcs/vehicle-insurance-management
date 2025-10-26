@@ -31,7 +31,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('vehicles/', include('vehicles.urls')),
     path('vehicle_types/', include('vehicle_types.urls')),
-    path('claims/', include('claims.urls')),
+    path('claims-customer/', include('claims.urls')),
     path('categories/', include('categories.urls')),
     path('contracts/customer/', include('contracts.urls.contract_customer_urls', namespace='contracts_customer')),
     path('contracts/employee/', include('contracts.urls.contract_employee_urls', namespace='contracts_employee')),
