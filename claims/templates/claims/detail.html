@@ -1,62 +1,567 @@
-{% extends "layouts/base.html" %}
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+
+{% block title %}Claim Details - {{ claim.claim_no }} - CARSORE{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Title Section */
+    .page-title-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-title-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .page-title-section h1 {
+        color: white;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .claim-number-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+    
+    /* Detail Section */
+    .detail-section {
+        padding: 60px 0;
+        background: #f8f9fa;
+    }
+    
+    /* Status Card */
+    .status-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .status-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+    
+    .status-badge-large {
+        display: inline-block;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-approved {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    /* Info Cards */
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f3f5;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .card-title i {
+        color: #667eea;
+        font-size: 1.5rem;
+    }
+    
+    .info-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+    
+    .info-row:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        flex: 0 0 200px;
+        font-weight: 600;
+        color: #6c757d;
+        font-size: 0.95rem;
+    }
+    
+    .info-value {
+        flex: 1;
+        color: #212529;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    
+    .info-value.amount {
+        color: #667eea;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    /* Action Buttons */
+    .action-section {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+    }
+    
+    .action-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 15px;
+    }
+    
+    .action-description {
+        color: #6c757d;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+    
+    .btn-action {
+        padding: 14px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+    
+    .btn-accept {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+    
+    .btn-accept:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+    
+    .btn-reject {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+    
+    .btn-reject:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    
+    .btn-back {
+        background: white;
+        color: #6c757d;
+        border: 2px solid #dee2e6;
+    }
+    
+    .btn-back:hover {
+        background: #f8f9fa;
+        border-color: #adb5bd;
+        color: #495057;
+        transform: translateY(-2px);
+    }
+    
+    .btn-update {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+    
+    .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        color: white;
+    }
+    
+    /* Alert Box */
+    .alert-info-custom {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        border-left: 4px solid #667eea;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .alert-info-custom i {
+        color: #667eea;
+        font-size: 1.3rem;
+        margin-right: 10px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .page-title-section {
+            padding: 60px 0 40px;
+        }
+        
+        .page-title-section h1 {
+            font-size: 1.8rem;
+        }
+        
+        .detail-section {
+            padding: 40px 0;
+        }
+        
+        .info-row {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .info-label {
+            flex: none;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-action {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+    
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+    }
+    
+    .loading-overlay.active {
+        display: flex;
+    }
+    
+    .loading-content {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Claim Detail</h2>
-<table class="table table-bordered">
-    <tr>
-        <th>Claim No</th>
-        <td>{{ claim.claim_no }}</td>
-    </tr>
-    <tr>
-        <th>Customer</th>
-        <td>{{ claim.customer.fullname }}</td>
-    </tr>
-    <tr>
-        <th>Vehicle</th>
-        <td>{{ claim.vehicle.name }}</td>
-    </tr>
-    <tr>
-        <th>Contract</th>
-        <td>{{ claim.contract.contract_no }}</td>
-    </tr>
-    <tr>
-        <th>Place</th>
-        <td>{{ claim.place }}</td>
-    </tr>
-    <tr>
-        <th>Date</th>
-        <td>{{ claim.date }}</td>
-    </tr>
-    <tr>
-        <th>Human Damage</th>
-        <td>{{ claim.human_damage }}</td>
-    </tr>
-    <tr>
-        <th>Property Damage</th>
-        <td>{{ claim.property_damage }}</td>
-    </tr>
-    <tr>
-        <th>Deduction</th>
-        <td>{{ claim.deduction }}</td>
-    </tr>
-    <tr>
-        <th>Personal Compensation</th>
-        <td>{{ claim.personal_compensation }}</td>
-    </tr>
-    <tr>
-        <th>Property Compensation</th>
-        <td>{{ claim.property_compensation }}</td>
-    </tr>
-    <tr>
-        <th>Note</th>
-        <td>{{ claim.note }}</td>
-    </tr>
-    <tr>
-        <th>Status</th>
-        <td>{{ claim.status }}</td>
-    </tr>
-</table>
-<a href="{% url 'claim_list' %}" class="btn btn-secondary">Back</a>
-{% if request.session.user_type == 'customer' %}
-    <a href="{% url 'claim_update' claim.pk %}" class="btn btn-warning">Update</a>
-{% endif %}
+<!-- Page Title Section -->
+<section class="page-title-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="wow fadeInUp" data-wow-delay="0.1s">Claim Details</h1>
+                <div class="claim-number-badge wow fadeInUp" data-wow-delay="0.2s">
+                    <i class="fa fa-file-text"></i> {{ claim.claim_no }}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Detail Section -->
+<section class="detail-section">
+    <div class="container">
+        <!-- Status Card -->
+        <div class="status-card wow fadeInUp" data-wow-delay="0.1s">
+            <div class="status-label">Current Status</div>
+            <span class="status-badge-large status-{{ claim.status|lower }}" id="claim-status">
+                {{ claim.status }}
+            </span>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Customer & Vehicle Info -->
+                <div class="info-card wow fadeInUp" data-wow-delay="0.2s">
+                    <h3 class="card-title">
+                        <i class="fa fa-user"></i>
+                        Customer & Vehicle Information
+                    </h3>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-user-circle"></i> Customer Name</div>
+                        <div class="info-value">{{ claim.customer.fullname }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-car"></i> Vehicle</div>
+                        <div class="info-value">{{ claim.vehicles.name }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-file-text-o"></i> Contract Number</div>
+                        <div class="info-value">{{ claim.contract.contract_no }}</div>
+                    </div>
+                </div>
+
+                <!-- Incident Details -->
+                <div class="info-card wow fadeInUp" data-wow-delay="0.3s">
+                    <h3 class="card-title">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        Incident Details
+                    </h3>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-map-marker"></i> Location</div>
+                        <div class="info-value">{{ claim.place }}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-calendar"></i> Date</div>
+                        <div class="info-value">{{ claim.date|date:"F d, Y" }}</div>
+                    </div>
+                    {% if claim.note %}
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-sticky-note"></i> Note</div>
+                        <div class="info-value">{{ claim.note }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Damage & Compensation -->
+                <div class="info-card wow fadeInUp" data-wow-delay="0.4s">
+                    <h3 class="card-title">
+                        <i class="fa fa-money"></i>
+                        Damage & Compensation Details
+                    </h3>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-user-injured"></i> Human Damage</div>
+                        <div class="info-value amount">{{ claim.human_damage|floatformat:0 }} VND</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-building"></i> Property Damage</div>
+                        <div class="info-value amount">{{ claim.property_damage|floatformat:0 }} VND</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-minus-circle"></i> Deduction</div>
+                        <div class="info-value amount">{{ claim.deduction|floatformat:0 }} VND</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-hand-holding-heart"></i> Personal Compensation</div>
+                        <div class="info-value amount">{{ claim.personal_compensation|floatformat:0 }} VND</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label"><i class="fa fa-shield-alt"></i> Property Compensation</div>
+                        <div class="info-value amount">{{ claim.property_compensation|floatformat:0 }} VND</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Action Section for Approved Claims -->
+                {% if claim.status == 'Approved'%}
+                <div class="action-section wow fadeInUp" data-wow-delay="0.2s">
+                    <h4 class="action-title">
+                        <i class="fa fa-check-circle"></i> Action Required
+                    </h4>
+                    <p class="action-description">
+                        Your claim has been approved. Please review the compensation details and choose to accept or reject this claim.
+                    </p>
+                    <div class="action-buttons">
+                        <button onclick="handleClaimAction('accept')" class="btn-action btn-accept">
+                            <i class="fa fa-check"></i> Accept Claim
+                        </button>
+                        <button onclick="handleClaimAction('reject')" class="btn-action btn-reject">
+                            <i class="fa fa-times"></i> Reject Claim
+                        </button>
+                    </div>
+                </div>
+                {% elif claim.status == 'Pending' %}
+                <div class="alert-info-custom wow fadeInUp" data-wow-delay="0.2s">
+                    <i class="fa fa-clock-o"></i>
+                    <strong>Pending Review</strong><br>
+                    Your claim is being reviewed by our team. You will be notified once it's approved.
+                </div>
+                {% elif claim.status == 'Completed' %}
+                <div class="alert-info-custom wow fadeInUp" data-wow-delay="0.2s">
+                    <i class="fa fa-check-circle"></i>
+                    <strong>Completed</strong><br>
+                    This claim has been successfully completed and closed.
+                </div>
+                {% elif claim.status == 'Rejected' %}
+                <div class="alert-info-custom wow fadeInUp" data-wow-delay="0.2s">
+                    <i class="fa fa-times-circle"></i>
+                    <strong>Rejected</strong><br>
+                    This claim has been rejected.
+                </div>
+                {% endif %}
+
+                <!-- Navigation Buttons -->
+                <div class="action-section wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="action-buttons">
+                        <a href="{% url 'claim_list' %}" class="btn-action btn-back">
+                            <i class="fa fa-arrow-left"></i> Back to Claims
+                        </a>
+                        {% if request.session.user_type == 'customer' and claim.status == 'Pending' %}
+                        <a href="{% url 'claim_update' claim.pk %}" class="btn-action btn-update">
+                            <i class="fa fa-edit"></i> Update Claim
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <p style="margin-top: 15px;">Processing...</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize WOW animations
+    if (typeof WOW !== 'undefined') {
+        new WOW({
+            boxClass: 'wow',
+            animateClass: 'animated',
+            offset: 0,
+            mobile: true,
+            live: true
+        }).init();
+    }
+});
+
+function handleClaimAction(action) {
+    const actionText = action === 'accept' ? 'accept' : 'reject';
+    const confirmMessage = `Are you sure you want to ${actionText} this claim?`;
+    
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+    
+    // Show loading overlay
+    $('#loadingOverlay').addClass('active');
+    
+    // Get CSRF token
+    const csrfToken = '{{ csrf_token }}';
+    
+    // Make AJAX request
+    $.ajax({
+        url: '{% url "claim_update_status" claim.pk "action" %}'.replace('action', action),
+        type: 'POST',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        success: function(response) {
+            $('#loadingOverlay').removeClass('active');
+            
+            if (response.success) {
+                // Show success message
+                showToast(response.message, 'success');
+                
+                // Update status badge
+                const statusBadge = $('#claim-status');
+                statusBadge.text(response.new_status);
+                statusBadge.removeClass('status-pending status-approved status-completed status-rejected');
+                statusBadge.addClass('status-' + response.new_status.toLowerCase());
+                
+                // Reload page after 1.5 seconds
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            } else {
+                showToast(response.message, 'error');
+            }
+        },
+        error: function(xhr, status, error) {
+            $('#loadingOverlay').removeClass('active');
+            showToast('An error occurred. Please try again.', 'error');
+            console.error('Error:', error);
+        }
+    });
+}
+</script>
 {% endblock %}

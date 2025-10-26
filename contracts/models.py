@@ -145,3 +145,7 @@ class Contracts(models.Model):
 
     class Meta:
         db_table = 'Contracts'
+
+
+    def __str__(self):
+        return self.contract_no

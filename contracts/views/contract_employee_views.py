@@ -100,7 +100,7 @@ def contract_update(request, pk):
             return render(request, 'contracts/employee/detail.html', { 'contract': contract, 'segment': 'contracts' })
         else:
             notify(request, "Please correct the errors before updating the contract.", "error")
-            return render(request, 'contracts_employee/contract_update.html', {
+            return render(request, 'contracts/employee/update.html', {
                 'form': form,
                 'contract': contract
             })

@@ -1,43 +1,580 @@
 {% extends "layouts/home-customer.html" %}
+{% load static %}
+
+{% block title %}Claims Management - CARSORE{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Page Title Section */
+    .page-title-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0 60px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .page-title-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .page-title-section h1 {
+        color: white;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .page-title-section p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.1rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Claims Section */
+    .claims-section {
+        padding: 60px 0;
+        background: #f8f9fa;
+    }
+    
+    /* Filter Bar */
+    .filter-bar {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        margin-bottom: 40px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+    
+    .filter-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+    }
+    
+    .filter-group input,
+    .filter-group select {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-group input:focus,
+    .filter-group select:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        outline: none;
+    }
+    
+    /* Create Button */
+    .btn-create {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        display: inline-block;
+        text-decoration: none;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+    
+    .btn-create i {
+        margin-right: 8px;
+    }
+    
+    /* Claims Grid */
+    .claims-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+    
+    /* Claim Card */
+    .claim-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .claim-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .claim-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    }
+    
+    .claim-card:hover::before {
+        opacity: 1;
+    }
+    
+    /* Claim Header */
+    .claim-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f1f3f5;
+    }
+    
+    .claim-number {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #212529;
+    }
+    
+    .claim-number i {
+        color: #667eea;
+        font-size: 1.3rem;
+        margin-right: 8px;
+    }
+    
+    /* Status Badge */
+    .badge-status {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .badge-approved {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .badge-rejected {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    
+    .badge-processing {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+    
+    /* Claim Info */
+    .claim-info {
+        margin-bottom: 20px;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        gap: 12px;
+    }
+    
+    .info-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+    
+    .info-icon.customer {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .info-icon.vehicle {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+    
+    .info-icon.contract {
+        background: #e8f5e9;
+        color: #388e3c;
+    }
+    
+    .info-icon.date {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+    
+    .info-details {
+        flex: 1;
+    }
+    
+    .info-label {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 3px;
+        font-weight: 600;
+    }
+    
+    .info-value {
+        font-size: 0.95rem;
+        color: #212529;
+        font-weight: 500;
+    }
+    
+    /* Claim Actions */
+    .claim-actions {
+        display: flex;
+        gap: 10px;
+        padding-top: 15px;
+        border-top: 2px solid #f1f3f5;
+    }
+    
+    .btn-action {
+        flex: 1;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: inline-block;
+    }
+    
+    .btn-view {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+    
+    .btn-view:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+    
+    .btn-edit {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+    }
+    
+    .btn-edit:hover {
+        background: #667eea;
+        color: white;
+        transform: scale(1.05);
+    }
+    
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        color: #495057;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #6c757d;
+        margin-bottom: 25px;
+    }
+    
+    /* Responsive */
+    @media (max-width: 992px) {
+        .claims-grid {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .page-title-section {
+            padding: 60px 0 40px;
+        }
+        
+        .page-title-section h1 {
+            font-size: 1.8rem;
+        }
+        
+        .claims-section {
+            padding: 40px 0;
+        }
+        
+        .claims-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .claim-actions {
+            flex-direction: column;
+        }
+    }
+    
+    /* Animation Classes */
+    .fadeInUp {
+        animation-name: fadeInUp;
+        animation-duration: 0.6s;
+        animation-fill-mode: both;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 30px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Claims List</h2>
+<!-- Page Title Section -->
+<section class="page-title-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="wow fadeInUp" data-wow-delay="0.1s">Claims Management</h1>
+                <p class="wow fadeInUp" data-wow-delay="0.2s">Manage and track all your insurance claims</p>
+            </div>
+        </div>
+    </div>
+</section>
 
-<a href="{% url 'claim_create' %}" class="btn btn-primary mb-2">Create Claim</a>
+<!-- Claims Section -->
+<section class="claims-section">
+    <div class="container">
+        <!-- Filter Bar -->
+        <div class="filter-bar wow fadeInUp" data-wow-delay="0.1s">
+            <div class="row align-items-end">
+                <div class="col-lg-3 col-md-6 mb-3 mb-lg-0">
+                    <div class="filter-group">
+                        <label for="searchClaim">Search Claim</label>
+                        <input type="text" 
+                               id="searchClaim" 
+                               class="form-control" 
+                               placeholder="Claim number, customer...">
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-3 mb-lg-0">
+                    <div class="filter-group">
+                        <label for="filterStatus">Status</label>
+                        <select id="filterStatus" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="processing">Processing</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-3 mb-lg-0">
+                    <div class="filter-group">
+                        <label for="filterDate">Date From</label>
+                        <input type="date" id="filterDate" class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-6 mb-3 mb-lg-0">
+                    <div class="filter-group">
+                        <label for="filterDateTo">Date To</label>
+                        <input type="date" id="filterDateTo" class="form-control">
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-12">
+                    <a href="{% url 'claim_create' %}" class="btn-create">
+                        <i class="fa fa-plus"></i> Create New Claim
+                    </a>
+                </div>
+            </div>
+        </div>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Claim No</th>
-            <th>Customer</th>
-            <th>Vehicle</th>
-            <th>Contract</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for claim in claims %}
-            <tr>
-                <td>{{ claim.claim_no }}</td>
-                <td>{{ claim.customer.fullname }}</td>
-                <td>{{ claim.vehicle.name }}</td>
-                <td>{{ claim.contract.contract_no }}</td>
-                <td>{{ claim.date }}</td>
-                <td>{{ claim.status }}</td>
-                <td>
-                    <a href="{% url 'claim_detail' claim.pk %}" class="btn btn-info btn-sm">View</a>
+        <!-- Claims Grid -->
+        {% if claims %}
+        <div class="claims-grid">
+            {% for claim in claims %}
+            <div class="claim-card wow fadeInUp" data-wow-delay="0.{{ forloop.counter }}s">
+                <!-- Claim Header -->
+                <div class="claim-header">
+                    <div class="claim-number">
+                        <i class="fa fa-file-text"></i>{{ claim.claim_no }}
+                    </div>
+                    <span class="badge-status badge-{{ claim.status|lower }}">
+                        {{ claim.status }}
+                    </span>
+                </div>
+
+                <!-- Claim Info -->
+                <div class="claim-info">
+                    <div class="info-item">
+                        <div class="info-icon customer">
+                            <i class="fa fa-user"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Customer</div>
+                            <div class="info-value">{{ claim.customer.fullname }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon vehicle">
+                            <i class="fa fa-car"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Vehicle</div>
+                            <div class="info-value">{{ claim.vehicles }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon contract">
+                            <i class="far fa-file-alt"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Contract</div>
+                            <div class="info-value">{{ claim.contract.contract_no }}</div>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <div class="info-icon date">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        <div class="info-details">
+                            <div class="info-label">Date</div>
+                            <div class="info-value">{{ claim.date|date:"M d, Y" }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Claim Actions -->
+                <div class="claim-actions">
+                    <a href="{% url 'claim_detail' claim.pk %}" class="btn-action btn-view">
+                        <i class="fa fa-eye"></i> View
+                    </a>
                     {% if request.session.user_type == 'customer' %}
-                        <a href="{% url 'claim_update' claim.pk %}"
-                           class="btn btn-warning btn-sm">Update</a>
+                    <a href="{% url 'claim_update' claim.pk %}" class="btn-action btn-edit">
+                        <i class="fa fa-edit"></i> Edit
+                    </a>
                     {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="7">No claims found.</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="row">
+            <div class="col-12">
+                <div class="empty-state wow fadeInUp">
+                    <i class="fa fa-folder-open"></i>
+                    <h3>No Claims Found</h3>
+                    <p>You don't have any claims yet. Create your first claim to get started.</p>
+                    <a href="{% url 'claim_create' %}" class="btn-create" style="max-width: 300px; margin: 0 auto;">
+                        <i class="fa fa-plus"></i> Create Your First Claim
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Initialize WOW animations
+    if (typeof WOW !== 'undefined') {
+        new WOW({
+            boxClass: 'wow',
+            animateClass: 'animated',
+            offset: 0,
+            mobile: true,
+            live: true
+        }).init();
+    }
+    
+    // Search functionality
+    $('#searchClaim').on('keyup', function() {
+        var searchText = $(this).val().toLowerCase();
+        
+        $('.claim-card').each(function() {
+            var cardText = $(this).text().toLowerCase();
+            if (cardText.indexOf(searchText) > -1) {
+                $(this).fadeIn(300);
+            } else {
+                $(this).fadeOut(300);
+            }
+        });
+    });
+    
+    // Filter by status
+    $('#filterStatus').on('change', function() {
+        var selectedStatus = $(this).val().toLowerCase();
+        
+        if (selectedStatus === '') {
+            $('.claim-card').fadeIn(300);
+        } else {
+            $('.claim-card').each(function() {
+                var cardStatus = $(this).find('.badge-status').text().toLowerCase().trim();
+                if (cardStatus === selectedStatus) {
+                    $(this).fadeIn(300);
+                } else {
+                    $(this).fadeOut(300);
+                }
+            });
+        }
+    });
+});
+</script>
 {% endblock %}

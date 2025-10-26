@@ -84,7 +84,7 @@ def index(request):
     # Step 2: Convert queryset to list of dicts
     all_monthly_revenue = [
         {
-            "month": calendar.month_abbr[c["month"]],  # e.g. "Jan"
+            "month": calendar.month_abbr[c["month"]] if c["month"] else "N/A",  # e.g. "Jan"
             "year": c["year"],
             "revenue": float(c["revenue"] or 0),
         }

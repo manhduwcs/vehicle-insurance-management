@@ -1,0 +1,194 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Claim Details {% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Header with back button -->
+            <div class="mb-3">
+                <a href="{% url 'claim_list_admin' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <!-- Main Claim Info Card -->
+            <div class="card mb-4">
+                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Claim #{{ claim.claim_no }}</h5>
+                        <p class="text-sm mb-0 text-secondary">Date: {{ claim.date|date:"d/m/Y" }}</p>
+                    </div>
+                    <div>
+                        {% if claim.status == 'Pending' %}
+                        <span class="badge badge-lg bg-gradient-warning">Pending</span>
+                        {% elif claim.status == 'Approved' %}
+                        <span class="badge badge-lg bg-gradient-info">Approved</span>
+                        {% elif claim.status == 'Completed' %}
+                        <span class="badge badge-lg bg-gradient-success">Completed</span>
+                        {% elif claim.status == 'Rejected' %}
+                        <span class="badge badge-lg bg-gradient-danger">Rejected</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Customer Information -->
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-7 mb-2">
+                                Customer Information
+                            </h6>
+                            <div class="ps-3">
+                                <p class="mb-1"><strong>Name:</strong> {{ claim.customer.fullname }}</p>
+                                <p class="mb-1"><strong>Phone:</strong> {{ claim.customer.phone }}</p>
+                                <p class="mb-1"><strong>Email:</strong> {{ claim.customer.email }}</p>
+                                <p class="mb-1"><strong>Address:</strong> {{ claim.customer.address }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Information -->
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-7 mb-2">
+                                Vehicle Information
+                            </h6>
+                            <div class="ps-3">
+                                <p class="mb-1"><strong>License Plate:</strong> {{ claim.vehicles.license_plate }}</p>
+                                <p class="mb-1"><strong>Model:</strong> {{ claim.vehicles.model }}</p>
+                                <p class="mb-1"><strong>Brand:</strong> {{ claim.vehicles.brand }}</p>
+                                <p class="mb-1"><strong>Year:</strong> {{ claim.vehicles.year }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Contract Information -->
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-7 mb-2">
+                                Contract Information
+                            </h6>
+                            <div class="ps-3">
+                                <p class="mb-1"><strong>Contract No:</strong> {{ claim.contract.contract_no }}</p>
+                                <p class="mb-1"><strong>Insurance Type:</strong> {{ claim.contract.insurance_type }}</p>
+                                <p class="mb-1"><strong>Start Date:</strong> {{ claim.contract.start_date|date:"d/m/Y" }}</p>
+                                <p class="mb-1"><strong>End Date:</strong> {{ claim.contract.end_date|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Incident Information -->
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-7 mb-2">
+                                Incident Information
+                            </h6>
+                            <div class="ps-3">
+                                <p class="mb-1"><strong>Location:</strong> {{ claim.place }}</p>
+                                <p class="mb-1"><strong>Date:</strong> {{ claim.date|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Damage and Compensation Details -->
+            {% if claim.status != 'Pending' %}
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6>Damage and Compensation Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase text-xs font-weight-bolder mb-3">Damages</h6>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-sm">Human Damage:</span>
+                                        <span class="text-sm font-weight-bold">
+                                            {{ claim.human_damage|floatformat:0|default:"0" }} VND
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-sm">Property Damage:</span>
+                                        <span class="text-sm font-weight-bold">
+                                            {{ claim.property_damage|floatformat:0|default:"0" }} VND
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-sm">Deduction:</span>
+                                        <span class="text-sm font-weight-bold text-danger">
+                                            -{{ claim.deduction|floatformat:0|default:"0" }} VND
+                                        </span>
+                                    </div>
+                                    <hr class="horizontal dark my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-sm font-weight-bold">Total Damage:</span>
+                                        <span class="text-sm font-weight-bold text-primary">
+                                            {% widthratio claim.human_damage 1 1 as hd %}
+                                            {% widthratio claim.property_damage 1 1 as pd %}
+                                            {% widthratio claim.deduction 1 1 as dd %}
+                                            {{ hd|add:pd|add:dd|floatformat:0 }} VND
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="card border">
+                                <div class="card-body">
+                                    <h6 class="text-uppercase text-xs font-weight-bolder mb-3">Compensation</h6>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-sm">Personal Compensation:</span>
+                                        <span class="text-sm font-weight-bold text-success">
+                                            {{ claim.personal_compensation|floatformat:0|default:"0" }} VND
+                                        </span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span class="text-sm">Property Compensation:</span>
+                                        <span class="text-sm font-weight-bold text-success">
+                                            {{ claim.property_compensation|floatformat:0|default:"0" }} VND
+                                        </span>
+                                    </div>
+                                    <hr class="horizontal dark my-2">
+                                    <div class="d-flex justify-content-between">
+                                        <span class="text-sm font-weight-bold">Total Compensation:</span>
+                                        <span class="text-sm font-weight-bold text-success">
+                                            {% widthratio claim.personal_compensation 1 1 as pc %}
+                                            {% widthratio claim.property_compensation 1 1 as prc %}
+                                            {{ pc|add:prc|floatformat:0 }} VND
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if claim.note %}
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-7 mb-2">Notes</h6>
+                            <div class="p-3 border rounded">
+                                <p class="text-sm mb-0">{{ claim.note }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Action Buttons for Pending Claims -->
+            {% if can_update %}
+            <div class="card">
+                <div class="card-body text-center py-4">
+                    <p class="text-sm text-secondary mb-3">
+                        This claim is in Pending status. Employee needs to verify and enter damage and compensation information.
+                    </p>
+                    <a href="{% url 'claim_approve' claim.id %}" class="btn btn-primary">
+                        <i class="fas fa-check-circle"></i> Verify and Update
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock content %}
