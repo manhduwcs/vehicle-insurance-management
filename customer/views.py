@@ -102,7 +102,7 @@ def customer_info(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = CustomerUpdateForm(instance=customer)
-    return render(request, 'customer/customer_info.html', {'form': form, 'customer': customer})
+    return render(request, 'customer/customer_info.html', {'form': form})
 
 
 def change_password(request):

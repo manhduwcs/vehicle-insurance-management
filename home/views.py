@@ -210,8 +210,7 @@ def home_page_customer(request):
     categories = InsuranceCategories.objects.all()
     
     context = {
-        "segment": "home",
-        "customer": request.user
+        "segment": "home"
         ,"categories": categories
     }
     return render(request, "home/home-customer.html", context)
@@ -225,7 +224,6 @@ def about(request):
 def contact(request):
     context = {
         "segment": "contact",
-        "customer": request.user
     }
     return render(request, "home/contact.html", context)
 
@@ -233,7 +231,6 @@ def services(request):
     categories = InsuranceCategories.objects.all()
     context = {
         "segment": "services",
-        "customer": request.user,
         "categories": categories
     }
     return render(request, "home/services.html", context)
