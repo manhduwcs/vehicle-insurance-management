@@ -300,7 +300,7 @@ aside#sidenav-main {
                     </li>
                 {% endif %}
                 <!-- Vehicles -->
-                {% if 'Manage Vehicles by Employees' in accessible_functions %}
+                {% if 'Manage Vehicles' in accessible_functions %}
                     <li class="nav-item">
                         <a class="nav-link {% if segment == 'vehicles' %}active{% endif %}"
                            href="{% url "vehicles:vehicle_list" %}">
@@ -397,7 +397,7 @@ aside#sidenav-main {
                     </li>
                 {% endif %}
                 <!-- Employee list -->
-                {% if 'Manage Employees by Admin' in accessible_functions or 'Manage Employees by Employees' in accessible_functions %}
+                {% if 'Manage Employees by Admin' in accessible_functions %}
                     <li class="nav-item">
                         <a class="nav-link {% if request.path == '/employees/' %}active{% endif %}"
                            href="{% url 'employee:employee_list' %}">

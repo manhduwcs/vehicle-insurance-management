@@ -53,6 +53,7 @@ class RedirectAuthenticatedUserMiddleware:
         protected_paths = [
             reverse('accounts:login'),
             reverse('accounts:register'),
+         
         ]
 
         # If the user is logged in and tries to access login/register => redirect

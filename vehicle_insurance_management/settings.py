@@ -69,7 +69,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.UserAuthMiddleware',
-    'accounts.middleware.RedirectAuthenticatedUserMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'vehicle_insurance_management.urls'
