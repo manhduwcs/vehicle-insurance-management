@@ -4,6 +4,9 @@ from .models import Vehicles, VehicleTypes
 from .forms import VehicleForm
 from employee.views import has_permission
 from permissions.constants import FunctionIds, ActionIds
+from django.http import JsonResponse
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 def vehicle_list(request):
     if "username" not in request.session:
@@ -13,9 +16,63 @@ def vehicle_list(request):
         messages.error(request, "You do not have permission to view the vehicles list.")
         return redirect("home")
 
-    vehicles = Vehicles.objects.all()
+    # Get params
+    search = request.GET.get('search', '')
+    vehicle_type_id = request.GET.get('vehicle_type_id', '')
+    page = request.GET.get('page', 1)
+
+    # Query vehicles with select_related for optimization
+    vehicles = Vehicles.objects.select_related('customer_id', 'vehicle_type')
+
+    # Query
+    if search:
+        vehicles = vehicles.filter(
+            Q(customer_id__fullname__icontains=search) |
+            Q(customer_id__phone__icontains=search) |
+            Q(number__icontains=search)
+        )
+
+    # filter by vehicle_type
+    if vehicle_type_id:
+        vehicles = vehicles.filter(vehicle_type_id=vehicle_type_id)
+
+    # Add order_by to fix UnorderedObjectListWarning
+    vehicles = vehicles.order_by('-id')  # Sort by ID newest
+
+    # Pagination
+    paginator = Paginator(vehicles, 10)  # 10 items/page
+    page_obj = paginator.get_page(page)
+
+    # Get vehicle types list for dropdown
+    vehicle_types = VehicleTypes.objects.all()
+
+    # get permission to pass into context
+    can_edit = has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Edit)
+    can_delete = has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Delete)
+    can_add = has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Create)
+
+    # AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        table_body = render(request, 'vehicles/_table_body.html', {
+            'vehicles': page_obj,
+            'can_edit': can_edit,
+            'can_delete': can_delete,
+        }).content.decode('utf-8')
+        pagination = render(request, 'vehicles/_pagination.html', {'page_obj': page_obj}).content.decode('utf-8')
+        return JsonResponse({
+            'table_body': table_body,
+            'pagination': pagination,
+        })
+
+    # Render full page
     return render(request, 'vehicles/list.html', {
-        'vehicles': vehicles,
+        'vehicles': page_obj,
+        'vehicle_types': vehicle_types,
+        'search': search,
+        'selected_vehicle_type': vehicle_type_id,
+        'can_add': can_add,
+        'can_edit': can_edit,
+        'can_delete': can_delete,
     })
 
 def vehicle_detail_emp(request, pk):

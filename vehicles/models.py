@@ -17,6 +17,9 @@ class Vehicles(models.Model):
         db_table = 'Vehicles'
         verbose_name = 'Vehicle'
         verbose_name_plural = 'Vehicles'
+        indexes = [
+            models.Index(fields=['number'], name='idx_vehicles_number'),
+        ]
 
     def __str__(self):
         return f"{self.name} - {self.model}"

@@ -10,4 +10,7 @@ urlpatterns = [
     path('<int:pk>/update/', contract_update, name='contract_update'),
     path('<int:pk>/reject/', contract_reject, name='contract_reject'),
     path('<int:pk>/payment_detail/', payment_detail, name='contract_payment_detail'),
+    # path('<int:pk>/', contract_detail, name='contract_detail'),
+    # path('<int:pk>/update/', contract_update, name='contract_update'),
+    # path('<int:pk>/payment/', goto_payment_choice, name='contract_payment'),
 ]

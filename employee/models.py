@@ -12,6 +12,9 @@ class Employees(models.Model):
 
     class Meta:
         db_table = 'Employees'
+        indexes = [
+            models.Index(fields=['fullname'], name='idx_employees_fullname'),
+        ]
 
     def __str__(self):
         return self.username

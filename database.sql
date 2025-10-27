@@ -179,6 +179,12 @@ FOREIGN KEY (GroupID)
 REFERENCES GroupsUsers(ID)
 ON DELETE SET NULL;
 
+-- create index
+CREATE INDEX idx_customers_fullname ON Customers(Fullname);
+CREATE INDEX idx_vehicles_number ON Vehicles(Number);
+CREATE INDEX idx_employees_fullname ON Employees(Fullname);
+CREATE INDEX idx_expenses_content ON Expenses(Content(255));
+CREATE INDEX idx_expenses_date ON Expenses(Date);
 
 -- sample data 
 USE vehicleinsurancedb;

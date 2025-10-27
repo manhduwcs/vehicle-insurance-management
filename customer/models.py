@@ -1,5 +1,6 @@
 from django.db import models
 from permissions.models import GroupsUsers
+
 class Customer(models.Model):
     id = models.AutoField(db_column='ID', primary_key=True)  
     fullname = models.CharField(db_column='Fullname', max_length=100, blank=True, null=True)
@@ -19,6 +20,9 @@ class Customer(models.Model):
     class Meta:
         managed = False  
         db_table = 'Customers'
+        indexes = [
+            models.Index(fields=['fullname'], name='idx_customers_fullname'),
+        ]
 
     def __str__(self):
         return f"{self.fullname} ({self.username})"

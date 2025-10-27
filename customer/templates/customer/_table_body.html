@@ -1,0 +1,26 @@
+{% for customer in customers %}
+  <tr>
+    <td class="align-middle text-center text-sm">{{ forloop.counter0|add:customers.start_index }}</td>  <!-- Chỉnh số thứ tự cho pagination -->
+    <td class="align-middle">
+      <a href="{% url 'customer:customer_detail' customer.id %}">
+        <p class="text-xs font-weight-bold mb-0">{{ customer.username|default:"N/A" }}</p>
+      </a>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ customer.fullname|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ customer.address|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ customer.email|default:"N/A" }}</p>
+    </td>
+    <td class="align-middle">
+      <p class="text-xs text-secondary mb-0">{{ customer.phone|default:"N/A" }}</p>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="6" class="text-center text-secondary">No customers found.</td>
+  </tr>
+{% endfor %}

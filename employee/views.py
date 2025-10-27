@@ -8,6 +8,9 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from app_helper.views import notify
 from accounts.forms import hash_password
 from .tokens import employee_token_generator as default_token_generator
+from django.http import JsonResponse
+from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 # from accounts.forms import hash_password
@@ -32,22 +35,59 @@ def employee_list(request):
     if not has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.View):
         messages.error(request, "You do not have permission to view the employees list.")
         return redirect("home")
-    employees = Employees.objects.all()
+
+    # get params
+    search = request.GET.get('search', '')
+    page = request.GET.get('page', 1)
+
+    # query employees with select_related
+    employees = Employees.objects.select_related('group')
+
+    # search
+    if search:
+        employees = employees.filter(
+            Q(username__icontains=search) |
+            Q(fullname__icontains=search) |
+            Q(email__icontains=search) |
+            Q(phone__icontains=search)
+        )
+
+    # add order_by to fix UnorderedObjectListWarning
+    employees = employees.order_by('-id')
+
+    # Pagination
+    paginator = Paginator(employees, 10)  # 10 items/page
+    page_obj = paginator.get_page(page)
+
+    # get permissions
+    can_add = has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Create)
+    can_edit = has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Edit)
+    can_delete = has_permission(group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Delete)
+
+    # AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        table_body = render(request, 'employee/_table_body.html', {
+            'employees': page_obj,
+            'can_edit': can_edit,
+            'can_delete': can_delete,
+        }).content.decode('utf-8')
+        pagination = render(request, 'employee/_pagination.html', {'page_obj': page_obj}).content.decode('utf-8')
+        return JsonResponse({
+            'table_body': table_body,
+            'pagination': pagination,
+        })
+
+    # Render full page
     return render(
         request,
         "employee/list.html",
         {
             "segment": "employee",
-            "employees": employees,
-            "can_add": has_permission(
-                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Create
-            ),
-            "can_edit": has_permission(
-                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Edit
-            ),
-            "can_delete": has_permission(
-                group_id, FunctionIds.ManageEmployeesByAdmin, ActionIds.Delete
-            ),
+            "employees": page_obj,
+            "search": search,
+            "can_add": can_add,
+            "can_edit": can_edit,
+            "can_delete": can_delete,
         },
     )
 
