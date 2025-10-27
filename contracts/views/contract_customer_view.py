@@ -201,7 +201,12 @@ def pay_with_qr(request, pk):
     receiver_name = "NGUYEN DUC MANH"
     amount = contract.actual_premium
     message = f"Payment for Contract {contract.contract_no}"
-    qr_url = ""  # or your VietQR URL
+    # qr_url = (
+    #     f"https://img.vietqr.io/image/"
+    #     f"{bank_code}-{account_number}-compact2.png"
+    #     f"?amount={amount}&addInfo={message}&accountName={receiver_name}"
+    # )
+    qr_url = ""
 
     context = {
         "contract": contract,
