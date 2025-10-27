@@ -1,0 +1,197 @@
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-md-12 mt-4">
+      <div class="card">
+        <div class="card-header pb-0 px-3">
+          <h4 class="mb-0">{{ vehicle.name|truncatechars:30 }}</h4>
+        </div>
+        <div class="card-body pt-4 p-3">
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <form action="{% url 'vehicles:vehicle_update' vehicle.id %}" method="post">
+            {% csrf_token %}
+
+            <!-- Name -->
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-car"></i></span>
+                {{ form.name }}
+              </div>
+              {% if form.name.errors %}
+                <div class="invalid-feedback d-block">{{ form.name.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Model -->
+            <div class="mb-3">
+              <label class="form-label">Model</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-cogs"></i></span>
+                {{ form.model }}
+              </div>
+              {% if form.model.errors %}
+                <div class="invalid-feedback d-block">{{ form.model.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Vehicle Type -->
+            <div class="mb-3">
+              <label class="form-label">Vehicle Type</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-list"></i></span>
+                {{ form.vehicle_type }}
+              </div>
+              {% if form.vehicle_type.errors %}
+                <div class="invalid-feedback d-block">{{ form.vehicle_type.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Purchase Price -->
+            <div class="mb-3">
+              <label class="form-label">Purchase Price</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-dollar-sign"></i></span>
+                {{ form.purchase_price }}
+              </div>
+              {% if form.purchase_price.errors %}
+                <div class="invalid-feedback d-block">{{ form.purchase_price.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Body Number -->
+            <div class="mb-3">
+              <label class="form-label">Body Number</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-barcode"></i></span>
+                {{ form.body_number }}
+              </div>
+              {% if form.body_number.errors %}
+                <div class="invalid-feedback d-block">{{ form.body_number.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Engine Number -->
+            <div class="mb-3">
+              <label class="form-label">Engine Number</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-cog"></i></span>
+                {{ form.engine_number }}
+              </div>
+              {% if form.engine_number.errors %}
+                <div class="invalid-feedback d-block">{{ form.engine_number.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Number -->
+            <div class="mb-3">
+              <label class="form-label">Number</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-id-card"></i></span>
+                {{ form.number }}
+              </div>
+              {% if form.number.errors %}
+                <div class="invalid-feedback d-block">{{ form.number.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Registration Date -->
+            <div class="mb-3">
+              <label class="form-label">Registration Date</label>
+              <div class="input-group">
+                <span class="input-group-text text-body"><i class="fas fa-calendar-alt"></i></span>
+                {{ form.registration_date }}
+              </div>
+              {% if form.registration_date.errors %}
+                <div class="invalid-feedback d-block">{{ form.registration_date.errors.as_text }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Customer ID (hidden) -->
+            {{ form.customer_id }}
+
+            <!-- Non-field errors -->
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors.as_text }}
+              </div>
+            {% endif %}
+
+            <!-- Submit and Cancel buttons -->
+            <div class="text-end mt-3">
+              <button type="submit" class="btn btn-primary">Update</button>
+              <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock content %}

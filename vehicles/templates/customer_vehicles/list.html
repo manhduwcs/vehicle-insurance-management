@@ -1,0 +1,180 @@
+{% extends "layouts/home-customer.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header pb-0">
+          <h6>Vehicle List</h6>
+          {% if messages %}
+            {% for message in messages %}
+              {% if message.tags != 'error' %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+          <div class="d-flex justify-content-between mb-2">
+            <div>
+              {% if can_add %}
+                <a href="{% url 'vehicles:vehicle_create' %}" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-plus"></i> Add Vehicle
+                </a>
+              {% endif %}
+              <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary btn-sm">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </a>
+            </div>
+            <div class="d-flex">
+              <input type="text" id="search-input" class="form-control me-2" placeholder="Search by name, phone, or number" value="{{ search }}">
+              <select id="vehicle-type-select" class="form-select">
+                <option value="">All Vehicle Types</option>
+                {% for vehicle_type in vehicle_types %}
+                  <option value="{{ vehicle_type.id }}" {% if selected_vehicle_type == vehicle_type.id|stringformat:"s" %}selected{% endif %}>
+                    {{ vehicle_type.name }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table id="vehicle-table" class="table align-items-center mb-0">  <!-- Thêm id="vehicle-table" -->
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer Name</th>  <!-- Chỉnh tên cột -->
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Customer Phone</th>  <!-- Chỉnh tên cột -->
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Model</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Number</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Vehicle Type</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Purchase Price</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% include "vehicles/_table_body.html" %}  <!-- Thêm include partial -->
+              </tbody>
+            </table>
+          </div>
+          <div id="pagination" class="mt-3">  <!-- Thêm div cho pagination -->
+            {% include "vehicles/_pagination.html" %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "includes/footer.html" %}
+
+    <!-- Modal for successful notification -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="okButton">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!-- Permission Error Modal -->
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        <div class="modal fade" id="permissionErrorModal" tabindex="-1" aria-labelledby="permissionErrorModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {{ message }}
+              </div>
+              <div class="modal-footer">
+                <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-primary">OK</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+// Permission error modal
+  {% if messages %}
+    {% for message in messages %}
+      {% if message.tags == 'error' %}
+        var permissionErrorModal = new bootstrap.Modal(document.getElementById('permissionErrorModal'), {});
+        permissionErrorModal.show();
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  // Instant search and filter
+  const searchInput = document.getElementById('search-input');
+  const vehicleTypeSelect = document.getElementById('vehicle-type-select');
+  let debounceTimeout;
+
+  function fetchVehicles(search, vehicleTypeId, page) {
+    const url = new URL(window.location.pathname, window.location.origin);
+    if (search) url.searchParams.append('search', search);
+    if (vehicleTypeId) url.searchParams.append('vehicle_type_id', vehicleTypeId);
+    if (page) url.searchParams.append('page', page);
+
+    fetch(url, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(response => response.json())
+      .then(data => {
+        document.querySelector('#vehicle-table tbody').innerHTML = data.table_body;
+        document.getElementById('pagination').innerHTML = data.pagination;
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  // Debounce search
+  searchInput.addEventListener('keyup', function () {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+      const search = searchInput.value.trim();
+      const vehicleTypeId = vehicleTypeSelect.value;
+      fetchVehicles(search, vehicleTypeId, 1);
+    }, 300);
+  });
+
+  // Filter by vehicle type
+  vehicleTypeSelect.addEventListener('change', function () {
+    const search = searchInput.value.trim();
+    const vehicleTypeId = vehicleTypeSelect.value;
+    fetchVehicles(search, vehicleTypeId, 1);
+  });
+
+  // Handle pagination clicks
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.pagination a')) {
+      e.preventDefault();
+      const page = e.target.getAttribute('data-page');
+      const search = searchInput.value.trim();
+      const vehicleTypeId = vehicleTypeSelect.value;
+      fetchVehicles(search, vehicleTypeId, page);
+    }
+  });
+});
+</script>
+{% endblock content %}
