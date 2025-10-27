@@ -19,7 +19,7 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-          <form action="{% url 'vehicles:vehicle_create' %}" method="post">
+          <form action="{% url 'vehicles:customer_vehicle_create' %}" method="post">
             {% csrf_token %}
 
             <!-- Name -->
@@ -131,7 +131,7 @@
             <!-- Submit and Cancel buttons -->
             <div class="text-end mt-3">
               <button type="submit" class="btn btn-primary">Save</button>
-              <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary">Cancel</a>
+              <a href="{% url 'vehicles:customer_vehicle_list' %}" class="btn btn-secondary">Cancel</a>
             </div>
           </form>
         </div>
@@ -165,14 +165,14 @@
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="permissionErrorModalLabel">Permission Denied</h5>
+                <h5 class="modal-title" id="permissionErrorModalLabel">Errors</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 {{ message }}
               </div>
               <div class="modal-footer">
-                <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-primary">OK</a>
+                <a href="{% url 'vehicles:customer_vehicle_list' %}" class="btn btn-primary">OK</a>
               </div>
             </div>
           </div>

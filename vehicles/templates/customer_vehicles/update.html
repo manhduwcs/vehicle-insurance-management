@@ -19,7 +19,7 @@
               {% endif %}
             {% endfor %}
           {% endif %}
-          <form action="{% url 'vehicles:vehicle_update' vehicle.id %}" method="post">
+          <form action="{% url 'vehicles:customer_vehicle_update' vehicle.id %}" method="post">
             {% csrf_token %}
 
             <!-- Name -->
@@ -131,7 +131,7 @@
             <!-- Submit and Cancel buttons -->
             <div class="text-end mt-3">
               <button type="submit" class="btn btn-primary">Update</button>
-              <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary">Cancel</a>
+              <a href="{% url 'vehicles:customer_vehicle_list' %}" class="btn btn-secondary">Cancel</a>
             </div>
           </form>
         </div>

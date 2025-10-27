@@ -2,7 +2,7 @@
   <tr>
     <td class="align-middle text-center text-sm">{{ forloop.counter0|add:vehicles.start_index }}</td>  <!-- Chỉnh số thứ tự cho pagination -->
     <td class="align-middle">
-      <a href="{% url 'vehicles:vehicle_detail_emp' vehicle.id %}">
+      <a href="{% url 'vehicles:customer_vehicle_detail' vehicle.id %}">
         <p class="text-xs font-weight-bold mb-0">{{ vehicle.name|truncatechars:50 }}</p>
       </a>
     </td>
@@ -26,12 +26,12 @@
     </td>
     <td class="align-middle">
       {% if can_edit %}
-        <a href="{% url 'vehicles:vehicle_update' vehicle.id %}" class="btn btn-sm btn-warning">
+        <a href="{% url 'vehicles:customer_vehicle_update' vehicle.id %}" class="btn btn-sm btn-warning">
           <i class="fas fa-edit"></i>
         </a>
       {% endif %}
       {% if can_delete %}
-        <form method="post" action="{% url 'vehicles:vehicle_delete' vehicle.id %}" style="display:inline;">
+        <form method="post" action="{% url 'vehicles:customer_vehicle_delete' vehicle.id %}" style="display:inline;">
           {% csrf_token %}
           <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the vehicle: {{ vehicle.name|truncatechars:30 }}?');">
             <i class="fas fa-trash"></i>

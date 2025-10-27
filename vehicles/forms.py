@@ -6,10 +6,9 @@ class VehicleForm(forms.ModelForm):
 
     class Meta:
         model = Vehicles
-        fields = ['name', 'customer_id', 'model', 'vehicle_type', 'purchase_price', 'body_number', 'engine_number', 'number', 'registration_date']
+        fields = ['name', 'model', 'vehicle_type', 'purchase_price', 'body_number', 'engine_number', 'number', 'registration_date']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'customer_id': forms.HiddenInput(),  # Ẩn vì lấy từ session
             'model': forms.TextInput(attrs={'class': 'form-control'}),
             'purchase_price': forms.NumberInput(attrs={'class': 'form-control'}),
             'body_number': forms.TextInput(attrs={'class': 'form-control'}),

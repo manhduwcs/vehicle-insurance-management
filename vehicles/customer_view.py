@@ -37,7 +37,7 @@ def customer_vehicle_detail(request, pk):
     group_id = request.session.get('group_id')
     if not has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.View):
         messages.error(request, "You do not have permission to view vehicle details.")
-        return redirect('customer:customer_vehicle_list')
+        return redirect('vehicles:customer_vehicle_list')
 
     vehicle = get_object_or_404(Vehicles, pk=pk)
     return render(request, 'customer_vehicles/detail.html', {
@@ -52,10 +52,10 @@ def customer_vehicle_create(request):
 
     group_id = request.session.get('group_id')
     user_id = request.session.get('user_id')
-
     if not has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Create):
+      
         messages.error(request, "You do not have permission to create vehicles.")
-        return redirect('customer:customer_vehicle_list')
+        return redirect('vehicles:customer_vehicle_list')
 
     if request.method == 'POST':
         form = VehicleForm(request.POST)
@@ -64,9 +64,9 @@ def customer_vehicle_create(request):
             vehicle.customer_id_id = user_id
             vehicle.save()
             messages.success(request, 'Vehicle created successfully!')
-            return redirect('customer:customer_vehicle_list')
+            return redirect('vehicles:customer_vehicle_list')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, form.errors.as_text())
     else:
         form = VehicleForm()
 
@@ -79,7 +79,7 @@ def customer_vehicle_update(request, pk):
     group_id = request.session.get('group_id')
     if not has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Edit):
         messages.error(request, "You do not have permission to edit vehicles.")
-        return redirect('customer:customer_vehicle_list')
+        return redirect('vehicles:customer_vehicle_list')
 
     vehicle = get_object_or_404(Vehicles, pk=pk)
 
@@ -88,9 +88,9 @@ def customer_vehicle_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Vehicle updated successfully!')
-            return redirect('customer:customer_vehicle_list')
+            return redirect('vehicles:customer_vehicle_list')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            messages.error(request, form.errors.as_text())
     else:
         form = VehicleForm(instance=vehicle)
 
@@ -103,12 +103,12 @@ def customer_vehicle_delete(request, pk):
     group_id = request.session.get('group_id')
     if not has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Delete):
         messages.error(request, "You do not have permission to delete vehicles.")
-        return redirect('customer:customer_vehicle_list')
+        return redirect('vehicles:customer_vehicle_list')
 
     vehicle = get_object_or_404(Vehicles, pk=pk)
     if request.method == 'POST':
         vehicle.delete()
         messages.success(request, 'Vehicle deleted successfully!')
-        return redirect('customer:customer_vehicle_list')
+        return redirect('vehicles:customer_vehicle_list')
 
-    return redirect('customer:customer_vehicle_list')
+    return redirect('vehicles:customer_vehicle_list')

@@ -63,7 +63,7 @@
                   </button>
                 {% endif %}
                 {% if can_edit %}
-                  <form action="{% url 'vehicles:vehicle_update' vehicle.id %}" method="GET" style="display: inline">
+                  <form action="{% url 'vehicles:customer_vehicle_update' vehicle.id %}" method="GET" style="display: inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-link text-dark px-3 mb-0">
                       <i class="fas fa-pencil-alt text-dark me-2" aria-hidden="true"></i>Edit
@@ -79,7 +79,7 @@
   </div>
   <div class="row">
     <div class="col-md-12 mt-4">
-      <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-secondary">Back to List</a>
+      <a href="{% url 'vehicles:customer_vehicle_list' %}" class="btn btn-secondary">Back to List</a>
     </div>
   </div>
 
@@ -116,7 +116,7 @@
                 {{ message }}
               </div>
               <div class="modal-footer">
-                <a href="{% url 'vehicles:vehicle_list' %}" class="btn btn-primary">OK</a>
+                <a href="{% url 'vehicles:customer_vehicle_list' %}" class="btn btn-primary">OK</a>
               </div>
             </div>
           </div>
