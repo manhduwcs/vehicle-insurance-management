@@ -68,8 +68,7 @@
   <script>
     function togglePassword(fieldId, iconElement) {
       const passwordField = document.getElementById(fieldId);
-      const icon = iconElement.querySelector('i');
-      
+      const icon = document.getElementById('icon-' + fieldId);
       if (passwordField.type === 'password') {
         passwordField.type = 'text';
         icon.classList.remove('fa-eye');

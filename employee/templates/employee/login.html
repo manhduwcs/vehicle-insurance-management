@@ -34,7 +34,8 @@
 
                     <label>Password</label>
                     <div class="mb-3">
-                      <input
+                      <div class="position-relative">
+                           <input
                         type="password"
                         class="form-control"
                         name="{{ form.password.name }}"
@@ -42,6 +43,14 @@
                         value="{{ form.password.value|default_if_none:'' }}"
                         placeholder="{{ form.password.label }}"
                       >
+                          <span
+                            class="position-absolute top-50 end-0 translate-middle-y pe-3"
+                            style="cursor: pointer; z-index: 10;"
+                            onclick="togglePassword('{{ form.password.id_for_label }}', this)"
+                          >
+                            <i class="fas fa-eye" id="icon-{{ form.password.id_for_label }}"></i>
+                          </span>
+                      </div>
                       {% if form.password.errors %}
                         <div class="text-danger small">{{ form.password.errors.as_text|striptags }}</div>
                       {% endif %}
@@ -96,5 +105,20 @@
             notification.warning("{% trans 'Please correct the errors below.' %}", 'top', 'right');
         {% endif %}
     {% endif %}
+
+    function togglePassword(fieldId, iconElement) {
+      const passwordField = document.getElementById(fieldId);
+      const icon = document.getElementById('icon-' + fieldId);
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
   </script>
 {% endblock extra_js %}

@@ -32,12 +32,20 @@
                                     </div>
                                     <label>Password</label>
                                     <div class="mb-3">
-                                        <input type="password"
+                                        <div class="position-relative">
+                                            <input type="password"
                                                class="form-control"
                                                name="password"
                                                id="password"
                                                value="{{ form.password.value|default_if_none:'' }}"
                                                placeholder="Password">
+
+                                                 <span class="position-absolute top-50 end-0 translate-middle-y pe-3" 
+                              style="cursor: pointer; z-index: 10;"
+                              onclick="togglePassword('password', this)">
+                          <i class="fas fa-eye" id="icon-password"></i>
+                        </span>
+                                        </div>
                                         {% if form.password.errors %}
                                             <div class="text-danger small">{{ form.password.errors.as_text|striptags }}</div>
                                         {% endif %}
@@ -81,4 +89,21 @@
         </div>
     </section>
 </main>
+
+  <script>
+    function togglePassword(fieldId, iconElement) {
+      const passwordField = document.getElementById(fieldId);
+      const icon = document.getElementById('icon-' + fieldId);
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        passwordField.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+  </script>
 {% endblock content %}

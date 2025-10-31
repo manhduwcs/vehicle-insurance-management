@@ -9,6 +9,7 @@ from .views import (
     employee_profile,
     change_password,
     login_view,
+    logout_view,
     reset_password_view,
     password_reset_confirm_view,
     password_reset_done_view
@@ -29,5 +30,5 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>/', password_reset_confirm_view, name='password_reset_confirm'),
     path('password-change/', password_reset_confirm_view, name='password_change'),
     path('password-change-done/', password_reset_done_view, name='password_change_done'),
-
+    path('logout/', logout_view, name='logout'),
 ]

@@ -73,6 +73,7 @@ def vehicle_list(request):
         'can_add': can_add,
         'can_edit': can_edit,
         'can_delete': can_delete,
+        'segment': 'vehicles',
     })
 
 def vehicle_detail_emp(request, pk):
@@ -82,10 +83,14 @@ def vehicle_detail_emp(request, pk):
     if not has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.View):
         messages.error(request, "You do not have permission to view vehicle details.")
         return redirect("vehicles:vehicle_list")
-
+    can_delete = has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Delete)
+    can_edit = has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Edit)
     vehicle = get_object_or_404(Vehicles, pk=pk)
     return render(request, 'vehicles/detail.html', {
         'vehicle': vehicle,
+        'can_edit': can_edit,
+        'can_delete': can_delete,
+        'segment': 'vehicles',
     })
 
 def vehicle_detail_cus(request, pk):
@@ -101,6 +106,7 @@ def vehicle_detail_cus(request, pk):
         'vehicle': vehicle,
         'can_edit': has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Edit),
         'can_delete': has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Delete),
+        'segment': 'vehicles',
     })
 
 def vehicle_create(request):
@@ -128,7 +134,7 @@ def vehicle_create(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = VehicleForm()
-    return render(request, 'vehicles/create.html', {'form': form})
+    return render(request, 'vehicles/create.html', {'form': form, 'segment': 'vehicles'})
 
 def vehicle_update(request, pk):
     if 'username' not in request.session:
@@ -136,7 +142,7 @@ def vehicle_update(request, pk):
     user_group_id = request.session.get('group_id', None)
     if not has_permission(user_group_id, FunctionIds.ManageVehicle, ActionIds.Edit):
         messages.error(request, "You do not have permission to edit vehicles.")
-        return redirect('vehicles:vehicle_info')
+        return redirect('vehicles:vehicle_detail_emp', pk=pk)
 
     vehicle = get_object_or_404(Vehicles, pk=pk)
     if request.method == 'POST':
@@ -144,12 +150,12 @@ def vehicle_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Vehicle updated successfully!')
-            return redirect('vehicles:vehicle_info')
+            return redirect('vehicles:vehicle_detail_emp', pk=pk)
         else:
             messages.error(request, 'Please correct the errors below.')
     else:
         form = VehicleForm(instance=vehicle)
-    return render(request, 'vehicles/update.html', {'form': form, 'vehicle': vehicle})
+    return render(request, 'vehicles/update.html', {'form': form, 'vehicle': vehicle, 'segment': 'vehicles'})
 
 def vehicle_delete(request, pk):
     if 'username' not in request.session:
@@ -184,4 +190,5 @@ def vehicle_info(request):
         'vehicles': vehicles,
         'can_edit': has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Edit),
         'can_delete': has_permission(group_id, FunctionIds.ManageVehicle, ActionIds.Delete),
+        'segment': 'vehicles',
     })

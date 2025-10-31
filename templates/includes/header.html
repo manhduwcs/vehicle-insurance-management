@@ -177,7 +177,12 @@
                                         <img src="{% static 'images/icons/user.png' %}" alt="">
                                         Profile
                                     </a>
-                                    <a href="#" class="dropdown-item">
+                                        <a href="{% url 'vehicles:customer_vehicle_list' %}"
+                                           class="dropdown-item">
+                                            <img src="{% static 'images/icons/car.png' %}" alt="">
+                                            My Vehicles
+                                        </a>
+                                    <a href="{% url 'contracts_customer:contract_list' %}" class="dropdown-item">
                                         <img src="{% static 'images/icons/contract.png' %}" alt="">
                                         My Contracts
                                     </a>
@@ -237,7 +242,12 @@
                         <img src="{% static 'images/icons/user.png' %}" alt="">
                         Profile
                     </a>
-                    <a href="#" class="dropdown-item">
+                        <a href="{% url 'vehicles:customer_vehicle_list' %}"
+                                           class="dropdown-item">
+                                            <img src="{% static 'images/icons/car.png' %}" alt="">
+                                            My Vehicles
+                        </a>
+                    <a href="{% url 'contracts_customer:contract_list' %}" class="dropdown-item">
                         <img src="{% static 'images/icons/contract.png' %}" alt="">
                         My Contracts
                     </a>

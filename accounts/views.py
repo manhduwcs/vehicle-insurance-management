@@ -35,23 +35,9 @@ def register_view(request):
 # LOGIN
 # -------------------
 def login_view(request):
-    print(f"goto accounts login")
-    try:
-        user = Customer.objects.get(username="johnsmith")
-        print("User exists:", user.username)
-    except Customer.DoesNotExist:
-        print("User does not exist")
-
-    hashed = make_password("123456")
-    print(hashed)  # produces pbkdf2_sha256$... or bcrypt$...
     if request.method == "POST":
-        print(f"login post request")
         form = LoginForm(request.POST)
-
-        print("POST data:", request.POST)
-        print("Form errors before is_valid:", form.errors)  # shows any validation errors
         if form.is_valid():
-            print(f"form is valid")
             customer = form.cleaned_data['customer']
             request.session['user_id'] = customer.id
             request.session['username'] = customer.username
@@ -60,7 +46,7 @@ def login_view(request):
             if remember_me == 'on':
                 request.session.set_expiry(7 * 24 * 60 * 60)  # 7 days
             else:
-                request.session.set_expiry(86400)  # 24 hours instead of 0  
+                request.session.set_expiry(0)  
             notify(request, f"Welcome, {customer.fullname}!", 'success')
             return redirect('home-customer')
         else:

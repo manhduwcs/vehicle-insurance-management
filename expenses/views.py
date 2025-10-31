@@ -78,6 +78,7 @@ def expense_list(request):
         'can_add': can_add,
         'can_edit': can_edit,
         'can_delete': can_delete,
+        'segment': 'expenses',
     })
 
 
@@ -99,7 +100,7 @@ def expense_create(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ExpenseForm()
-    return render(request, 'expenses/create.html', {'form': form})
+    return render(request, 'expenses/create.html', {'form': form, 'segment': 'expenses'})
 
 
 def expense_update(request, pk):
@@ -121,7 +122,7 @@ def expense_update(request, pk):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = ExpenseForm(instance=expense)
-    return render(request, 'expenses/update.html', {'form': form, 'expense': expense})
+    return render(request, 'expenses/update.html', {'form': form, 'expense': expense, 'segment': 'expenses'})
 
 
 def expense_detail(request, pk):
@@ -137,6 +138,7 @@ def expense_detail(request, pk):
         'expense': expense,
         'can_edit': has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageExpenses, ActionIds.Delete),
+        'segment': 'expenses',
     })
 
 

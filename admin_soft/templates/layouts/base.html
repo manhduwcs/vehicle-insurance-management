@@ -20,7 +20,7 @@
 
 <body class="g-sidenav-show  bg-gray-100">
   {% block sidebar %}
-    {% include "includes/sidebar.html" %}
+   {% include "includes/sidebar.html" with segment=segment %}
   {% endblock sidebar %}
   <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
     {% block navigation %}
