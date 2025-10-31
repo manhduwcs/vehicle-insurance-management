@@ -36,6 +36,7 @@ def category_list(request):
         'can_add': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Create),
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Delete),
+        'segment': 'insurance_category',
     })
 
 
@@ -57,7 +58,7 @@ def category_create(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = InsuranceCategoryForm()
-    return render(request, 'categories/create.html', {'form': form})
+    return render(request, 'categories/create.html', {'form': form, 'segment': 'insurance_category'})
 
 
 def category_update(request, pk):
@@ -79,7 +80,7 @@ def category_update(request, pk):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = InsuranceCategoryForm(instance=category)
-    return render(request, 'categories/update.html', {'form': form, 'category': category})
+    return render(request, 'categories/update.html', {'form': form, 'category': category, 'segment': 'insurance_category'})
 
 
 def category_delete(request, pk):
@@ -135,6 +136,7 @@ def edit_price_list(request):
         'can_add': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Create),
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageInsuranceCategories, ActionIds.Delete),
+        'segment': 'insurance_category',
     })
 
 
@@ -182,4 +184,5 @@ def update_max_coverage(request):
         'categories': categories,
         'category_max_coverage': category_max_coverage,
         'can_edit': has_permission(user_group_id, FunctionIds.ManageInsurancePriceList, ActionIds.Edit),
+        'segment': 'insurance_category',
     })

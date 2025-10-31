@@ -46,18 +46,27 @@ class RedirectAuthenticatedUserMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        user_id = request.session.get('user_id')
+        user = request.session.get('username')
         path = request.path
 
         # The list of paths that should be protected from authenticated users
         protected_paths = [
             reverse('accounts:login'),
             reverse('accounts:register'),
-         
+            reverse('accounts:reset_password'),
+            reverse('accounts:password_change'),
+            reverse('accounts:password_change_done'),
+            reverse('employee:login'),
+            reverse('employee:reset_password'),
+            reverse('employee:password_change'),
+            reverse('employee:password_change_done'),
         ]
 
         # If the user is logged in and tries to access login/register => redirect
-        if user_id and any(path.startswith(p) for p in protected_paths):
+        if user and any(path.startswith(p) for p in protected_paths):
+            
+            if request.session.get('group_id') == 3:
+                return redirect('home')
             return redirect('home-customer')
 
         # Allow normal request processing

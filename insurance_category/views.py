@@ -28,6 +28,7 @@ def insurance_category_list(request):
         "can_delete": has_permission(
             group_id, FunctionIds.ManageEmployees, ActionIds.Delete
         ),
+        "segment": "insurance_category",
     }
     return render(request, "insurance_category/list.html", context)
 

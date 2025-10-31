@@ -181,6 +181,7 @@ def claims_list_admin(request):
         'search_query': search_query,
         'status_filter': status_filter,
         'status_choices': ['Pending', 'Approved', 'Completed', 'Rejected'],
+        'segment': 'claim',
     }
 
     return render(request, 'claims/claims_list_admin.html', context)
@@ -200,6 +201,7 @@ def claim_detail_admin(request, pk):
     context = {
         'claim': claim,
         'can_update': can_update,
+        'segment': 'claim',
     }
 
     return render(request, 'claims/claim_detail_admin.html', context)
@@ -230,6 +232,7 @@ def claim_approve(request, pk):
     context = {
         'form': form,
         'claim': claim,
+        'segment': 'claim',
     }
     
     return render(request, 'claims/claim_approve.html', context)

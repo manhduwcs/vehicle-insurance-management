@@ -20,6 +20,7 @@ def vehicle_type_list(request):
         'can_add': has_permission(group_id, FunctionIds.ManageVehicleTypes, ActionIds.Create),
         'can_edit': has_permission(group_id, FunctionIds.ManageVehicleTypes, ActionIds.Edit),
         'can_delete': has_permission(group_id, FunctionIds.ManageVehicleTypes, ActionIds.Delete),
+        'segment': 'vehicle_types',
     })
 
 
@@ -41,7 +42,7 @@ def vehicle_type_create(request):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = VehicleTypeForm()
-    return render(request, 'vehicle_types/create.html', {'form': form})
+    return render(request, 'vehicle_types/create.html', {'form': form, 'segment': 'vehicle_types'})
 
 
 def vehicle_type_update(request, pk):
@@ -63,7 +64,7 @@ def vehicle_type_update(request, pk):
             messages.error(request, 'Please correct the errors below.')
     else:
         form = VehicleTypeForm(instance=vehicle_type)
-    return render(request, 'vehicle_types/update.html', {'form': form, 'vehicle_type': vehicle_type})
+    return render(request, 'vehicle_types/update.html', {'form': form, 'vehicle_type': vehicle_type, 'segment': 'vehicle_types'})
 
 
 def vehicle_type_detail(request, pk):
@@ -79,6 +80,7 @@ def vehicle_type_detail(request, pk):
         'vehicle_type': vehicle_type,
         'can_edit': has_permission(user_group_id, FunctionIds.ManageVehicleTypes, ActionIds.Edit),
         'can_delete': has_permission(user_group_id, FunctionIds.ManageVehicleTypes, ActionIds.Delete),
+        'segment': 'vehicle_types',
     })
 
 

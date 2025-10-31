@@ -297,3 +297,8 @@ def password_reset_confirm_view(request, uidb64, token):
     else:
         messages.error(request, "The password reset link is invalid or has expired.")
         return render(request, "employee/password_reset_confirm.html", {"validlink": False})
+
+
+def logout_view(request):
+    request.session.flush()
+    return redirect("employee:login")
