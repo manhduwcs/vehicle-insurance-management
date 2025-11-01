@@ -65,7 +65,7 @@ function showToast(message, type='info', duration=4000) {
 // Render Django messages
 {% if messages %}
     {% for message in messages %}
-        showToast("{{ message|escapejs }}", 
+        showToast("{{ message|escapejs }}",
                   "{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}");
     {% endfor %}
 {% endif %}
@@ -87,14 +87,10 @@ function showToast(message, type='info', duration=4000) {
     {% block navigation %}
         {% include "includes/navigation.html" %}
     {% endblock navigation %}
-    
+
     {% block content %}{% endblock content %}
   </main>
 
-  {% block configurator %}
-    {% include "includes/configurator.html" %}
-  {% endblock configurator %}
-  
   <!-- Overlay and modal -->
   <div id="overlay" class="overlay" style="display:none"></div>
   <div id="deleteConfirm" class="delete-modal" style="display:none"></div>
