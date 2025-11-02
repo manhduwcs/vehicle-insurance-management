@@ -225,7 +225,7 @@ def claim_approve(request, pk):
             claim.status = 'Approved'
             claim.save()
             messages.success(request, f'Claim #{claim.claim_no} has been verified and approved.')
-            return redirect('claim_detail_admin', claim_id=claim.id)
+            return redirect('claim_detail_admin', pk=claim.id)
     else:
         form = ClaimApprovalForm(instance=claim)
     
