@@ -1,47 +1,69 @@
 {% for vehicle in vehicles %}
-  <tr>
-    <td class="align-middle text-center text-sm">{{ forloop.counter0|add:vehicles.start_index }}</td>  <!-- Chỉnh số thứ tự cho pagination -->
+<tr>
+    <td class="align-middle text-center text-sm">
+        {{ forloop.counter0|add:vehicles.start_index }}
+    </td>
+    <!-- Chỉnh số thứ tự cho pagination -->
     <td class="align-middle">
-      <a href="{% url 'vehicles:customer_vehicle_detail' vehicle.id %}">
-        <p class="text-xs font-weight-bold mb-0">{{ vehicle.name|truncatechars:50 }}</p>
-      </a>
+        <p class="text-xs font-weight-bold mb-0">
+            {{ vehicle.name|truncatechars:50 }}
+        </p>
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.customer_id.fullname|default:"N/A" }}</p>  <!-- Thêm default -->
+        <p class="text-xs text-secondary mb-0">
+            {{ vehicle.customer_id.fullname|default:"N/A" }}
+        </p>
+        <!-- Thêm default -->
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.customer_id.phone|default:"N/A" }}</p>  <!-- Thêm default -->
+        <p class="text-xs text-secondary mb-0">
+            {{ vehicle.customer_id.phone|default:"N/A" }}
+        </p>
+        <!-- Thêm default -->
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.model }}</p>
+        <p class="text-xs text-secondary mb-0">{{ vehicle.model }}</p>
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.number }}</p>
+        <p class="text-xs text-secondary mb-0">{{ vehicle.number }}</p>
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.vehicle_type.name }}</p>
+        <p class="text-xs text-secondary mb-0">
+            {{ vehicle.vehicle_type.name }}
+        </p>
     </td>
     <td class="align-middle">
-      <p class="text-xs text-secondary mb-0">{{ vehicle.purchase_price }}</p>
+        <p class="text-xs text-secondary mb-0">{{ vehicle.purchase_price }}</p>
     </td>
     <td class="align-middle">
-      {% if can_edit %}
-        <a href="{% url 'vehicles:vehicle_update' vehicle.id %}" class="btn btn-sm btn-warning">
-          <i class="fas fa-edit"></i>
+        {% if can_edit %}
+        <a
+            href="{% url 'vehicles:vehicle_update' vehicle.id %}"
+            class="btn btn-sm btn-warning"
+        >
+            <i class="fas fa-edit"></i>
         </a>
-      {% endif %}
-      {% if can_delete %}
-        <form method="post" action="{% url 'vehicles:vehicle_delete' vehicle.id %}" style="display:inline;">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure to delete the vehicle: {{ vehicle.name|truncatechars:30 }}?');">
-            <i class="fas fa-trash"></i>
-          </button>
+        {% endif %} {% if can_delete %}
+        <form
+            method="post"
+            action="{% url 'vehicles:vehicle_delete' vehicle.id %}"
+            style="display: inline"
+        >
+            {% csrf_token %}
+            <button
+                type="submit"
+                class="btn btn-sm btn-danger"
+                onclick="return confirm('Are you sure to delete the vehicle: {{ vehicle.name|truncatechars:30 }}?');"
+            >
+                <i class="fas fa-trash"></i>
+            </button>
         </form>
-      {% endif %}
+        {% endif %}
     </td>
-  </tr>
+</tr>
 {% empty %}
-  <tr>
-    <td colspan="9" class="text-center text-secondary">No vehicles found.</td>  <!-- Chỉnh colspan=9 -->
-  </tr>
+<tr>
+    <td colspan="9" class="text-center text-secondary">No vehicles found.</td>
+    <!-- Chỉnh colspan=9 -->
+</tr>
 {% endfor %}
